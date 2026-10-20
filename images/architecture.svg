@@ -1,0 +1,201 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 720" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <linearGradient id="coreGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="adapterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="100%" style="stop-color:#0891b2"/>
+    </linearGradient>
+    <linearGradient id="testGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+    <linearGradient id="metricsGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+    <linearGradient id="aiGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="appGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f43f5e"/>
+      <stop offset="100%" style="stop-color:#e11d48"/>
+    </linearGradient>
+    <linearGradient id="dbGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e"/>
+      <stop offset="100%" style="stop-color:#16a34a"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arrowDown" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="720" rx="12" fill="url(#bgGrad)"/>
+
+  <!-- Title -->
+  <text x="450" y="38" text-anchor="middle" fill="#f1f5f9" font-size="20" font-weight="700">cockroachdb-spring-boot-starter Architecture</text>
+  <text x="450" y="58" text-anchor="middle" fill="#94a3b8" font-size="12">Spring Boot Auto-Configuration | Annotation-Driven | Spring AI Integration</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- LAYER 1: YOUR APPLICATION (rose) -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="30" y="75" width="840" height="50" rx="8" fill="url(#appGrad)" opacity="0.9" filter="url(#shadow)"/>
+  <text x="450" y="105" text-anchor="middle" fill="white" font-size="15" font-weight="600">Your Spring Boot Application</text>
+
+  <!-- Arrow down -->
+  <line x1="450" y1="125" x2="450" y2="145" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowDown)"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- LAYER 2: SPRING INTEGRATION (cyan) -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <text x="44" y="162" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">SPRING INTEGRATION</text>
+
+  <!-- Annotations & AOP -->
+  <rect x="30" y="170" width="270" height="80" rx="8" fill="url(#adapterGrad)" filter="url(#shadow)"/>
+  <text x="165" y="196" text-anchor="middle" fill="white" font-size="14" font-weight="700">Annotations &amp; AOP</text>
+  <text x="165" y="214" text-anchor="middle" fill="#cffafe" font-size="10">@CockroachDB | @RetryableTransaction</text>
+  <text x="165" y="228" text-anchor="middle" fill="#cffafe" font-size="10">@FollowerRead | @CockroachDBCDC</text>
+  <text x="165" y="242" text-anchor="middle" fill="#cffafe" font-size="10">TransactionAspect | Around Advice</text>
+
+  <!-- Auto-Configuration -->
+  <rect x="315" y="170" width="270" height="80" rx="8" fill="url(#adapterGrad)" filter="url(#shadow)"/>
+  <text x="450" y="196" text-anchor="middle" fill="white" font-size="14" font-weight="700">Auto-Configuration</text>
+  <text x="450" y="214" text-anchor="middle" fill="#cffafe" font-size="10">CockroachDBAutoConfiguration</text>
+  <text x="450" y="228" text-anchor="middle" fill="#cffafe" font-size="10">CDCAutoConfiguration</text>
+  <text x="450" y="242" text-anchor="middle" fill="#cffafe" font-size="10">RegionAutoConfiguration</text>
+
+  <!-- Spring AI -->
+  <rect x="600" y="170" width="270" height="80" rx="8" fill="url(#adapterGrad)" filter="url(#shadow)"/>
+  <text x="735" y="196" text-anchor="middle" fill="white" font-size="14" font-weight="700">Spring AI</text>
+  <text x="735" y="214" text-anchor="middle" fill="#cffafe" font-size="10">@VectorSearch | @SemanticSearch</text>
+  <text x="735" y="228" text-anchor="middle" fill="#cffafe" font-size="10">VectorSearchAspect</text>
+  <text x="735" y="242" text-anchor="middle" fill="#cffafe" font-size="10">CockroachDBAIAutoConfiguration</text>
+
+  <!-- Arrow down -->
+  <line x1="450" y1="250" x2="450" y2="275" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowDown)"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- LAYER 3: CORE (indigo) -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <text x="44" y="290" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">CORE</text>
+
+  <!-- Core outer box -->
+  <rect x="30" y="298" width="840" height="110" rx="8" fill="url(#coreGrad)" filter="url(#shadow)"/>
+  <text x="450" y="322" text-anchor="middle" fill="white" font-size="16" font-weight="700">CockroachDBTemplate</text>
+
+  <!-- Inner boxes row -->
+  <!-- RetryPolicy -->
+  <rect x="44" y="334" width="120" height="60" rx="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="104" y="356" text-anchor="middle" fill="white" font-size="11" font-weight="600">RetryPolicy</text>
+  <text x="104" y="372" text-anchor="middle" fill="#c7d2fe" font-size="9">Exp. Backoff</text>
+  <text x="104" y="384" text-anchor="middle" fill="#c7d2fe" font-size="9">SQLSTATE 40001</text>
+
+  <!-- Errors -->
+  <rect x="176" y="334" width="120" height="60" rx="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="236" y="356" text-anchor="middle" fill="white" font-size="11" font-weight="600">CrdbErrors</text>
+  <text x="236" y="372" text-anchor="middle" fill="#c7d2fe" font-size="9">Serialization</text>
+  <text x="236" y="384" text-anchor="middle" fill="#c7d2fe" font-size="9">Classification</text>
+
+  <!-- RegionContext -->
+  <rect x="308" y="334" width="120" height="60" rx="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="368" y="356" text-anchor="middle" fill="white" font-size="11" font-weight="600">RegionContext</text>
+  <text x="368" y="372" text-anchor="middle" fill="#c7d2fe" font-size="9">Multi-Region</text>
+  <text x="368" y="384" text-anchor="middle" fill="#c7d2fe" font-size="9">Thread-local</text>
+
+  <!-- FollowerRead -->
+  <rect x="440" y="334" width="120" height="60" rx="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="500" y="356" text-anchor="middle" fill="white" font-size="11" font-weight="600">FollowerRead</text>
+  <text x="500" y="372" text-anchor="middle" fill="#c7d2fe" font-size="9">Conditional</text>
+  <text x="500" y="384" text-anchor="middle" fill="#c7d2fe" font-size="9">Unconditional</text>
+
+  <!-- Health -->
+  <rect x="572" y="334" width="120" height="60" rx="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="632" y="356" text-anchor="middle" fill="white" font-size="11" font-weight="600">HealthIndicator</text>
+  <text x="632" y="372" text-anchor="middle" fill="#c7d2fe" font-size="9">Actuator</text>
+  <text x="632" y="384" text-anchor="middle" fill="#c7d2fe" font-size="9">Integration</text>
+
+  <!-- Properties -->
+  <rect x="704" y="334" width="152" height="60" rx="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="780" y="356" text-anchor="middle" fill="white" font-size="11" font-weight="600">CrdbProperties</text>
+  <text x="780" y="372" text-anchor="middle" fill="#c7d2fe" font-size="9">cockroachdb.retry.*</text>
+  <text x="780" y="384" text-anchor="middle" fill="#c7d2fe" font-size="9">cockroachdb.region.*</text>
+
+  <!-- Arrow down -->
+  <line x1="450" y1="408" x2="450" y2="430" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowDown)"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- LAYER 4: SUPPORT ROW -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <text x="44" y="448" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">SUPPORT</text>
+
+  <!-- CDC (cyan) -->
+  <rect x="30" y="456" width="270" height="80" rx="8" fill="url(#adapterGrad)" filter="url(#shadow)"/>
+  <text x="165" y="482" text-anchor="middle" fill="white" font-size="14" font-weight="700">CDC</text>
+  <text x="165" y="500" text-anchor="middle" fill="#cffafe" font-size="10">ChangefeedFactory | WebhookController</text>
+  <text x="165" y="514" text-anchor="middle" fill="#cffafe" font-size="10">CDCProperties | ChangefeedMetrics</text>
+  <text x="165" y="528" text-anchor="middle" fill="#cffafe" font-size="10">Per-endpoint event &amp; latency tracking</text>
+
+  <!-- Metrics (green) -->
+  <rect x="315" y="456" width="270" height="80" rx="8" fill="url(#metricsGrad)" filter="url(#shadow)"/>
+  <text x="450" y="482" text-anchor="middle" fill="white" font-size="14" font-weight="700">Metrics</text>
+  <text x="450" y="500" text-anchor="middle" fill="#d1fae5" font-size="10">CockroachDBMetrics | Micrometer</text>
+  <text x="450" y="514" text-anchor="middle" fill="#d1fae5" font-size="10">Transactions | Retries | Failures</text>
+  <text x="450" y="528" text-anchor="middle" fill="#d1fae5" font-size="10">MetricsAutoConfiguration</text>
+
+  <!-- AI / Vector Search (purple) -->
+  <rect x="600" y="456" width="270" height="80" rx="8" fill="url(#aiGrad)" filter="url(#shadow)"/>
+  <text x="735" y="482" text-anchor="middle" fill="white" font-size="14" font-weight="700">AI / Vector Search</text>
+  <text x="735" y="500" text-anchor="middle" fill="#e9d5ff" font-size="10">VectorSearchTemplate | VectorStore</text>
+  <text x="735" y="514" text-anchor="middle" fill="#e9d5ff" font-size="10">RAG | EmbeddingGenerator</text>
+  <text x="735" y="528" text-anchor="middle" fill="#e9d5ff" font-size="10">AIMetrics | L2 | Cosine | Inner Product</text>
+
+  <!-- Arrow down -->
+  <line x1="450" y1="536" x2="450" y2="558" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowDown)"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- LAYER 5: TESTING (amber) -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <text x="44" y="575" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="1.5">TESTING</text>
+
+  <!-- Testing box -->
+  <rect x="30" y="582" width="840" height="50" rx="8" fill="url(#testGrad)" filter="url(#shadow)"/>
+  <text x="450" y="607" text-anchor="middle" fill="white" font-size="14" font-weight="700">TestConfig  |  ConcurrencyRunner  |  TransactionTestHelper  |  CDCTestHarness</text>
+  <text x="450" y="623" text-anchor="middle" fill="#fef3c7" font-size="10">Serialization conflict simulation | CDC event builder | Integration test utilities</text>
+
+  <!-- Arrow down -->
+  <line x1="450" y1="632" x2="450" y2="650" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowDown)"/>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- LAYER 6: COCKROACHDB (green) -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="100" y="656" width="700" height="50" rx="10" fill="url(#dbGrad)" filter="url(#shadow)"/>
+  <text x="450" y="680" text-anchor="middle" fill="white" font-size="15" font-weight="700">CockroachDB</text>
+  <text x="450" y="696" text-anchor="middle" fill="#dcfce7" font-size="10">Serializable | Multi-Region | Follower Reads | Native VECTOR (C-SPANN)</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- LEGEND -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="30" y="640" width="12" height="12" rx="3" fill="url(#appGrad)"/>
+  <text x="48" y="650" fill="#94a3b8" font-size="10">App</text>
+  <rect x="30" y="656" width="12" height="12" rx="3" fill="url(#adapterGrad)"/>
+  <text x="48" y="666" fill="#94a3b8" font-size="10">Spring</text>
+  <rect x="30" y="672" width="12" height="12" rx="3" fill="url(#coreGrad)"/>
+  <text x="48" y="682" fill="#94a3b8" font-size="10">Core</text>
+  <rect x="30" y="688" width="12" height="12" rx="3" fill="url(#aiGrad)"/>
+  <text x="48" y="698" fill="#94a3b8" font-size="10">AI</text>
+</svg>

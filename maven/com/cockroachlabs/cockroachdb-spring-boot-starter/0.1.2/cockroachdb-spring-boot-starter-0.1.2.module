@@ -1,0 +1,181 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.cockroachlabs",
+    "module": "cockroachdb-spring-boot-starter",
+    "version": "0.1.2",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.8.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter",
+          "version": {
+            "requires": "4.1.1"
+          }
+        },
+        {
+          "group": "org.springframework",
+          "module": "spring-aop",
+          "version": {
+            "requires": "7.0.9"
+          }
+        },
+        {
+          "group": "org.aspectj",
+          "module": "aspectjweaver",
+          "version": {
+            "requires": "1.9.25.1"
+          }
+        },
+        {
+          "group": "org.springframework",
+          "module": "spring-tx",
+          "version": {
+            "requires": "7.0.9"
+          }
+        },
+        {
+          "group": "org.springframework",
+          "module": "spring-jdbc",
+          "version": {
+            "requires": "7.0.9"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "cockroachdb-spring-boot-starter-0.1.2.jar",
+          "url": "cockroachdb-spring-boot-starter-0.1.2.jar",
+          "size": 202389,
+          "sha512": "4a507f662f07ecfc3a4801f506ccf7371c00632e2fd14edaf6af3ebddcf35900dec101b482708a9a05d9b58f6ac8307b85edb48567b1443d215dc09c74273621",
+          "sha256": "74d7f3f60cf76b529501cfd1161621e4b2d428bade9f4f85d0746d8fce7be35a",
+          "sha1": "a78a67cf46fa70e4f33d3ef58cc0de838cb74620",
+          "md5": "a56fcecc9ce427c701fcb2826b331803"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-autoconfigure",
+          "version": {
+            "requires": "4.1.1"
+          }
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter",
+          "version": {
+            "requires": "4.1.1"
+          }
+        },
+        {
+          "group": "org.springframework",
+          "module": "spring-aop",
+          "version": {
+            "requires": "7.0.9"
+          }
+        },
+        {
+          "group": "org.aspectj",
+          "module": "aspectjweaver",
+          "version": {
+            "requires": "1.9.25.1"
+          }
+        },
+        {
+          "group": "org.springframework",
+          "module": "spring-tx",
+          "version": {
+            "requires": "7.0.9"
+          }
+        },
+        {
+          "group": "org.springframework",
+          "module": "spring-jdbc",
+          "version": {
+            "requires": "7.0.9"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "cockroachdb-spring-boot-starter-0.1.2.jar",
+          "url": "cockroachdb-spring-boot-starter-0.1.2.jar",
+          "size": 202389,
+          "sha512": "4a507f662f07ecfc3a4801f506ccf7371c00632e2fd14edaf6af3ebddcf35900dec101b482708a9a05d9b58f6ac8307b85edb48567b1443d215dc09c74273621",
+          "sha256": "74d7f3f60cf76b529501cfd1161621e4b2d428bade9f4f85d0746d8fce7be35a",
+          "sha1": "a78a67cf46fa70e4f33d3ef58cc0de838cb74620",
+          "md5": "a56fcecc9ce427c701fcb2826b331803"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "cockroachdb-spring-boot-starter-0.1.2-sources.jar",
+          "url": "cockroachdb-spring-boot-starter-0.1.2-sources.jar",
+          "size": 95757,
+          "sha512": "234165c115a7348dcb53822661aebfedb736e130ff1cc9bde72d99591ded1911a5118713e05c922f44a8343d13b10fb4d9786863dfcd226e61ef692f3567440b",
+          "sha256": "0491ef01ef5507ee40b9f6a3b334828b7dc319570a430c512b0f8ad4cfca961b",
+          "sha1": "1a62188a2a15ffeec972b8f2c8b4f09ac6205c5c",
+          "md5": "358403e92dabf335704c7836910c1bbb"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "cockroachdb-spring-boot-starter-0.1.2-javadoc.jar",
+          "url": "cockroachdb-spring-boot-starter-0.1.2-javadoc.jar",
+          "size": 637653,
+          "sha512": "43411a774497e82d73ed4fee03071280bfb91b764d363a984d5486ec3f22a2f5906a217a7487d6eac368c81007ddd4a30f3d4f54ac7f7531068ed29824a38d13",
+          "sha256": "901dae4ae35116f2014d6e8b81ec4dfc4bbe2cfb327f53aab32aaf4b872aa230",
+          "sha1": "0dbb06f6a265ff5c132a8c2c77cb968197db8aae",
+          "md5": "87ff44680ad69d642666d3737de9f211"
+        }
+      ]
+    }
+  ]
+}

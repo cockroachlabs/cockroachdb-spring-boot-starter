@@ -71,7 +71,7 @@ publishing {
             pom {
                 name = 'CockroachDB Spring Boot Starter'
                 description = 'Spring Boot starter for CockroachDB with retry, metrics, and concurrency testing'
-                url = 'https://github.com/felipeg48/cockroachdb-spring-boot-starter'
+                url = 'https://github.com/cockroachlabs/cockroachdb-spring-boot-starter'
                 licenses {
                     license {
                         name = 'The Apache License, Version 2.0'
@@ -92,9 +92,9 @@ publishing {
     repositories {
         maven {
             name = 'GitHubPackages'
-            url = 'https://maven.pkg.github.com/felipeg48/cockroachdb-spring-boot-starter'
+            url = 'https://maven.pkg.github.com/cockroachlabs/cockroachdb-spring-boot-starter'
             credentials {
-                username = System.getenv('GITHUB_ACTOR') ?: 'felipeg48'
+                username = System.getenv('GITHUB_ACTOR')
                 password = System.getenv('GITHUB_TOKEN')
             }
         }

@@ -32,23 +32,39 @@ Designed for Spring Boot 4.x and Java 21+. **GraalVM Native Image ready.**
 
 ## Installation
 
+Artifacts are served from this repository's **GitHub Pages Maven repository** — no token required.
+
 ### Gradle
 
 ```groovy
+repositories {
+    mavenCentral()
+    maven { url 'https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/maven/' }
+}
+
 dependencies {
-    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.1.0-SNAPSHOT'
+    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.1.2'
 }
 ```
 
 ### Maven
 
 ```xml
+<repositories>
+  <repository>
+    <id>cockroachlabs</id>
+    <url>https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/maven/</url>
+  </repository>
+</repositories>
+
 <dependency>
     <groupId>com.cockroachlabs</groupId>
     <artifactId>cockroachdb-spring-boot-starter</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.2</version>
 </dependency>
 ```
+
+API reference: https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/
 
 ## Configuration
 

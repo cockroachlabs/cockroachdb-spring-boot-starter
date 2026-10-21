@@ -733,14 +733,19 @@ Add Spring AI to your project alongside the starter:
 
 ```groovy
 // build.gradle
+repositories {
+    mavenCentral()
+    maven { url 'https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/maven/' }
+}
+
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.ai:spring-ai-bom:2.0.0-SNAPSHOT"
+        mavenBom "org.springframework.ai:spring-ai-bom:2.0.1"
     }
 }
 
 dependencies {
-    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.1.0-SNAPSHOT'
+    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.1.2'
     implementation 'org.springframework.ai:spring-ai-starter-model-ollama'  // or openai, etc.
     implementation 'org.springframework.ai:spring-ai-advisors-vector-store' // for RAG
 }

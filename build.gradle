@@ -7,11 +7,24 @@ plugins {
 group = 'com.cockroachlabs'
 version = '0.1.2'
 
+// Build with GraalVM 25, but emit (and compile against the API of) Java 17 so the
+// starter runs on any Java 17+ JVM. `release` rejects newer JDK APIs at compile
+// time; source/targetCompatibility alone would not.
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+        nativeImageCapable = true
+    }
     withSourcesJar()
     withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.addStringOption('-release', '17')
 }
 
 repositories {
@@ -58,8 +71,21 @@ dependencies {
     testImplementation 'org.postgresql:postgresql'
 }
 
+// Tests run on the oldest supported JVM by default; CI overrides with -PtestJvm=21/25.
+def testJvm = (findProperty('testJvm') ?: '17') as int
+
 test {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(testJvm)
+    }
     useJUnitPlatform()
+    // TestJvmTest asserts the forked JVM really is this version and prints it.
+    systemProperty 'expectedTestJvm', testJvm
+    addTestOutputListener({ descriptor, event ->
+        if (descriptor.className?.endsWith('.TestJvmTest')) {
+            logger.lifecycle(event.message.trim())
+        }
+    } as TestOutputListener)
 }
 
 publishing {

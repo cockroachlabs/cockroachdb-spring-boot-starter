@@ -74,7 +74,7 @@ public class CDCWebhookController {
 
             int eventCount = envelope.payload() != null ? envelope.payload().size() : 1;
             CDCOperationType op = envelope.hasPayload()
-                    ? envelope.payload().getFirst().resolveOperation()
+                    ? envelope.payload().get(0).resolveOperation()
                     : CDCOperationType.INSERT;
             for (int i = 0; i < eventCount; i++) {
                 metrics.recordEvent(normalizedEndpoint, op, durationNanos / eventCount, true);

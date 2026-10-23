@@ -12,16 +12,30 @@ concurrency:
 
 jobs:
   build:
-    name: Build & test (JDK 21)
+    # Always compiled by GraalVM 25 to Java 17 bytecode; the matrix varies the
+    # JVM the tests run on (17 = oldest supported runtime).
+    name: Build & test (JDK ${{ matrix.java }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['17', '21', '25']
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK ${{ matrix.java }} (test runtime)
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: ${{ matrix.java }}
           distribution: temurin
+
+      # GraalVM 25 compiles (Gradle toolchain); set up last so it is JAVA_HOME.
+      - name: Set up GraalVM 25
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: graalvm-community
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -29,4 +43,14 @@ jobs:
       # Tests use Testcontainers (testcontainers-cockroachdb), which starts a
       # CockroachDB container on the runner's Docker daemon — no manual service.
       - name: Build & test
-        run: ./gradlew build --no-daemon --stacktrace
+        run: ./gradlew build -PtestJvm=${{ matrix.java }} --no-daemon --stacktrace
+
+  # Stable-named gate for branch protection: require "CI OK" instead of the
+  # matrix job names, so matrix changes don't strand the required check.
+  ci-ok:
+    name: CI OK
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: '[ "${{ needs.build.result }}" = "success" ]'

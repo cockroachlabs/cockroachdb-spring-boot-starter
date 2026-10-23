@@ -6,7 +6,9 @@
 
 A Spring Boot starter that provides automatic retry handling for CockroachDB serialization errors (SQLSTATE `40001`), built-in transaction metrics, multi-region support for REGIONAL BY ROW tables, concurrency testing utilities, and Spring AI `VectorStore` integration for RAG pipelines.
 
-Designed for Spring Boot 4.x and Java 21+. **GraalVM Native Image ready.**
+Designed for Spring Boot 4.x and Java 17+. **GraalVM Native Image ready.**
+
+Building from source requires GraalVM 25; Gradle downloads it automatically if missing. The published jar targets Java 17 bytecode.
 
 ## Architecture
 

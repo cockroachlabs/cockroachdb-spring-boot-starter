@@ -19,7 +19,7 @@
       "attributes": {
         "org.gradle.category": "library",
         "org.gradle.dependency.bundling": "external",
-        "org.gradle.jvm.version": 21,
+        "org.gradle.jvm.version": 17,
         "org.gradle.libraryelements": "jar",
         "org.gradle.usage": "java-api"
       },
@@ -64,11 +64,11 @@
         {
           "name": "cockroachdb-spring-boot-starter-0.1.2.jar",
           "url": "cockroachdb-spring-boot-starter-0.1.2.jar",
-          "size": 202389,
-          "sha512": "4a507f662f07ecfc3a4801f506ccf7371c00632e2fd14edaf6af3ebddcf35900dec101b482708a9a05d9b58f6ac8307b85edb48567b1443d215dc09c74273621",
-          "sha256": "74d7f3f60cf76b529501cfd1161621e4b2d428bade9f4f85d0746d8fce7be35a",
-          "sha1": "a78a67cf46fa70e4f33d3ef58cc0de838cb74620",
-          "md5": "a56fcecc9ce427c701fcb2826b331803"
+          "size": 202391,
+          "sha512": "bf30a7254c1d9db364a71e4d01d98e27d2f6a12f041850b48df019e1ff4e3db03db3876d379a4062c5449e7f311de9828747527809fe266de0db21b51868987e",
+          "sha256": "80b7bd7757b279962a5848795bcf5181e18067d6ddfe58df92dbe994b14c6745",
+          "sha1": "cee014678989f11ab9107502044a81f98dc27e10",
+          "md5": "b2b5c6248d813c66f6f29d2058a21caa"
         }
       ]
     },
@@ -77,7 +77,7 @@
       "attributes": {
         "org.gradle.category": "library",
         "org.gradle.dependency.bundling": "external",
-        "org.gradle.jvm.version": 21,
+        "org.gradle.jvm.version": 17,
         "org.gradle.libraryelements": "jar",
         "org.gradle.usage": "java-runtime"
       },
@@ -129,11 +129,11 @@
         {
           "name": "cockroachdb-spring-boot-starter-0.1.2.jar",
           "url": "cockroachdb-spring-boot-starter-0.1.2.jar",
-          "size": 202389,
-          "sha512": "4a507f662f07ecfc3a4801f506ccf7371c00632e2fd14edaf6af3ebddcf35900dec101b482708a9a05d9b58f6ac8307b85edb48567b1443d215dc09c74273621",
-          "sha256": "74d7f3f60cf76b529501cfd1161621e4b2d428bade9f4f85d0746d8fce7be35a",
-          "sha1": "a78a67cf46fa70e4f33d3ef58cc0de838cb74620",
-          "md5": "a56fcecc9ce427c701fcb2826b331803"
+          "size": 202391,
+          "sha512": "bf30a7254c1d9db364a71e4d01d98e27d2f6a12f041850b48df019e1ff4e3db03db3876d379a4062c5449e7f311de9828747527809fe266de0db21b51868987e",
+          "sha256": "80b7bd7757b279962a5848795bcf5181e18067d6ddfe58df92dbe994b14c6745",
+          "sha1": "cee014678989f11ab9107502044a81f98dc27e10",
+          "md5": "b2b5c6248d813c66f6f29d2058a21caa"
         }
       ]
     },
@@ -149,11 +149,11 @@
         {
           "name": "cockroachdb-spring-boot-starter-0.1.2-sources.jar",
           "url": "cockroachdb-spring-boot-starter-0.1.2-sources.jar",
-          "size": 95757,
-          "sha512": "234165c115a7348dcb53822661aebfedb736e130ff1cc9bde72d99591ded1911a5118713e05c922f44a8343d13b10fb4d9786863dfcd226e61ef692f3567440b",
-          "sha256": "0491ef01ef5507ee40b9f6a3b334828b7dc319570a430c512b0f8ad4cfca961b",
-          "sha1": "1a62188a2a15ffeec972b8f2c8b4f09ac6205c5c",
-          "md5": "358403e92dabf335704c7836910c1bbb"
+          "size": 95754,
+          "sha512": "a8c7134ada49db74200f3ef49b73b4d1521606178d90cb7feca40bf5bfebd28994fe6d47227d57a65d303cbe4d93f3293a891746b53248733674de7041903bbf",
+          "sha256": "53ff7d6519f9f4f45e56bc5c14943a5dd4a170cd042900c3efc500d3ad23f99a",
+          "sha1": "2a92585437cc8e6f387126b5a8ac918c3ae7649c",
+          "md5": "1e2643c776b3a847ddf37726116cab34"
         }
       ]
     },
@@ -169,11 +169,11 @@
         {
           "name": "cockroachdb-spring-boot-starter-0.1.2-javadoc.jar",
           "url": "cockroachdb-spring-boot-starter-0.1.2-javadoc.jar",
-          "size": 637653,
-          "sha512": "43411a774497e82d73ed4fee03071280bfb91b764d363a984d5486ec3f22a2f5906a217a7487d6eac368c81007ddd4a30f3d4f54ac7f7531068ed29824a38d13",
-          "sha256": "901dae4ae35116f2014d6e8b81ec4dfc4bbe2cfb327f53aab32aaf4b872aa230",
-          "sha1": "0dbb06f6a265ff5c132a8c2c77cb968197db8aae",
-          "md5": "87ff44680ad69d642666d3737de9f211"
+          "size": 4724495,
+          "sha512": "bf78d48abffb7df734fe9347ff2eb27181ea488ff5567a33fa83a5cb1cc68cf21a1491af9e31b2e327e380210e5563144c7348aadc77371382beb6dce919e7a7",
+          "sha256": "c01beb537f58bbff6859811afd1566e7ae0043af69216cc5d2051d67e062544e",
+          "sha1": "00ccd585292073d50577f89d92c27c52158c808b",
+          "md5": "1a9b773f72bea04cc6068fcc85035893"
         }
       ]
     }

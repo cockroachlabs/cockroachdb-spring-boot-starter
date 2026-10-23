@@ -14,7 +14,7 @@ jobs:
   build:
     # Always compiled by GraalVM 25 to Java 17 bytecode; the matrix varies the
     # JVM the tests run on (17 = oldest supported runtime).
-    name: Build & test (tests on JDK ${{ matrix.java }})
+    name: Build & test (JDK ${{ matrix.java }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

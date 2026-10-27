@@ -280,7 +280,11 @@ pointer to retry metrics.</div>
 about a cluster.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="com/cockroachlabs/data/annotation/FollowerRead.html" title="annotation interface in com.cockroachlabs.data.annotation">FollowerRead</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">&nbsp;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">
+<div class="block">Runs the method in its own read-only transaction with
+<code>SET TRANSACTION AS OF SYSTEM TIME ...</code>, so every query it makes reads a
+consistent snapshot from the past that the nearest replica can serve.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/aop/FollowerReadAspect.html" title="class in com.cockroachlabs.data.aop">FollowerReadAspect</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="com/cockroachlabs/data/annotation/GlobalTable.html" title="annotation interface in com.cockroachlabs.data.annotation">GlobalTable</a></div>

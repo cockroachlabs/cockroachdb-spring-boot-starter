@@ -956,7 +956,11 @@ about a cluster.</div>
 <dt><a href="com/cockroachlabs/data/continuum/aegis/SimulatedAegisClient.html#findings()" class="member-name-link">findings()</a> - Method in class com.cockroachlabs.data.continuum.aegis.<a href="com/cockroachlabs/data/continuum/aegis/SimulatedAegisClient.html" title="class in com.cockroachlabs.data.continuum.aegis">SimulatedAegisClient</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/annotation/FollowerRead.html" class="type-name-link" title="annotation interface in com.cockroachlabs.data.annotation">FollowerRead</a> - Annotation Interface in <a href="com/cockroachlabs/data/annotation/package-summary.html">com.cockroachlabs.data.annotation</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Runs the method in its own read-only transaction with
+<code>SET TRANSACTION AS OF SYSTEM TIME ...</code>, so every query it makes reads a
+consistent snapshot from the past that the nearest replica can serve.</div>
+</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBAutoConfiguration.html#followerReadAspect(org.springframework.transaction.PlatformTransactionManager,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.metrics.CockroachDBMetrics)" class="member-name-link">followerReadAspect(PlatformTransactionManager, JdbcTemplate, CockroachDBMetrics)</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBAutoConfiguration.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBAutoConfiguration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/aop/FollowerReadAspect.html" class="type-name-link" title="class in com.cockroachlabs.data.aop">FollowerReadAspect</a> - Class in <a href="com/cockroachlabs/data/aop/package-summary.html">com.cockroachlabs.data.aop</a></dt>
@@ -1318,6 +1322,8 @@ for all <a href="com/cockroachlabs/data/annotation/ComputedColumn.html" title="a
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/continuum/annotation/Workload.Priority.html#HIGH" class="member-name-link">HIGH</a> - Enum constant in enum class com.cockroachlabs.data.continuum.annotation.<a href="com/cockroachlabs/data/continuum/annotation/Workload.Priority.html" title="enum class in com.cockroachlabs.data.continuum.annotation">Workload.Priority</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/annotation/FollowerRead.html#hoursAgo()" class="member-name-link">hoursAgo()</a> - Element in annotation interface com.cockroachlabs.data.annotation.<a href="com/cockroachlabs/data/annotation/FollowerRead.html" title="annotation interface in com.cockroachlabs.data.annotation">FollowerRead</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/continuum/aegis/HttpAegisClient.html" class="type-name-link" title="class in com.cockroachlabs.data.continuum.aegis">HttpAegisClient</a> - Class in <a href="com/cockroachlabs/data/continuum/aegis/package-summary.html">com.cockroachlabs.data.continuum.aegis</a></dt>
 <dd>
 <div class="block">Placeholder for the real Cockroach Aegis HTTP client.</div>
@@ -1594,6 +1600,8 @@ using a service-account Bearer token.</div>
 <dt><a href="com/cockroachlabs/data/metrics/MicrometerCockroachDBMetrics.html" class="type-name-link" title="class in com.cockroachlabs.data.metrics">MicrometerCockroachDBMetrics</a> - Class in <a href="com/cockroachlabs/data/metrics/package-summary.html">com.cockroachlabs.data.metrics</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/metrics/MicrometerCockroachDBMetrics.html#%3Cinit%3E(io.micrometer.core.instrument.MeterRegistry)" class="member-name-link">MicrometerCockroachDBMetrics(MeterRegistry)</a> - Constructor for class com.cockroachlabs.data.metrics.<a href="com/cockroachlabs/data/metrics/MicrometerCockroachDBMetrics.html" title="class in com.cockroachlabs.data.metrics">MicrometerCockroachDBMetrics</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/annotation/FollowerRead.html#minutesAgo()" class="member-name-link">minutesAgo()</a> - Element in annotation interface com.cockroachlabs.data.annotation.<a href="com/cockroachlabs/data/annotation/FollowerRead.html" title="annotation interface in com.cockroachlabs.data.annotation">FollowerRead</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/factory/ChangefeedInfo.html#modified()" class="member-name-link">modified()</a> - Method in record class com.cockroachlabs.data.cdc.factory.<a href="com/cockroachlabs/data/cdc/factory/ChangefeedInfo.html" title="class in com.cockroachlabs.data.cdc.factory">ChangefeedInfo</a></dt>
 <dd>
@@ -1909,6 +1917,8 @@ cluster.</div>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/ai/VectorSearchTemplate.html#search(java.lang.String,java.lang.String,float%5B%5D,com.cockroachlabs.data.ai.DistanceMetric,int,java.util.List,java.lang.String,int)" class="member-name-link">search(String, String, float[], DistanceMetric, int, List, String, int)</a> - Method in class com.cockroachlabs.data.ai.<a href="com/cockroachlabs/data/ai/VectorSearchTemplate.html" title="class in com.cockroachlabs.data.ai">VectorSearchTemplate</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/annotation/FollowerRead.html#secondsAgo()" class="member-name-link">secondsAgo()</a> - Element in annotation interface com.cockroachlabs.data.annotation.<a href="com/cockroachlabs/data/annotation/FollowerRead.html" title="annotation interface in com.cockroachlabs.data.annotation">FollowerRead</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/ai/annotation/SemanticSearch.html" class="type-name-link" title="annotation interface in com.cockroachlabs.data.ai.annotation">SemanticSearch</a> - Annotation Interface in <a href="com/cockroachlabs/data/ai/annotation/package-summary.html">com.cockroachlabs.data.ai.annotation</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/ai/autoconfigure/CockroachDBAIAutoConfiguration.html#semanticSearchAspect(com.cockroachlabs.data.ai.VectorSearchTemplate,com.cockroachlabs.data.ai.metrics.AIMetrics)" class="member-name-link">semanticSearchAspect(VectorSearchTemplate, AIMetrics)</a> - Method in class com.cockroachlabs.data.ai.autoconfigure.<a href="com/cockroachlabs/data/ai/autoconfigure/CockroachDBAIAutoConfiguration.html" title="class in com.cockroachlabs.data.ai.autoconfigure">CockroachDBAIAutoConfiguration</a></dt>
@@ -2082,10 +2092,6 @@ cluster.</div>
 <dt><a href="com/cockroachlabs/data/continuum/aegis/AppEvent.html#source()" class="member-name-link">source()</a> - Method in record class com.cockroachlabs.data.continuum.aegis.<a href="com/cockroachlabs/data/continuum/aegis/AppEvent.html" title="class in com.cockroachlabs.data.continuum.aegis">AppEvent</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./com/cockroachlabs/data/continuum/aegis/AppEvent.html#param-source"><code>source</code></a> record component.</div>
-</dd>
-<dt><a href="com/cockroachlabs/data/annotation/FollowerRead.html#staleParam()" class="member-name-link">staleParam()</a> - Element in annotation interface com.cockroachlabs.data.annotation.<a href="com/cockroachlabs/data/annotation/FollowerRead.html" title="annotation interface in com.cockroachlabs.data.annotation">FollowerRead</a></dt>
-<dd>
-<div class="block">Name of the boolean method parameter that controls follower reads.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/continuum/cloud/CloudClient.Cluster.html#state()" class="member-name-link">state()</a> - Method in record class com.cockroachlabs.data.continuum.cloud.<a href="com/cockroachlabs/data/continuum/cloud/CloudClient.Cluster.html" title="class in com.cockroachlabs.data.continuum.cloud">CloudClient.Cluster</a></dt>
 <dd>

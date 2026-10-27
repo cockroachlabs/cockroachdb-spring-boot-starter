@@ -57,7 +57,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#annotation-interface-optional-element-summary" tabindex="0">Optional Element Summary</a></li>
 <li><a href="#annotation-interface-element-detail" tabindex="0">Element Details</a>
 <ol class="toc-list">
-<li><a href="#staleParam()" tabindex="0">staleParam</a></li>
+<li><a href="#hoursAgo()" tabindex="0">hoursAgo</a></li>
+<li><a href="#minutesAgo()" tabindex="0">minutesAgo</a></li>
+<li><a href="#secondsAgo()" tabindex="0">secondsAgo</a></li>
 </ol>
 </li>
 </ol>
@@ -74,6 +76,17 @@ loadScripts(document, 'script');</script>
 <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/Retention.html" title="class or interface in java.lang.annotation" class="external-link">@Retention</a>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/RetentionPolicy.html#RUNTIME" title="class or interface in java.lang.annotation" class="external-link">RUNTIME</a>)
 <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/Documented.html" title="class or interface in java.lang.annotation" class="external-link">@Documented</a>
 </span><span class="modifiers">public @interface </span><span class="element-name type-name-label">FollowerRead</span></div>
+<div class="block">Runs the method in its own read-only transaction with
+<code>SET TRANSACTION AS OF SYSTEM TIME ...</code>, so every query it makes reads a
+consistent snapshot from the past that the nearest replica can serve.
+
+<p>With nothing set (the default), it reads at <code>follower_read_timestamp()</code>, the
+most recent time any replica can serve (about 4.2s ago). Otherwise the parts add up,
+so <code>@FollowerRead(hoursAgo = 1, minutesAgo = 30)</code> reads as of 1h30m ago.
+
+<p>A time more recent than <code>follower_read_timestamp()</code> still reads historical
+data, but is served by the leaseholder rather than the nearest replica. A negative
+part fails when the method is called.</div>
 </div>
 </section>
 <section class="summary">
@@ -87,11 +100,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Optional Element</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#staleParam()" class="member-name-link">staleParam</a></code></div>
-<div class="col-last even-row-color">
-<div class="block">Name of the boolean method parameter that controls follower reads.</div>
-</div>
+<div class="col-first even-row-color"><code>long</code></div>
+<div class="col-second even-row-color"><code><a href="#hoursAgo()" class="member-name-link">hoursAgo</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>long</code></div>
+<div class="col-second odd-row-color"><code><a href="#minutesAgo()" class="member-name-link">minutesAgo</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>long</code></div>
+<div class="col-second even-row-color"><code><a href="#secondsAgo()" class="member-name-link">secondsAgo</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -105,17 +122,37 @@ loadScripts(document, 'script');</script>
 <h2>Element Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="staleParam()">
-<h3>staleParam</h3>
+<section class="detail" id="hoursAgo()">
+<h3>hoursAgo</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">staleParam</span></div>
-<div class="block">Name of the boolean method parameter that controls follower reads.
-When that parameter is <code>true</code>, the method runs inside a read-only
-transaction with <code>AS OF SYSTEM TIME follower_read_timestamp()</code>.
-Set to empty string to always use follower reads.</div>
+<div class="member-signature"><span class="return-type">long</span>&nbsp;<span class="element-name">hoursAgo</span></div>
 <dl class="notes">
 <dt>Default:</dt>
-<dd><code>"stale"</code></dd>
+<dd><code>0L</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="minutesAgo()">
+<h3>minutesAgo</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">long</span>&nbsp;<span class="element-name">minutesAgo</span></div>
+<dl class="notes">
+<dt>Default:</dt>
+<dd><code>0L</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="secondsAgo()">
+<h3>secondsAgo</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="return-type">long</span>&nbsp;<span class="element-name">secondsAgo</span></div>
+<dl class="notes">
+<dt>Default:</dt>
+<dd><code>0L</code></dd>
 </dl>
 </div>
 </section>

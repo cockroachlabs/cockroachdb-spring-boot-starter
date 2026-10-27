@@ -25,7 +25,7 @@ Building from source requires GraalVM 25; Gradle downloads it automatically if m
 - **CDC webhook handlers** — `@CockroachDBCDC` annotation for consuming CockroachDB changefeeds via HTTP webhook sink
 - **CDC test harness** — `CDCTestHarness` and `CDCEventBuilder` for integration testing without a live changefeed
 - **CDC metrics** — Per-endpoint event counts, latency, and auth failure tracking (auto-enabled with Actuator)
-- **Follower reads** — `@FollowerRead` annotation for low-latency reads from any replica with conditional or unconditional staleness
+- **Follower reads** — `@FollowerRead` annotation for low-latency historical reads from the nearest replica, at `follower_read_timestamp()` or a chosen time in the past
 - **Vector search** — `@VectorSearch` annotation for pgvector-compatible similarity search (L2, cosine, inner product) with CockroachDB's C-SPANN distributed vector indexing
 - **Semantic search** — `@SemanticSearch` annotation for RAG-style queries combining vector similarity with structured SQL filters in a single transaction
 - **`VectorSearchTemplate`** — Programmatic API for embedding storage, similarity search, and hybrid queries (vector + relational filters)
@@ -465,46 +465,55 @@ cdcTestHarness.send("/orders", event);
 
 ### 8. Follower Reads
 
-CockroachDB's [follower reads](https://www.cockroachlabs.com/docs/stable/follower-reads.html) allow any replica to serve reads at a slightly stale timestamp (`~4.8s`), avoiding the round-trip to the leaseholder. The `@FollowerRead` annotation wraps a method in a read-only transaction with `SET TRANSACTION AS OF SYSTEM TIME follower_read_timestamp()`.
-
-#### Conditional follower reads (default)
-
-The annotation inspects a boolean parameter to decide at runtime:
+CockroachDB's [follower reads](https://www.cockroachlabs.com/docs/stable/follower-reads.html) allow any replica to serve reads at a slightly stale timestamp (about 4.2s old), avoiding the round-trip to the leaseholder. `@FollowerRead` runs the method in its own read-only transaction that starts with `SET TRANSACTION AS OF SYSTEM TIME`, so every query the method makes reads the same snapshot from the past:
 
 ```java
 @Service
 public class CatalogService {
 
     @FollowerRead
-    public List<Product> findAll(boolean stale) {
+    public List<Product> browseCatalog() {
         return productRepo.findAll();
     }
-
-    @FollowerRead
-    public Product findById(UUID id, boolean stale) {
-        return productRepo.findById(id).orElseThrow();
-    }
 }
 ```
 
-When `stale=true`, the method runs in a follower-read transaction. When `stale=false`, the method runs normally against the leaseholder. The parameter name defaults to `"stale"` but is configurable:
+The method doesn't need `@Transactional`. It works with both JDBC (`DataSourceTransactionManager`) and JPA (`JpaTransactionManager`), as long as the auto-configured `JdbcTemplate` uses the same `DataSource` as the transaction manager, which is the Spring Boot default.
+
+#### Choosing how far back to read
+
+By default the read runs at `follower_read_timestamp()`. Use `hoursAgo`, `minutesAgo` and `secondsAgo` to read further back. They add up:
 
 ```java
-@FollowerRead(staleParam = "useReplica")
-public List<Product> findAll(boolean useReplica) {
-    return productRepo.findAll();
-}
+@FollowerRead                                   // follower_read_timestamp()
+@FollowerRead(secondsAgo = 20)
+@FollowerRead(minutesAgo = 5)
+@FollowerRead(hoursAgo = 1)
+@FollowerRead(hoursAgo = 1, minutesAgo = 30)    // 1h30m ago
 ```
 
-#### Unconditional follower reads
+A time more recent than `follower_read_timestamp()` (about 4.2s ago) still reads historical data, but the leaseholder serves it rather than the nearest replica. A time older than the table's garbage-collection window fails in CockroachDB.
 
-Set `staleParam = ""` to always use follower reads — no boolean parameter needed:
+#### Misuse fails instead of reading current data
+
+`@FollowerRead` never silently falls back to a current read. The call fails with an `IllegalStateException`, before your method runs, when:
+
+- `hoursAgo`, `minutesAgo` or `secondsAgo` is negative
+- the `JdbcTemplate` doesn't share the transaction's connection, for example because it uses a different `DataSource` from the transaction manager
+
+#### Calling a follower read inside a transaction
+
+The follower-read transaction is always a new one (`PROPAGATION_REQUIRES_NEW`). If the method is called inside an existing transaction, that transaction is suspended, not joined, so it stays read-write and current. While the method runs it uses a second connection from the pool, so size the pool for that if you nest follower reads in transactions.
+
+#### Upgrading from `staleParam`
+
+Earlier versions had a `staleParam` attribute, defaulting to `"stale"`, that did a follower read only when the method had a `boolean` argument with that name set to `true`. It's removed, and `@FollowerRead` now always does a follower read. To choose at runtime, call a `@FollowerRead` method or a regular one:
 
 ```java
-@FollowerRead(staleParam = "")
-public List<Product> browseCatalog() {
-    return productRepo.findAll();
-}
+@FollowerRead
+public List<Product> browseCatalogStale() { return productRepo.findAll(); }
+
+public List<Product> browseCatalog() { return productRepo.findAll(); }
 ```
 
 #### When to use follower reads

@@ -21,7 +21,7 @@ class ComputedColumnHelperTest {
 
     @Container
     static final CockroachContainer crdb = new CockroachContainer(
-            "cockroachdb/cockroach:latest-v24.3");
+            "cockroachdb/cockroach:v26.3.3");
 
     private Connection conn;
 

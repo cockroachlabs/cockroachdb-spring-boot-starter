@@ -25,7 +25,7 @@ class VClusterTaggingIT {
 
     @Container
     static final CockroachContainer crdb =
-            new CockroachContainer("cockroachdb/cockroach:latest-v24.3");
+            new CockroachContainer("cockroachdb/cockroach:v26.3.3");
 
     /** Reads the session settings that the aspect should have applied. */
     static class Probe {

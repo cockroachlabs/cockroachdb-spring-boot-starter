@@ -19,7 +19,7 @@ class StorageInsightsIT {
 
     @Container
     static final CockroachContainer crdb =
-            new CockroachContainer("cockroachdb/cockroach:latest-v24.3");
+            new CockroachContainer("cockroachdb/cockroach:v26.3.3");
 
     @Test
     void summaryIncludesCreatedTableWithoutUsingCrdbInternal() {

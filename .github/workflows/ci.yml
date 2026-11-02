@@ -13,7 +13,9 @@ concurrency:
 jobs:
   build:
     # Always compiled by GraalVM 25 to Java 17 bytecode; the matrix varies the
-    # JVM the tests run on (17 = oldest supported runtime).
+    # JVM the tests run on (17 = oldest supported runtime). Gradle itself runs
+    # on the matrix JDK, so the getting-started guides (included builds with no
+    # toolchain of their own) are tested on it too.
     name: Build & test (JDK ${{ matrix.java }})
     runs-on: ubuntu-latest
     strategy:
@@ -23,13 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK ${{ matrix.java }} (test runtime)
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: temurin
-
-      # GraalVM 25 compiles (Gradle toolchain); set up last so it is JAVA_HOME.
+      # GraalVM 25 compiles the starter (Gradle toolchain, found via GRAALVM_HOME).
       - name: Set up GraalVM 25
         uses: graalvm/setup-graalvm@v1
         with:
@@ -37,11 +33,19 @@ jobs:
           distribution: graalvm-community
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Set up last so it is JAVA_HOME: Gradle, the starter tests and the guides
+      # all run on this JVM.
+      - name: Set up JDK ${{ matrix.java }} (test runtime)
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # Tests use Testcontainers (testcontainers-cockroachdb), which starts a
-      # CockroachDB container on the runner's Docker daemon — no manual service.
+      # Builds the starter and every guide. Tests use Testcontainers, which starts
+      # CockroachDB containers on the runner's Docker daemon — no manual service.
       - name: Build & test
         run: ./gradlew build -PtestJvm=${{ matrix.java }} --no-daemon --stacktrace
 

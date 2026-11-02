@@ -88,6 +88,20 @@ test {
     } as TestOutputListener)
 }
 
+// Build and test every guide included in settings.gradle; `build` runs them too.
+def guidesDir = file('guides').toPath()
+def guideBuilds = gradle.includedBuilds.findAll { it.projectDir.toPath().startsWith(guidesDir) }
+
+tasks.register('guides') {
+    group = 'verification'
+    description = 'Builds and tests every getting-started guide against this starter.'
+    dependsOn guideBuilds.collect { it.task(':build') }
+}
+
+tasks.named('build') {
+    dependsOn 'guides'
+}
+
 publishing {
     publications {
         maven(MavenPublication) {

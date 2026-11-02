@@ -14,6 +14,16 @@ Building from source requires GraalVM 25; Gradle downloads it automatically if m
 
 ![Architecture](images/architecture.svg)
 
+See [docs/architecture.md](docs/architecture.md) for how this repository is organized, including the principles behind its executable getting-started guides and the starter's internals.
+
+## Getting-started guides
+
+Short, executable tutorials, each one focused on a single feature and sized to finish in 30 to 60 minutes:
+
+- [Retrying serialization conflicts with `@CockroachDB`](guides/serialization-retry/README.md)
+
+See [guides/README.md](guides/README.md) for how to follow a guide and how to write a new one.
+
 ## Features
 
 - **`@CockroachDB` annotation** — Declarative retry with exponential backoff for serialization conflicts

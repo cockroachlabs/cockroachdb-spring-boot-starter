@@ -38,7 +38,7 @@ plus the final vote count for each so the contrast is obvious.
 ./gradlew bootRun    # or: gradle bootRun
 ```
 
-The example compiles against the published starter `0.1.2`, resolved from the
+The example compiles against the published starter `0.2.0`, resolved from the
 anonymous GitHub Pages Maven feed
 (`https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/maven/`) — no
 credentials needed. It needs a running cluster to execute; without one, startup

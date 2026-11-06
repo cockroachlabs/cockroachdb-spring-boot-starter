@@ -14,9 +14,11 @@ spring:
     init:
       mode: always
 
+# tag::actuator-config[]
 management:
   endpoints:
     web:
       exposure:
         include: health,info,metrics
+# end::actuator-config[]
 # end::config[]

@@ -28,6 +28,12 @@ dependencyManagement {
         // matching the parent starter build.
         mavenBom 'org.testcontainers:testcontainers-bom:2.0.5'
     }
+    dependencies {
+        // The CDC test harness pulls Jackson 3 (tools.jackson 3.1.5), which needs
+        // jackson-annotations >= 2.21 (adds JsonSerializeAs). Spring Boot 3.x otherwise
+        // pins 2.17. This bump stays within the 2.x line and is compatible with Jackson 2.
+        dependency 'com.fasterxml.jackson.core:jackson-annotations:2.21'
+    }
 }
 
 // tag::deps[]
@@ -35,6 +41,8 @@ dependencies {
     implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.2.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // CDC webhook sink is an HTTP endpoint, so the app needs the web stack.
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'org.postgresql:postgresql'
 
     // tag::test-deps[]
@@ -43,6 +51,10 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-cockroachdb'
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
     testImplementation 'org.postgresql:postgresql'
+    // Jackson 3 (tools.jackson) is compileOnly in the starter (built on Spring Boot 4);
+    // the CDC test harness needs it on the test classpath. Pinned explicitly because
+    // this example runs on Spring Boot 3.x, which manages Jackson 2, not Jackson 3.
+    testImplementation 'tools.jackson.core:jackson-databind:3.1.5'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // end::test-deps[]
 }

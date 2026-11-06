@@ -22,3 +22,16 @@ management:
         include: health,info,metrics
 # end::actuator-config[]
 # end::config[]
+
+# tag::region-config[]
+cockroachdb:
+  region:
+    # Allowed regions are enforced whenever a region is used explicitly — via
+    # @CockroachDB(region=...), RegionContext, or inRegion(...). No default-region
+    # is set, so single-node runs never issue SET crdb_region.
+    validate: true
+    allowed:
+      - us-east1
+      - us-west1
+      - eu-west1
+# end::region-config[]

@@ -22,11 +22,32 @@ repositories {
 }
 // end::repo-maven[]
 
+dependencyManagement {
+    imports {
+        // Testcontainers BOM pins the CockroachDB + JUnit module versions,
+        // matching the parent starter build.
+        mavenBom 'org.testcontainers:testcontainers-bom:2.0.5'
+    }
+}
+
 // tag::deps[]
 dependencies {
     implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.1.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'org.postgresql:postgresql'
+
+    // tag::test-deps[]
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:testcontainers-cockroachdb'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+    testImplementation 'org.postgresql:postgresql'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // end::test-deps[]
 }
 // end::deps[]
+
+test {
+    useJUnitPlatform()
+}

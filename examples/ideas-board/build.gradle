@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.5'
+    id 'org.springframework.boot' version '4.1.1'
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
@@ -28,12 +28,6 @@ dependencyManagement {
         // matching the parent starter build.
         mavenBom 'org.testcontainers:testcontainers-bom:2.0.5'
     }
-    dependencies {
-        // The CDC test harness pulls Jackson 3 (tools.jackson 3.1.5), which needs
-        // jackson-annotations >= 2.21 (adds JsonSerializeAs). Spring Boot 3.x otherwise
-        // pins 2.17. This bump stays within the 2.x line and is compatible with Jackson 2.
-        dependency 'com.fasterxml.jackson.core:jackson-annotations:2.21'
-    }
 }
 
 // tag::deps[]
@@ -51,10 +45,6 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers-cockroachdb'
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
     testImplementation 'org.postgresql:postgresql'
-    // Jackson 3 (tools.jackson) is compileOnly in the starter (built on Spring Boot 4);
-    // the CDC test harness needs it on the test classpath. Pinned explicitly because
-    // this example runs on Spring Boot 3.x, which manages Jackson 2, not Jackson 3.
-    testImplementation 'tools.jackson.core:jackson-databind:3.1.5'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // end::test-deps[]
 }

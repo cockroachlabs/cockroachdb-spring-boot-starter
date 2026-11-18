@@ -8,7 +8,7 @@ import com.cockroachlabs.data.cdc.CDCEnvelope;
 import com.cockroachlabs.data.cdc.annotation.CockroachDBCDC;
 import com.cockroachlabs.data.metrics.CockroachDBMetrics;
 import com.cockroachlabs.data.multiregion.RegionResolver;
-import com.cockroachlabs.data.template.CockroachDBTemplate;
+import com.cockroachlabs.data.template.CockroachDBTransactionTemplate;
 import org.junit.jupiter.api.Test;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -54,7 +54,7 @@ class CockroachDBRuntimeHintsTest {
     @Test
     void registersServicesForReflection() {
         assertThat(RuntimeHintsPredicates.reflection()
-                .onType(CockroachDBTemplate.class).test(hints)).isTrue();
+                .onType(CockroachDBTransactionTemplate.class).test(hints)).isTrue();
         assertThat(RuntimeHintsPredicates.reflection()
                 .onType(CockroachDBProperties.class).test(hints)).isTrue();
     }

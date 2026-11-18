@@ -96,7 +96,7 @@
 
   <!-- Core outer box -->
   <rect x="30" y="298" width="840" height="110" rx="8" fill="url(#coreGrad)" filter="url(#shadow)"/>
-  <text x="450" y="322" text-anchor="middle" fill="white" font-size="16" font-weight="700">CockroachDBTemplate</text>
+  <text x="450" y="322" text-anchor="middle" fill="white" font-size="16" font-weight="700">CockroachDBTransactionTemplate</text>
 
   <!-- Inner boxes row -->
   <!-- RetryPolicy -->

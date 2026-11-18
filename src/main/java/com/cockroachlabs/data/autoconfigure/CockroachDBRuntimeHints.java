@@ -51,7 +51,7 @@ import com.cockroachlabs.data.continuum.plenum.TableStorage;
 import com.cockroachlabs.data.multiregion.RegionContext;
 import com.cockroachlabs.data.multiregion.RegionResolver;
 import com.cockroachlabs.data.multiregion.RegionalByRowListener;
-import com.cockroachlabs.data.template.CockroachDBTemplate;
+import com.cockroachlabs.data.template.CockroachDBTransactionTemplate;
 import com.cockroachlabs.data.test.CockroachDBConcurrencyRunner;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -93,7 +93,7 @@ public class CockroachDBRuntimeHints implements RuntimeHintsRegistrar {
     );
 
     private static final Set<Class<?>> SERVICES = Set.of(
-            CockroachDBTemplate.class,
+            CockroachDBTransactionTemplate.class,
             CockroachDBMetrics.class,
             CockroachDBMetrics.InMemory.class,
             CockroachDBProperties.class,

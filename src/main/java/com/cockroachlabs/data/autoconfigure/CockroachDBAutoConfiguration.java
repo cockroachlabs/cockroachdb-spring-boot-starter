@@ -8,7 +8,7 @@ import com.cockroachlabs.data.multiregion.HeaderRegionResolver;
 import com.cockroachlabs.data.multiregion.RegionContextFilter;
 import com.cockroachlabs.data.multiregion.RegionResolver;
 import com.cockroachlabs.data.multiregion.StaticRegionResolver;
-import com.cockroachlabs.data.template.CockroachDBTemplate;
+import com.cockroachlabs.data.template.CockroachDBTransactionTemplate;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -53,24 +53,19 @@ public class CockroachDBAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public CockroachDBTemplate cockroachDBTemplate(
+    public CockroachDBTransactionTemplate cockroachDBTransactionTemplate(
             PlatformTransactionManager txManager,
             CockroachDBProperties props,
             CockroachDBMetrics metrics,
             JdbcTemplate jdbcTemplate,
             RegionResolver regionResolver) {
-        return new CockroachDBTemplate(txManager, props, metrics, jdbcTemplate, regionResolver);
+        return new CockroachDBTransactionTemplate(txManager, props, metrics, jdbcTemplate, regionResolver);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public CockroachDBAspect cockroachDBAspect(
-            PlatformTransactionManager txManager,
-            CockroachDBProperties props,
-            CockroachDBMetrics metrics,
-            JdbcTemplate jdbcTemplate,
-            RegionResolver regionResolver) {
-        return new CockroachDBAspect(txManager, props, metrics, jdbcTemplate, regionResolver);
+    public CockroachDBAspect cockroachDBAspect(CockroachDBTransactionTemplate cockroachDBTransactionTemplate) {
+        return new CockroachDBAspect(cockroachDBTransactionTemplate);
     }
 
     @Bean

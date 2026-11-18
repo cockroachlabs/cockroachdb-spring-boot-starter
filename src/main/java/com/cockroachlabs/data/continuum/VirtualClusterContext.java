@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Thread-scoped Cockroach vCluster context for programmatic use, mirroring
  * {@code RegionContext}. When set, the {@code VirtualClusterAspect} and
- * {@code CockroachDBTemplate} apply the tag/QoS to the transaction.
+ * {@code CockroachDBTransactionTemplate} apply the tag/QoS to the transaction.
  */
 public final class VirtualClusterContext {
 

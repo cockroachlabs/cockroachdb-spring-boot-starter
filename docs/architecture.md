@@ -99,7 +99,7 @@ The list below is a backlog, not a commitment. Order roughly reflects priority. 
 
 | Slug | Goal | Starter feature | spring-data-examples inspiration |
 |------|------|-----------------|----------------------------------|
-| `programmatic-retry` | Run retryable transactions with plain JDBC | `CockroachDBTemplate` | `jdbc/basics` |
+| `programmatic-retry` | Run retryable transactions with plain JDBC | `CockroachDBTransactionTemplate` | `jdbc/basics` |
 | `concurrency-testing` | Prove a service survives contention in a test | `CockroachDBConcurrencyRunner` | none |
 | `transaction-metrics` | Watch retries and failures in Actuator metrics | Micrometer metrics | `mongodb/repository-metrics` |
 | `follower-reads` | Serve a read-heavy endpoint from historical data | `@FollowerRead` | `jpa/example` (read-only queries) |
@@ -128,7 +128,7 @@ src/main/java/com/cockroachlabs/data/
 │   ├── annotation/         Declarative annotations (@CockroachDB, @FollowerRead, etc.)
 │   ├── aop/                AOP aspects that intercept annotated methods
 │   ├── autoconfigure/      Spring Boot auto-configuration and properties binding
-│   ├── template/           CockroachDBTemplate — programmatic retry API
+│   ├── template/           CockroachDBTransactionTemplate / CockroachDBTransactionOperations — programmatic retry API
 │   ├── region/             RegionContext (ThreadLocal), RegionResolver (strategy)
 │   ├── jpa/                JPA entity listeners (RegionalByRowListener)
 │   └── metrics/            Micrometer metric bindings for transactions
@@ -165,6 +165,9 @@ Each feature area registers its own auto-configuration class:
 
 #### Retry outside the transaction boundary
 The `@CockroachDB` aspect runs at `@Order(LOWEST_PRECEDENCE - 2)` — outside Spring's transaction advisor. Each retry creates a fresh `TransactionTemplate.execute()` call. CockroachDB requires a new transaction after a serialization error (SQLSTATE 40001); retrying within the same transaction is not supported.
+
+#### One retry implementation, Spring-shaped APIs
+`CockroachDBTransactionTemplate` extends Spring's `TransactionTemplate`, implements `CockroachDBTransactionOperations` (which extends `TransactionOperations`, mirroring Spring's template/operations split), and owns the only retry loop: it overrides `execute(TransactionCallback)` to call `super.execute()` once per attempt. `@CockroachDB` mirrors `@Transactional`'s attributes (plus retry settings and a region); `CockroachDBAspect` turns each annotation into a configured copy of the template (cached per annotation value), applies `@Transactional`-style rollback rules, and delegates. Anyone who knows `TransactionTemplate` and `@Transactional` already knows how to use both, and a fix to retry behavior lands in one place.
 
 #### Region resolution chain
 Multi-region support uses a priority chain: annotation > ThreadLocal (`RegionContext`) > `RegionResolver` bean > default config > gateway region. This lets applications mix static routing (annotation), request-scoped routing (context/filter), and dynamic routing (GeoIP resolver).

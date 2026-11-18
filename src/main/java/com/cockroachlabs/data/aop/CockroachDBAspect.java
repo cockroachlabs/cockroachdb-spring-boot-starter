@@ -1,172 +1,188 @@
 package com.cockroachlabs.data.aop;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.cockroachlabs.data.annotation.CockroachDB;
-import com.cockroachlabs.data.autoconfigure.CockroachDBProperties;
-import com.cockroachlabs.data.metrics.CockroachDBMetrics;
-import com.cockroachlabs.data.multiregion.RegionContext;
-import com.cockroachlabs.data.multiregion.RegionResolver;
+import com.cockroachlabs.data.template.CockroachDBTransactionTemplate;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.dao.TransientDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.interceptor.NoRollbackRuleAttribute;
+import org.springframework.transaction.interceptor.RollbackRuleAttribute;
+import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
 
+/**
+ * Runs {@link CockroachDB @CockroachDB} methods through {@link CockroachDBTransactionTemplate}.
+ * <p>
+ * The aspect only translates the annotation into a configured copy of the template; the
+ * transaction handling and the 40001 retry loop live in the template. Like
+ * {@code @Transactional}, a method-level annotation wins over a class-level one, and an
+ * exception rolls the transaction back only when the rollback rules say so (by default,
+ * unchecked exceptions and errors); otherwise the transaction commits and the exception
+ * still reaches the caller unchanged. A serialization conflict always rolls back.
+ * <p>
+ * Runs at {@code LOWEST_PRECEDENCE - 2}, outside Spring's transaction advisor, so each
+ * retry gets a fresh transaction.
+ */
 @Aspect
 @Order(Ordered.LOWEST_PRECEDENCE - 2)
-public class CockroachDBAspect {
+public class CockroachDBAspect implements BeanFactoryAware {
 
-    private static final Pattern REGION_PATTERN = Pattern.compile("^[a-z][a-z0-9-]*$");
+    private final CockroachDBTransactionTemplate template;
+    private final Map<CockroachDB, Prepared> prepared = new ConcurrentHashMap<>();
+    private BeanFactory beanFactory;
 
-    private final PlatformTransactionManager txManager;
-    private final CockroachDBProperties properties;
-    private final CockroachDBMetrics metrics;
-    private final JdbcTemplate jdbcTemplate;
-    private final RegionResolver regionResolver;
+    public CockroachDBAspect(CockroachDBTransactionTemplate template) {
+        this.template = template;
+    }
 
-    public CockroachDBAspect(PlatformTransactionManager txManager,
-                             CockroachDBProperties properties,
-                             CockroachDBMetrics metrics,
-                             JdbcTemplate jdbcTemplate,
-                             RegionResolver regionResolver) {
-        this.txManager = txManager;
-        this.properties = properties;
-        this.metrics = metrics;
-        this.jdbcTemplate = jdbcTemplate;
-        this.regionResolver = regionResolver;
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
     }
 
     @Around("@annotation(cockroachDB)")
-    public Object around(ProceedingJoinPoint pjp,
-                         CockroachDB cockroachDB) throws Throwable {
-
-        CockroachDBProperties.Retry defaults = properties.getRetry();
-
-        int maxRetries = resolve(cockroachDB.maxRetries(), defaults.getMaxRetries());
-        long delay = resolve(cockroachDB.delay(), defaults.getDelay());
-        double multiplier = resolve(cockroachDB.multiplier(), defaults.getMultiplier());
-        long maxDelay = resolve(cockroachDB.maxDelay(), defaults.getMaxDelay());
-        long jitter = defaults.getJitter();
-
-        String region = resolveRegion(cockroachDB.region());
-
-        TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        txTemplate.setIsolationLevel(cockroachDB.isolation().value());
-        txTemplate.setReadOnly(cockroachDB.readOnly());
-
-        long start = System.nanoTime();
-        int attempt = 0;
-        long currentDelay = delay;
-
-        while (true) {
-            try {
-                Object result = txTemplate.execute(status -> {
-                    setSessionRegion(region);
-                    try {
-                        return pjp.proceed();
-                    } catch (RuntimeException | Error e) {
-                        throw e;
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-                metrics.recordTransaction(start, attempt, true);
-                return result;
-            } catch (TransientDataAccessException ex) {
-                if (!isSerializationError(ex) || attempt >= maxRetries) {
-                    metrics.recordTransaction(start, attempt, false);
-                    throw ex;
-                }
-                attempt++;
-                sleep(currentDelay, jitter);
-                currentDelay = Math.min((long) (currentDelay * multiplier), maxDelay);
-            }
-        }
+    public Object around(ProceedingJoinPoint pjp, CockroachDB cockroachDB) throws Throwable {
+        return invoke(pjp, cockroachDB);
     }
 
-    private String resolveRegion(String annotationRegion) {
-        if (annotationRegion != null && !annotationRegion.isBlank()) {
-            return validateRegion(annotationRegion);
-        }
-
-        return RegionContext.current()
-                .filter(r -> !r.isBlank())
-                .map(this::validateRegion)
-                .orElseGet(() -> {
-                    if (regionResolver != null) {
-                        String r = regionResolver.resolve();
-                        if (r != null && !r.isBlank()) return validateRegion(r);
-                    }
-                    String def = properties.getRegion().getDefaultRegion();
-                    return (def != null && !def.isBlank()) ? validateRegion(def) : null;
-                });
+    @Around("@within(cockroachDB) && execution(public * *(..)) "
+            + "&& !@annotation(com.cockroachlabs.data.annotation.CockroachDB)")
+    public Object aroundClass(ProceedingJoinPoint pjp, CockroachDB cockroachDB) throws Throwable {
+        return invoke(pjp, cockroachDB);
     }
 
-    private void setSessionRegion(String region) {
-        if (region == null || region.isBlank()) return;
-        jdbcTemplate.execute("SET crdb_region = '" + region + "'");
-    }
+    private Object invoke(ProceedingJoinPoint pjp, CockroachDB cockroachDB) throws Throwable {
+        Prepared p = prepared.computeIfAbsent(cockroachDB, this::prepare);
 
-    private String validateRegion(String region) {
-        if (region == null || region.isBlank()) return region;
-
-        if (!REGION_PATTERN.matcher(region).matches()) {
-            throw new IllegalArgumentException(
-                    "Invalid region format: '" + region + "' (must match [a-z][a-z0-9-]*)");
-        }
-
-        CockroachDBProperties.Region regionProps = properties.getRegion();
-        if (regionProps.isValidate()) {
-            List<String> allowed = regionProps.getAllowed();
-            if (!allowed.isEmpty() && !allowed.contains(region)) {
-                throw new IllegalArgumentException(
-                        "Region '" + region + "' not in allowed list: " + allowed);
-            }
-        }
-        return region;
-    }
-
-    private boolean isSerializationError(Throwable ex) {
-        Throwable cause = ex;
-        while (cause != null) {
-            if (cause instanceof SQLException sql
-                    && "40001".equals(sql.getSQLState())) {
-                return true;
-            }
-            cause = cause.getCause();
-        }
-        return false;
-    }
-
-    private void sleep(long delay, long jitter) {
+        // An exception the rollback rules say to commit on; thrown after the commit.
+        Throwable[] committedWith = new Throwable[1];
         try {
-            long jitteredDelay = delay;
-            if (jitter > 0) {
-                jitteredDelay += ThreadLocalRandom.current().nextLong(-jitter, jitter + 1);
+            Object result = p.template().execute(status -> {
+                committedWith[0] = null;
+                try {
+                    return pjp.proceed();
+                } catch (Throwable t) {
+                    if (!CockroachDBTransactionTemplate.isSerializationError(t) && !p.rules().rollbackOn(t)) {
+                        committedWith[0] = t;
+                        return null;
+                    }
+                    throw tunnel(t);
+                }
+            });
+            if (committedWith[0] != null) {
+                throw committedWith[0];
             }
-            Thread.sleep(Math.max(0, jitteredDelay));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            return result;
+        } catch (ThrowableTunnel tunnel) {
+            throw tunnel.getCause();
         }
     }
 
-    private int resolve(int annotationVal, int propertyVal) {
-        return annotationVal >= 0 ? annotationVal : propertyVal;
+    /** Builds the template copy and rollback rules for one annotation; cached per annotation value. */
+    private Prepared prepare(CockroachDB cockroachDB) {
+        CockroachDBTransactionTemplate tx = new CockroachDBTransactionTemplate(template);
+
+        String qualifier = !cockroachDB.transactionManager().isEmpty()
+                ? cockroachDB.transactionManager() : cockroachDB.value();
+        if (!qualifier.isEmpty()) {
+            if (beanFactory == null) {
+                throw new IllegalStateException(
+                        "@CockroachDB(transactionManager = \"" + qualifier + "\") needs a BeanFactory");
+            }
+            tx.setTransactionManager(BeanFactoryAnnotationUtils.qualifiedBeanOfType(
+                    beanFactory, PlatformTransactionManager.class, qualifier));
+        }
+        tx.setPropagationBehavior(cockroachDB.propagation().value());
+        tx.setIsolationLevel(cockroachDB.isolation().value());
+        tx.setTimeout(timeout(cockroachDB));
+        tx.setReadOnly(cockroachDB.readOnly());
+
+        if (cockroachDB.maxRetries() >= 0) {
+            tx.setMaxRetries(cockroachDB.maxRetries());
+        }
+        if (cockroachDB.delay() >= 0) {
+            tx.setDelay(cockroachDB.delay());
+        }
+        if (cockroachDB.multiplier() >= 0) {
+            tx.setMultiplier(cockroachDB.multiplier());
+        }
+        if (cockroachDB.maxDelay() >= 0) {
+            tx.setMaxDelay(cockroachDB.maxDelay());
+        }
+        if (!cockroachDB.region().isBlank()) {
+            tx.setRegion(cockroachDB.region());
+        }
+
+        return new Prepared(tx, rollbackRules(cockroachDB));
     }
 
-    private long resolve(long annotationVal, long propertyVal) {
-        return annotationVal >= 0 ? annotationVal : propertyVal;
+    private int timeout(CockroachDB cockroachDB) {
+        String timeoutString = cockroachDB.timeoutString();
+        if (timeoutString.isBlank()) {
+            return cockroachDB.timeout();
+        }
+        if (cockroachDB.timeout() != TransactionDefinition.TIMEOUT_DEFAULT) {
+            throw new IllegalArgumentException("Specify 'timeout' or 'timeoutString', not both");
+        }
+        if (beanFactory instanceof ConfigurableBeanFactory cbf) {
+            timeoutString = cbf.resolveEmbeddedValue(timeoutString);
+        }
+        try {
+            return Integer.parseInt(timeoutString.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    "Invalid timeoutString '" + timeoutString + "': must be a number of seconds", e);
+        }
     }
 
-    private double resolve(double annotationVal, double propertyVal) {
-        return annotationVal >= 0 ? annotationVal : propertyVal;
+    /** The same rules {@code @Transactional} builds from its rollbackFor/noRollbackFor attributes. */
+    private static RuleBasedTransactionAttribute rollbackRules(CockroachDB cockroachDB) {
+        List<RollbackRuleAttribute> rules = new ArrayList<>();
+        for (Class<?> type : cockroachDB.rollbackFor()) {
+            rules.add(new RollbackRuleAttribute(type));
+        }
+        for (String name : cockroachDB.rollbackForClassName()) {
+            rules.add(new RollbackRuleAttribute(name));
+        }
+        for (Class<?> type : cockroachDB.noRollbackFor()) {
+            rules.add(new NoRollbackRuleAttribute(type));
+        }
+        for (String name : cockroachDB.noRollbackForClassName()) {
+            rules.add(new NoRollbackRuleAttribute(name));
+        }
+        RuleBasedTransactionAttribute attribute = new RuleBasedTransactionAttribute();
+        attribute.setRollbackRules(rules);
+        return attribute;
+    }
+
+    private static RuntimeException tunnel(Throwable t) {
+        if (t instanceof RuntimeException re) {
+            return re;
+        }
+        if (t instanceof Error e) {
+            throw e;
+        }
+        return new ThrowableTunnel(t);
+    }
+
+    private record Prepared(CockroachDBTransactionTemplate template, RuleBasedTransactionAttribute rules) {
+    }
+
+    /** Carries a checked exception out of the transaction callback; unwrapped before it reaches the caller. */
+    private static final class ThrowableTunnel extends RuntimeException {
+        ThrowableTunnel(Throwable cause) {
+            super(cause.getMessage(), cause, false, false);
+        }
     }
 }

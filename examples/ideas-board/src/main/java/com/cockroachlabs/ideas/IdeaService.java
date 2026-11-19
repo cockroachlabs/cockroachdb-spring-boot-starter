@@ -17,14 +17,14 @@ public class IdeaService {
     // tag::plain[]
     @Transactional
     public void upvoteWithoutRetry(UUID id) {
-        Idea idea = repository.findById(id).orElseThrow(); // <1>
-        idea.setVotes(idea.getVotes() + 1);                // <2>
-        repository.save(idea);                             // <3>
+        Idea idea = repository.findById(id).orElseThrow();
+        idea.setVotes(idea.getVotes() + 1);
+        repository.save(idea);
     }
     // end::plain[]
 
     // tag::retry[]
-    @CockroachDB // <1>
+    @CockroachDB
     public void upvote(UUID id) {
         Idea idea = repository.findById(id).orElseThrow();
         idea.setVotes(idea.getVotes() + 1);

@@ -10,70 +10,83 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * A drop-in replacement for {@code @Transactional} that also retries the method, in a
- * fresh transaction each time, when CockroachDB reports a serialization conflict
- * (SQLSTATE {@code 40001}).
+ * {@link Transactional @Transactional} with CockroachDB's retry paradigm for SERIALIZABLE
+ * transactions: when the transaction fails with SQLSTATE {@code 40001}, the whole method is run
+ * again in a fresh transaction, with exponential backoff and jitter.
  * <p>
- * The transaction attributes ({@link #transactionManager}, {@link #propagation},
- * {@link #isolation}, {@link #timeout}, {@link #readOnly} and the rollback rules) mean the
- * same as on {@code @Transactional}, with two differences:
- * <ul>
- *   <li>{@link #isolation} defaults to SERIALIZABLE, CockroachDB's default level.</li>
- *   <li>There is no {@code label} attribute.</li>
- * </ul>
- * On top of those it adds retry settings ({@link #maxRetries}, {@link #delay},
- * {@link #multiplier}, {@link #maxDelay}) and a session {@link #region}.
+ * This is a composed annotation: it is meta-annotated with {@code @Transactional}, so Spring's
+ * own transaction support runs the transaction, and every {@code @Transactional} attribute
+ * below means exactly what it does there. The one difference is that {@link #isolation}
+ * defaults to SERIALIZABLE, CockroachDB's default level.
  * <p>
- * Put it on a method, or on a class to apply it to every public method; an annotation on
- * the method wins. Don't combine it with {@code @Transactional} on the same method.
- * Methods run through {@code CockroachDBTransactionTemplate}.
+ * Plain {@code @Transactional} methods get the same retries, with the
+ * {@code cockroachdb.retry.*} defaults, unless
+ * {@code cockroachdb.retry.apply-to-transactional-methods=false}. Use this annotation when a
+ * method needs different retry settings or a fixed {@link #region}, or to keep retrying it when
+ * that property is off.
+ * <p>
+ * Retries happen only at the outermost transactional call. A method called inside a
+ * transaction that is already running runs once; if it hits a {@code 40001}, the outermost
+ * call retries the whole unit of work.
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface CockroachDB {
+@Transactional
+public @interface CockroachDBTransactional {
 
     // ---- @Transactional attributes --------------------------------------------------
 
     /** Alias for {@link #transactionManager}. */
-    @AliasFor("transactionManager")
+    @AliasFor(annotation = Transactional.class)
     String value() default "";
 
-    /**
-     * Qualifier (bean name or {@code @Qualifier} value) of the
-     * {@code PlatformTransactionManager} to use. Empty uses the starter's default.
-     */
-    @AliasFor("value")
+    /** Qualifier of the {@code TransactionManager} to use, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
     String transactionManager() default "";
 
+    /** Transaction labels, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
+    String[] label() default {};
+
     /** Transaction propagation, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
     Propagation propagation() default Propagation.REQUIRED;
 
     /** Isolation level. Unlike {@code @Transactional}, defaults to SERIALIZABLE. */
+    @AliasFor(annotation = Transactional.class)
     Isolation isolation() default Isolation.SERIALIZABLE;
 
-    /** Timeout in seconds for each attempt; -1 uses the transaction manager's default. */
+    /** Timeout in seconds for each attempt, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
     int timeout() default TransactionDefinition.TIMEOUT_DEFAULT;
 
-    /** {@link #timeout} as a string, in seconds; may be a {@code ${...}} placeholder. */
+    /** {@link #timeout} as a string, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
     String timeoutString() default "";
 
     /** Marks the transaction read-only, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
     boolean readOnly() default false;
 
     /** Exception types that roll back the transaction, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
     Class<? extends Throwable>[] rollbackFor() default {};
 
     /** Exception type name patterns that roll back the transaction, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
     String[] rollbackForClassName() default {};
 
     /** Exception types that do not roll back the transaction, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
     Class<? extends Throwable>[] noRollbackFor() default {};
 
     /** Exception type name patterns that do not roll back the transaction, as on {@code @Transactional}. */
+    @AliasFor(annotation = Transactional.class)
     String[] noRollbackForClassName() default {};
 
     // ---- CockroachDB extensions -----------------------------------------------------
@@ -91,9 +104,9 @@ public @interface CockroachDB {
     long maxDelay() default -1;
 
     /**
-     * Target region for REGIONAL BY ROW operations, set with {@code SET crdb_region} at the
-     * start of each transaction. Empty uses {@code RegionContext}, the {@code RegionResolver},
-     * then the default region.
+     * Session region ({@code SET crdb_region}) for REGIONAL BY ROW tables, set at the start of
+     * each transaction. Empty uses {@code RegionContext}, the {@code RegionResolver}, then
+     * {@code cockroachdb.region.default-region}.
      */
     String region() default "";
 }

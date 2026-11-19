@@ -1,10 +1,10 @@
-# Retrying Serialization Conflicts with `@CockroachDB`
+# Retrying Serialization Conflicts in `@Transactional` Code
 
 ## What you'll build
 
-You'll build a small Spring Boot app that moves money between two bank accounts, then hit it with 200 transfers running at the same time. With a plain `@Transactional` method, most of them fail with a CockroachDB serialization error (SQLSTATE `40001`). With one annotation from the CockroachDB Spring Boot Starter, `@CockroachDB`, every one of them succeeds.
+You'll build a small Spring Boot app that moves money between two bank accounts, then hit it with 200 transfers running at the same time. Without retries, most of them fail with a CockroachDB serialization error (SQLSTATE `40001`). Then you'll let the CockroachDB Spring Boot Starter retry your ordinary `@Transactional` method, and tune it with the starter's `@CockroachDBTransactional`, until every one of them succeeds.
 
-**Goal:** keep money transfers succeeding when concurrent transactions conflict, using `@CockroachDB`.
+**Goal:** keep money transfers succeeding when concurrent transactions conflict, using the CockroachDB starter's transaction retries.
 
 ## What you need
 
@@ -58,7 +58,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.2.0'
+    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.3.0'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     runtimeOnly 'org.postgresql:postgresql'
 
@@ -90,11 +90,15 @@ UPSERT INTO accounts (id, owner, balance) VALUES
     (2, 'bob',   1000.00);
 ```
 
-`src/main/resources/application.properties` tells Spring Boot to run those scripts at startup:
+`src/main/resources/application.properties` tells Spring Boot to run those scripts at startup. It also switches off one feature of the starter for now: the starter normally retries `@Transactional` methods that hit a serialization conflict, and you'll first see what happens without that.
 
 ```properties
 spring.application.name=serialization-retry
 spring.sql.init.mode=always
+
+# The starter retries @Transactional methods that hit a serialization conflict.
+# It's switched off for now so you can see the problem first; step 4 turns it on.
+cockroachdb.retry.apply-to-transactional-methods=false
 ```
 
 `src/test/java/com/example/retry/TestcontainersConfiguration.java` starts a single-node CockroachDB container. `@ServiceConnection` hands its connection details to Spring Boot, so you never configure a JDBC URL:
@@ -299,11 +303,50 @@ Most transfers failed. Two things are worth noticing.
 
 **The failures are SQLSTATE `40001`.** CockroachDB runs every transaction at SERIALIZABLE isolation, the strictest level: the end result must be the same as if the transactions had run one at a time. When two transfers read the same balance and both try to update it, they can't both be allowed to commit, because one of them would overwrite the other's change and money would disappear. So CockroachDB aborts one of them and returns `40001`, which means "this transaction conflicted with another one; run it again from the beginning."
 
-Spring's `@Transactional` doesn't do that. It rolls back and hands the exception to the caller, so the transfer is simply lost.
+On its own, Spring's `@Transactional` doesn't do that. It rolls back and hands the exception to the caller, so the transfer is simply lost. That's what you just saw, because `application.properties` switched off the starter's retries.
 
-## 4. Retry conflicts with `@CockroachDB`
+## 4. Let the starter retry `@Transactional` methods
 
-In `TransferService`, replace `@Transactional` with `@CockroachDB` and swap the import. This is the final version of the file:
+Delete the last two lines from `src/main/resources/application.properties`, so it's back to:
+
+```properties
+spring.application.name=serialization-retry
+spring.sql.init.mode=always
+```
+
+You don't change `TransferService` at all. With the CockroachDB starter on the classpath, every `@Transactional` method gets CockroachDB's retry behavior. When the method fails with `40001`, the starter:
+
+1. lets Spring roll back the failed transaction,
+2. waits a short time, longer after each failed attempt, with a little randomness so that conflicting transfers don't collide again in lockstep,
+3. runs the whole method again in a **brand-new transaction**.
+
+The new transaction matters. Once CockroachDB has aborted a transaction, it can't be resumed; the reads have to happen again so the method sees the balances the other transfer just committed.
+
+Only `40001` errors are retried. Any other exception, such as a constraint violation or a bug in your code, goes straight to the caller as it always has with `@Transactional`.
+
+Run the demo again:
+
+```bash
+./gradlew bootTestRun
+```
+
+Something like this:
+
+```
+Transfers succeeded: 199
+Transfers failed:    1
+Attempts made:       252
+Total balance:       2000.00 (started at 2000.00)
+First failure:       CannotAcquireLockException (SQLSTATE 40001)
+```
+
+Almost every transfer succeeds now, and `Attempts made` is higher than 200: the extra attempts are the retries the starter ran for you. You may still see one or two failures, or none at all. Those are transfers that conflicted on every attempt until the starter ran out of retries.
+
+## 5. Tune a busy method with `@CockroachDBTransactional`
+
+By default the starter retries a transaction 3 times before giving up, then passes the `40001` error to the caller. Eight threads fighting over two rows is heavy contention, so this method needs more.
+
+In `TransferService`, replace `@Transactional` with `@CockroachDBTransactional(maxRetries = 10)` and swap the import. This is the final version of the file:
 
 ```java
 package com.example.retry;
@@ -311,7 +354,7 @@ package com.example.retry;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.cockroachlabs.data.annotation.CockroachDB;
+import com.cockroachlabs.data.annotation.CockroachDBTransactional;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 
@@ -327,7 +370,8 @@ public class TransferService {
         this.jdbc = jdbc;
     }
 
-    @CockroachDB
+    // Retry a conflicting transfer up to 10 times before giving up.
+    @CockroachDBTransactional(maxRetries = 10)
     public void transfer(int fromId, int toId, BigDecimal amount) {
         attempts.incrementAndGet();
 
@@ -363,47 +407,9 @@ public class TransferService {
 }
 ```
 
-`@CockroachDB` replaces `@Transactional`; don't use both on the same method. It starts the transaction itself, and when the method fails with `40001` it:
+`@CockroachDBTransactional` is `@Transactional` with CockroachDB's retry settings added. It takes every attribute `@Transactional` does (`readOnly`, `timeout`, `rollbackFor` and the rest, with the same meaning), plus `maxRetries`, `delay`, `multiplier` and `maxDelay` for the backoff. The one difference is that its isolation level defaults to SERIALIZABLE, which is what CockroachDB uses anyway.
 
-1. rolls back the failed transaction,
-2. waits a short time, longer after each failed attempt, with a little randomness so that conflicting transfers don't collide again in lockstep,
-3. runs the whole method again in a **brand-new transaction**.
-
-The new transaction matters. Once CockroachDB has aborted a transaction, it can't be resumed; the reads have to happen again so the method sees the balances the other transfer just committed.
-
-Only `40001` errors are retried. Any other exception, such as a constraint violation or a bug in your code, goes straight to the caller as it would with `@Transactional`.
-
-Run the demo again:
-
-```bash
-./gradlew bootTestRun
-```
-
-Something like this:
-
-```
-Transfers succeeded: 199
-Transfers failed:    1
-Attempts made:       252
-Total balance:       2000.00 (started at 2000.00)
-First failure:       CannotAcquireLockException (SQLSTATE 40001)
-```
-
-Almost every transfer succeeds now, and `Attempts made` is higher than 200: the extra attempts are the retries `@CockroachDB` ran for you. You may still see one or two failures, or none at all. Those are transfers that conflicted on every attempt until `@CockroachDB` ran out of retries.
-
-## 5. Give conflicts enough retries
-
-By default `@CockroachDB` retries a transaction 3 times before giving up, then passes the `40001` error to the caller. Eight threads fighting over two rows is heavy contention, so raise the limit. Add this line to `src/main/resources/application.properties`:
-
-```properties
-spring.application.name=serialization-retry
-spring.sql.init.mode=always
-
-# Retry a conflicting transfer up to 10 times before giving up.
-cockroachdb.retry.max-retries=10
-```
-
-You can also set it on a single method with `@CockroachDB(maxRetries = 10)`.
+Use it on methods that need different retry settings from the rest of the application. To change the defaults for every transactional method instead, set `cockroachdb.retry.max-retries` (and its siblings `delay`, `multiplier` and `max-delay`) in `application.properties`.
 
 Run the demo again:
 
@@ -484,16 +490,17 @@ Run the tests:
 
 You should see `BUILD SUCCESSFUL`. The test checks all three things you saw in the demo: no transfer failed, the total balance didn't change, and retries really happened. The last check means the test can't pass just because no conflicts occurred.
 
-If you're curious, switch `TransferService` back to `@Transactional` and run `./gradlew test` again. The test fails, because most transfers are lost.
+If you're curious, switch `TransferService` back to `@Transactional`, add `cockroachdb.retry.apply-to-transactional-methods=false` to `application.properties` again, and run `./gradlew test`. The test fails, because most transfers are lost.
 
 ## Summary
 
 - CockroachDB runs transactions at SERIALIZABLE isolation. When concurrent transactions conflict, it aborts one with SQLSTATE `40001` instead of letting data go wrong.
-- A `40001` error means "run the transaction again". Spring's `@Transactional` won't do that for you.
-- `@CockroachDB` replaces `@Transactional` and retries the whole method in a fresh transaction, waiting a little longer after each failure.
-- Only `40001` errors are retried. Tune how many retries with `cockroachdb.retry.max-retries` or `@CockroachDB(maxRetries = ...)`.
+- A `40001` error means "run the transaction again". On its own, Spring's `@Transactional` won't do that.
+- With the CockroachDB starter on the classpath, `@Transactional` methods are retried in a fresh transaction, waiting a little longer after each failure. `cockroachdb.retry.apply-to-transactional-methods=false` turns that off.
+- `@CockroachDBTransactional` is `@Transactional` plus retry settings, for methods that need their own.
+- Only `40001` errors are retried. Tune how many retries with `cockroachdb.retry.max-retries` for every method, or `@CockroachDBTransactional(maxRetries = ...)` for one.
 
 ## Where to go next
 
-- The starter's [README](../../README.md) lists every retry setting and the other things `@CockroachDB` can do.
+- The starter's [README](../../README.md) lists every retry setting and the other things `@CockroachDBTransactional` can do.
 - CockroachDB's [transaction retry error reference](https://www.cockroachlabs.com/docs/stable/transaction-retry-error-reference.html) explains the different reasons a transaction gets a `40001`.

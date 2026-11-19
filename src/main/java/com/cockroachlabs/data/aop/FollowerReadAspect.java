@@ -3,6 +3,7 @@ package com.cockroachlabs.data.aop;
 import javax.sql.DataSource;
 import com.cockroachlabs.data.annotation.FollowerRead;
 import com.cockroachlabs.data.metrics.CockroachDBMetrics;
+import com.cockroachlabs.data.transaction.CockroachDBRegions;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -45,7 +46,9 @@ public class FollowerReadAspect {
         txTemplate.setReadOnly(true);
 
         long start = System.nanoTime();
-        try {
+        // SET TRANSACTION AS OF SYSTEM TIME must be the transaction's first statement, so
+        // keep the session-region listener from running SET crdb_region ahead of it.
+        try (CockroachDBRegions.Scope noRegion = CockroachDBRegions.suppress()) {
             Object result = txTemplate.execute(status -> {
                 requireTransactionBoundConnection(pjp);
                 jdbcTemplate.execute(setAsOf);

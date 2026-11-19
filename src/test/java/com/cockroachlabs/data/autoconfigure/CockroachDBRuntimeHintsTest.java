@@ -1,9 +1,9 @@
 package com.cockroachlabs.data.autoconfigure;
 
-import com.cockroachlabs.data.annotation.CockroachDB;
+import com.cockroachlabs.data.annotation.CockroachDBTransactional;
 import com.cockroachlabs.data.annotation.ComputedColumn;
 import com.cockroachlabs.data.annotation.FollowerRead;
-import com.cockroachlabs.data.aop.CockroachDBAspect;
+import com.cockroachlabs.data.transaction.CockroachDBTransactionAdvisor;
 import com.cockroachlabs.data.cdc.CDCEnvelope;
 import com.cockroachlabs.data.cdc.annotation.CockroachDBCDC;
 import com.cockroachlabs.data.metrics.CockroachDBMetrics;
@@ -30,7 +30,7 @@ class CockroachDBRuntimeHintsTest {
     @Test
     void registersAnnotationsForReflection() {
         assertThat(RuntimeHintsPredicates.reflection()
-                .onType(CockroachDB.class).test(hints)).isTrue();
+                .onType(CockroachDBTransactional.class).test(hints)).isTrue();
         assertThat(RuntimeHintsPredicates.reflection()
                 .onType(FollowerRead.class).test(hints)).isTrue();
         assertThat(RuntimeHintsPredicates.reflection()
@@ -42,7 +42,7 @@ class CockroachDBRuntimeHintsTest {
     @Test
     void registersAspectsForReflection() {
         assertThat(RuntimeHintsPredicates.reflection()
-                .onType(CockroachDBAspect.class).test(hints)).isTrue();
+                .onType(CockroachDBTransactionAdvisor.class).test(hints)).isTrue();
     }
 
     @Test

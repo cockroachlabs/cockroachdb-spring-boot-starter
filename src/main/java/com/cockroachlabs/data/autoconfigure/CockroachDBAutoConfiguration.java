@@ -1,7 +1,7 @@
 package com.cockroachlabs.data.autoconfigure;
 
 import javax.sql.DataSource;
-import com.cockroachlabs.data.aop.CockroachDBAspect;
+import com.cockroachlabs.data.annotation.EnableCockroachDBTransactionManagement;
 import com.cockroachlabs.data.aop.FollowerReadAspect;
 import com.cockroachlabs.data.metrics.CockroachDBMetrics;
 import com.cockroachlabs.data.multiregion.HeaderRegionResolver;
@@ -9,8 +9,20 @@ import com.cockroachlabs.data.multiregion.RegionContextFilter;
 import com.cockroachlabs.data.multiregion.RegionResolver;
 import com.cockroachlabs.data.multiregion.StaticRegionResolver;
 import com.cockroachlabs.data.template.CockroachDBTransactionTemplate;
+import com.cockroachlabs.data.transaction.CockroachDBRegions;
+import com.cockroachlabs.data.transaction.CockroachDBTransactionManagementConfiguration;
+import com.cockroachlabs.data.transaction.SerializationRetry;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.Role;
+import org.springframework.transaction.ConfigurableTransactionManager;
+import org.springframework.transaction.TransactionExecution;
+import org.springframework.transaction.TransactionExecutionListener;
+import org.springframework.transaction.config.TransactionManagementConfigUtils;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -21,7 +33,10 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
-@AutoConfiguration(after = CockroachDBMetricsAutoConfiguration.class)
+// After Boot's TransactionAutoConfiguration, which enables Spring's transaction advisor that the
+// retry advisor wraps. Named rather than referenced: spring-boot-transaction is optional here.
+@AutoConfiguration(after = CockroachDBMetricsAutoConfiguration.class,
+        afterName = "org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration")
 @ConditionalOnClass(DataSource.class)
 @EnableConfigurationProperties(CockroachDBProperties.class)
 @ImportRuntimeHints(CockroachDBRuntimeHints.class)
@@ -53,19 +68,65 @@ public class CockroachDBAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public CockroachDBTransactionTemplate cockroachDBTransactionTemplate(
-            PlatformTransactionManager txManager,
-            CockroachDBProperties props,
-            CockroachDBMetrics metrics,
-            JdbcTemplate jdbcTemplate,
-            RegionResolver regionResolver) {
-        return new CockroachDBTransactionTemplate(txManager, props, metrics, jdbcTemplate, regionResolver);
+    public SerializationRetry cockroachDBSerializationRetry(CockroachDBProperties props,
+                                                            CockroachDBMetrics metrics) {
+        return new SerializationRetry(props.getRetry(), metrics);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public CockroachDBAspect cockroachDBAspect(CockroachDBTransactionTemplate cockroachDBTransactionTemplate) {
-        return new CockroachDBAspect(cockroachDBTransactionTemplate);
+    public CockroachDBRegions cockroachDBRegions(CockroachDBProperties props,
+                                                 RegionResolver regionResolver,
+                                                 JdbcTemplate jdbcTemplate) {
+        return new CockroachDBRegions(props.getRegion(), regionResolver, jdbcTemplate);
+    }
+
+    /**
+     * Registers {@link CockroachDBRegions} with every transaction manager that accepts
+     * execution listeners, so transactions begun by retried methods get their session region.
+     * The listener looks up {@code CockroachDBRegions} lazily, on first use.
+     */
+    @Bean
+    static BeanPostProcessor cockroachDBRegionsListenerRegistrar(ObjectProvider<CockroachDBRegions> regions) {
+        return new BeanPostProcessor() {
+            @Override
+            public Object postProcessAfterInitialization(Object bean, String beanName) {
+                if (bean instanceof ConfigurableTransactionManager transactionManager) {
+                    transactionManager.addListener(new TransactionExecutionListener() {
+                        @Override
+                        public void afterBegin(TransactionExecution transaction, Throwable beginFailure) {
+                            CockroachDBRegions listener = regions.getIfAvailable();
+                            if (listener != null) {
+                                listener.afterBegin(transaction, beginFailure);
+                            }
+                        }
+                    });
+                }
+                return bean;
+            }
+        };
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CockroachDBTransactionTemplate cockroachDBTransactionTemplate(
+            PlatformTransactionManager txManager,
+            SerializationRetry retry,
+            CockroachDBRegions regions) {
+        return new CockroachDBTransactionTemplate(txManager, retry, regions);
+    }
+
+    /**
+     * Applies {@link EnableCockroachDBTransactionManagement @EnableCockroachDBTransactionManagement}
+     * with its defaults, the way Spring Boot applies {@code @EnableTransactionManagement}: only when
+     * Spring's transaction advisor is there to be wrapped, and not when the application declares
+     * the annotation itself.
+     */
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnBean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
+    @ConditionalOnMissingBean(CockroachDBTransactionManagementConfiguration.class)
+    @EnableCockroachDBTransactionManagement
+    static class EnableCockroachDBTransactionManagementConfiguration {
     }
 
     @Bean

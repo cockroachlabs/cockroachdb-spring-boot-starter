@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.cockroachlabs.data.autoconfigure.CockroachDBProperties;
 import com.cockroachlabs.data.metrics.CockroachDBMetrics;
+import com.cockroachlabs.data.transaction.CockroachDBRegions;
+import com.cockroachlabs.data.transaction.SerializationRetry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.CannotAcquireLockException;
@@ -36,7 +38,9 @@ class CockroachDBTransactionTemplateRetryTest {
         properties.getRetry().setDelay(0);
         properties.getRetry().setJitter(0);
 
-        template = new CockroachDBTransactionTemplate(txManager, properties, metrics, mock(JdbcTemplate.class), null);
+        template = new CockroachDBTransactionTemplate(txManager,
+                new SerializationRetry(properties.getRetry(), metrics),
+                new CockroachDBRegions(properties.getRegion(), null, mock(JdbcTemplate.class)));
     }
 
     static SQLException sqlState(String state) {

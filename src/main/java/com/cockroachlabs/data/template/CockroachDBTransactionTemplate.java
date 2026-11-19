@@ -1,19 +1,15 @@
 package com.cockroachlabs.data.template;
 
-import java.sql.SQLException;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
-import com.cockroachlabs.data.autoconfigure.CockroachDBProperties;
-import com.cockroachlabs.data.metrics.CockroachDBMetrics;
-import com.cockroachlabs.data.multiregion.RegionContext;
-import com.cockroachlabs.data.multiregion.RegionResolver;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.cockroachlabs.data.transaction.CockroachDBRegions;
+import com.cockroachlabs.data.transaction.RetrySettings;
+import com.cockroachlabs.data.transaction.SerializationRetry;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -37,20 +33,19 @@ import org.springframework.transaction.support.TransactionTemplate;
  * </ul>
  * Unlike {@code TransactionTemplate}, the isolation level defaults to SERIALIZABLE.
  * <p>
+ * Like {@code @CockroachDBTransactional}, it retries only when it starts the transaction. Called
+ * inside a transaction that is already running, it runs the callback once and leaves retrying
+ * to whoever owns that transaction.
+ * <p>
  * As with {@code TransactionTemplate}, configure an instance before sharing it between
- * threads. To vary settings per call, copy the shared instance with
+ * threads. To vary settings, copy the shared instance with
  * {@link #CockroachDBTransactionTemplate(CockroachDBTransactionTemplate)} and configure the copy.
- * {@code @CockroachDB} methods are run this way.
  */
 public class CockroachDBTransactionTemplate extends TransactionTemplate
         implements CockroachDBTransactionOperations {
 
-    private static final Pattern REGION_PATTERN = Pattern.compile("^[a-z][a-z0-9-]*$");
-
-    private final CockroachDBProperties properties;
-    private final CockroachDBMetrics metrics;
-    private final JdbcTemplate jdbcTemplate;
-    private final RegionResolver regionResolver;
+    private final SerializationRetry retry;
+    private final CockroachDBRegions regions;
 
     // null = use the cockroachdb.retry.* property
     private Integer maxRetries;
@@ -61,15 +56,11 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
     private String region;
 
     public CockroachDBTransactionTemplate(PlatformTransactionManager txManager,
-                               CockroachDBProperties props,
-                               CockroachDBMetrics metrics,
-                               JdbcTemplate jdbcTemplate,
-                               RegionResolver regionResolver) {
+                                          SerializationRetry retry,
+                                          CockroachDBRegions regions) {
         super(txManager);
-        this.properties = props;
-        this.metrics = metrics;
-        this.jdbcTemplate = jdbcTemplate;
-        this.regionResolver = regionResolver;
+        this.retry = retry;
+        this.regions = regions;
         setIsolationLevel(TransactionDefinition.ISOLATION_SERIALIZABLE);
     }
 
@@ -80,10 +71,8 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
      */
     public CockroachDBTransactionTemplate(CockroachDBTransactionTemplate template) {
         super(template.getTransactionManager(), template);
-        this.properties = template.properties;
-        this.metrics = template.metrics;
-        this.jdbcTemplate = template.jdbcTemplate;
-        this.regionResolver = template.regionResolver;
+        this.retry = template.retry;
+        this.regions = template.regions;
         this.maxRetries = template.maxRetries;
         this.delay = template.delay;
         this.multiplier = template.multiplier;
@@ -95,42 +84,38 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
 
     /** Retry a conflicting transaction up to this many times (default {@code cockroachdb.retry.max-retries}). */
     public void setMaxRetries(int maxRetries) {
-        requireNonNegative("maxRetries", maxRetries);
-        this.maxRetries = maxRetries;
+        this.maxRetries = settings().withMaxRetries(maxRetries).maxRetries();
     }
 
     public int getMaxRetries() {
-        return maxRetries != null ? maxRetries : properties.getRetry().getMaxRetries();
+        return settings().maxRetries();
     }
 
     /** Wait this many ms before the first retry (default {@code cockroachdb.retry.delay}). */
     public void setDelay(long delay) {
-        requireNonNegative("delay", delay);
-        this.delay = delay;
+        this.delay = settings().withDelay(delay).delay();
     }
 
     public long getDelay() {
-        return delay != null ? delay : properties.getRetry().getDelay();
+        return settings().delay();
     }
 
     /** Multiply the delay by this after each retry (default {@code cockroachdb.retry.multiplier}). */
     public void setMultiplier(double multiplier) {
-        requireNonNegative("multiplier", multiplier);
-        this.multiplier = multiplier;
+        this.multiplier = settings().withMultiplier(multiplier).multiplier();
     }
 
     public double getMultiplier() {
-        return multiplier != null ? multiplier : properties.getRetry().getMultiplier();
+        return settings().multiplier();
     }
 
     /** Never wait longer than this many ms between retries (default {@code cockroachdb.retry.max-delay}). */
     public void setMaxDelay(long maxDelay) {
-        requireNonNegative("maxDelay", maxDelay);
-        this.maxDelay = maxDelay;
+        this.maxDelay = settings().withMaxDelay(maxDelay).maxDelay();
     }
 
     public long getMaxDelay() {
-        return maxDelay != null ? maxDelay : properties.getRetry().getMaxDelay();
+        return settings().maxDelay();
     }
 
     /**
@@ -142,10 +127,10 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
      *         {@code cockroachdb.region.allowed} (when validation is on)
      */
     public void setRegion(String region) {
-        this.region = (region == null || region.isBlank()) ? null : validateRegion(region);
+        this.region = (region == null || region.isBlank()) ? null : regions.validate(region);
     }
 
-    /** The explicitly set region, or {@code null} when it is resolved per call. */
+    /** The explicitly set region, or {@code null} when it is resolved per transaction. */
     public String getRegion() {
         return region;
     }
@@ -164,119 +149,37 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
      * Runs {@code action} in a transaction, as {@link TransactionTemplate#execute} does,
      * and retries it in a fresh transaction when it fails with SQLSTATE {@code 40001}
      * anywhere in the cause chain, whatever exception type wraps it. Any other exception
-     * is rethrown immediately.
+     * is rethrown immediately. Inside a transaction that is already running, it runs once.
      */
     @Override
     public <T> T execute(TransactionCallback<T> action) throws TransactionException {
-        int maxRetries = getMaxRetries();
-        long currentDelay = getDelay();
-        double multiplier = getMultiplier();
-        long maxDelay = getMaxDelay();
-        long jitter = properties.getRetry().getJitter();
-
-        String region = resolveRegion();
-
-        long start = System.nanoTime();
-        int attempt = 0;
-
-        while (true) {
-            try {
-                T result = super.execute(status -> {
-                    setSessionRegion(region);
-                    return action.doInTransaction(status);
-                });
-                metrics.recordTransaction(start, attempt, true);
-                return result;
-            } catch (RuntimeException ex) {
-                // Decide on SQLSTATE alone: JPA wraps 40001 in JpaSystemException or
-                // TransactionSystemException, which are not TransientDataAccessExceptions.
-                if (!isSerializationError(ex) || attempt >= maxRetries) {
-                    metrics.recordTransaction(start, attempt, false);
-                    throw ex;
-                }
-                attempt++;
-                sleep(currentDelay, jitter);
-                currentDelay = Math.min((long) (currentDelay * multiplier), maxDelay);
+        try (CockroachDBRegions.Scope scope = CockroachDBRegions.bind(region)) {
+            if (TransactionSynchronizationManager.isActualTransactionActive()) {
+                return super.execute(action);
             }
+            return retry.execute(settings(), () -> super.execute(action));
+        } catch (RuntimeException | Error ex) {
+            throw ex;
+        } catch (Throwable ex) {
+            // TransactionTemplate.execute only throws unchecked exceptions.
+            throw new UndeclaredThrowableException(ex);
         }
     }
 
-    // ---- regions --------------------------------------------------------------------
-
-    private String resolveRegion() {
-        if (region != null) {
-            return region;
+    private RetrySettings settings() {
+        RetrySettings settings = retry.defaults();
+        if (maxRetries != null) {
+            settings = settings.withMaxRetries(maxRetries);
         }
-        return RegionContext.current()
-                .filter(r -> !r.isBlank())
-                .map(this::validateRegion)
-                .orElseGet(() -> {
-                    if (regionResolver != null) {
-                        String r = regionResolver.resolve();
-                        if (r != null && !r.isBlank()) {
-                            return validateRegion(r);
-                        }
-                    }
-                    String def = properties.getRegion().getDefaultRegion();
-                    return (def != null && !def.isBlank()) ? validateRegion(def) : null;
-                });
-    }
-
-    private void setSessionRegion(String region) {
-        if (region == null || region.isBlank()) {
-            return;
+        if (delay != null) {
+            settings = settings.withDelay(delay);
         }
-        jdbcTemplate.execute("SET crdb_region = '" + region + "'");
-    }
-
-    private String validateRegion(String region) {
-        if (!REGION_PATTERN.matcher(region).matches()) {
-            throw new IllegalArgumentException(
-                    "Invalid region format: '" + region + "' (must match [a-z][a-z0-9-]*)");
+        if (multiplier != null) {
+            settings = settings.withMultiplier(multiplier);
         }
-
-        CockroachDBProperties.Region regionProps = properties.getRegion();
-        if (regionProps.isValidate()) {
-            List<String> allowed = regionProps.getAllowed();
-            if (!allowed.isEmpty() && !allowed.contains(region)) {
-                throw new IllegalArgumentException(
-                        "Region '" + region + "' not in allowed list: " + allowed);
-            }
+        if (maxDelay != null) {
+            settings = settings.withMaxDelay(maxDelay);
         }
-        return region;
-    }
-
-    // ---- helpers --------------------------------------------------------------------
-
-    /** True when any exception in the cause chain is a {@link SQLException} with SQLSTATE 40001. */
-    public static boolean isSerializationError(Throwable ex) {
-        Throwable cause = ex;
-        while (cause != null) {
-            if (cause instanceof SQLException sql
-                    && "40001".equals(sql.getSQLState())) {
-                return true;
-            }
-            cause = cause.getCause();
-        }
-        return false;
-    }
-
-    private static void sleep(long delay, long jitter) {
-        try {
-            long jitteredDelay = delay;
-            if (jitter > 0) {
-                jitteredDelay += ThreadLocalRandom.current().nextLong(-jitter, jitter + 1);
-            }
-            Thread.sleep(Math.max(0, jitteredDelay));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void requireNonNegative(String name, double value) {
-        if (value < 0) {
-            throw new IllegalArgumentException(name + " must not be negative: " + value);
-        }
+        return settings;
     }
 }

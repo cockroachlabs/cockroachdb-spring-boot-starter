@@ -2,15 +2,15 @@
 
 This directory holds short, executable tutorials for the CockroachDB Spring Boot Starter. Each guide teaches one feature by having the reader build a small, working Spring Boot application, and each one is built and tested by CI on every change to the starter.
 
-This page covers the whole process: how to follow a guide, how guides are built and tested, and how to write, review and maintain one. The rules every guide must meet are defined in [docs/architecture.md](../docs/architecture.md#getting-started-guides); this page restates them where they matter and explains how to apply them.
+This page covers the whole process: how to follow a guide, how guides are built and tested, and how to write, review and maintain one. The rules every guide must meet are defined in [docs/guides.md](../docs/guides.md); this page restates them where they matter and explains how to apply them.
 
 ## Available guides
 
 | Guide | You'll learn to | Starter feature |
 |-------|-----------------|-----------------|
-| [Retrying serialization conflicts with `@CockroachDB`](serialization-retry/README.md) | Keep money transfers succeeding when concurrent transactions conflict (SQLSTATE `40001`) | `@CockroachDB` |
+| [Retrying serialization conflicts in `@Transactional` code](serialization-retry/README.md) | Keep money transfers succeeding when concurrent transactions conflict (SQLSTATE `40001`) | `@Transactional` retries, `@CockroachDBTransactional` |
 
-Planned guides are listed in the [candidate backlog](../docs/architecture.md#candidate-guides).
+Planned guides are listed in the [candidate backlog](../docs/guides.md#candidate-guides).
 
 ## Following a guide
 
@@ -106,7 +106,7 @@ Guides have no Java toolchain of their own, so their tests run on the JVM that r
 
 ### 1. Pick the goal
 
-Start from the [candidate backlog](../docs/architecture.md#candidate-guides), or propose a new entry there. Write the goal as one sentence naming the starter feature, for example "keep money transfers succeeding when concurrent transactions conflict, using `@CockroachDB`". If you can't, the guide's scope isn't settled yet.
+Start from the [candidate backlog](../docs/guides.md#candidate-guides), or propose a new entry there. Write the goal as one sentence naming the starter feature, for example "keep money transfers succeeding when concurrent transactions conflict, using the CockroachDB starter's transaction retries". If you can't, the guide's scope isn't settled yet.
 
 [spring-projects/spring-data-examples](https://github.com/spring-projects/spring-data-examples) is a good source of small domains, but its projects are reference code, not tutorials. Rewrite rather than port.
 
@@ -156,7 +156,7 @@ Throw the walkthrough's changes away afterwards. Don't commit a filled-in `initi
 
 - Add the guide to the table at the top of this page.
 - Add it to the "Getting-started guides" list in the root [README.md](../README.md).
-- Remove or update its row in the [candidate backlog](../docs/architecture.md#candidate-guides).
+- Remove or update its row in the [candidate backlog](../docs/guides.md#candidate-guides).
 
 Run `./gradlew build` from the root, then open a PR.
 

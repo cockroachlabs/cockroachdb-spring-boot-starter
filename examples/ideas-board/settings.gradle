@@ -1,1 +1,6 @@
-rootProject.name = 'ideas-board'
+plugins {
+    // Downloads the Java 17 toolchain this build asks for when it isn't installed.
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'example-ideas-board'

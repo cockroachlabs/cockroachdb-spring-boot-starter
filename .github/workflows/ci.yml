@@ -15,7 +15,8 @@ jobs:
     # Always compiled by GraalVM 25 to Java 17 bytecode; the matrix varies the
     # JVM the tests run on (17 = oldest supported runtime). Gradle itself runs
     # on the matrix JDK, so the getting-started guides (included builds with no
-    # toolchain of their own) are tested on it too.
+    # toolchain of their own) are tested on it too. Example apps under examples/
+    # are built too; they pin their own toolchain and download it if missing.
     name: Build & test (JDK ${{ matrix.java }})
     runs-on: ubuntu-latest
     strategy:
@@ -44,7 +45,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # Builds the starter and every guide. Tests use Testcontainers, which starts
+      # Builds the starter, every guide and every example. Tests use Testcontainers, which starts
       # CockroachDB containers on the runner's Docker daemon — no manual service.
       - name: Build & test
         run: ./gradlew build -PtestJvm=${{ matrix.java }} --no-daemon --stacktrace

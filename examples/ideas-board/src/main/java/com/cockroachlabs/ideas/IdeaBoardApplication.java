@@ -38,13 +38,13 @@ public class IdeaBoardApplication {
             // Reset and run again, this time with automatic retry.
             service.resetVotes(id);
 
-            // --- WITH retry: @CockroachDB retries 40001 conflicts automatically ---
+            // --- WITH retry: @CockroachDBTransactional retries 40001 conflicts automatically ---
             CockroachDBConcurrencyRunner.Result retried =
                     CockroachDBConcurrencyRunner.run(threads, iterations,
                             () -> service.upvote(id));
 
             System.out.println();
-            System.out.println("=== @CockroachDB (automatic retry) ===");
+            System.out.println("=== @CockroachDBTransactional (automatic retry) ===");
             printResult(retried);
             System.out.println("Final vote count: " + service.currentVotes(id)
                     + " (expected exactly " + threads + ", zero failures)");

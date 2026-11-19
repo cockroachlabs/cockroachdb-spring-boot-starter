@@ -1,9 +1,9 @@
 # Concurrent Ideas Board
 
 A standalone Spring Boot demo for the **CockroachDB Spring Boot Starter**. It shows
-the starter's hero feature — the `@CockroachDB` annotation, which automatically
-retries `40001` serialization conflicts with exponential backoff — proven under
-real contention.
+the starter's hero feature — automatic retries of `40001` serialization conflicts
+with exponential backoff, here through the `@CockroachDBTransactional` annotation —
+proven under real contention.
 
 ## What it shows
 
@@ -14,8 +14,13 @@ isolation, so the threads genuinely conflict.
 - `upvoteWithoutRetry(...)` is annotated only `@Transactional`. Conflicting
   transactions abort with `40001` and the updates are lost — the final count is
   **less than 50**, with failures reported.
-- `upvote(...)` is annotated `@CockroachDB`. Aborted transactions are retried
-  automatically, so the final count is **exactly 50** with **zero failures**.
+- `upvote(...)` is annotated `@CockroachDBTransactional`, a `@Transactional` with
+  CockroachDB's retry settings. Aborted transactions are retried automatically, so
+  the final count is **exactly 50** with **zero failures**.
+
+The starter normally retries plain `@Transactional` methods too. This demo sets
+`cockroachdb.retry.apply-to-transactional-methods: false` in `application.yml` so the
+`@Transactional` baseline shows what Spring alone does under contention.
 
 The app runs both, back to back, and prints a `CockroachDBConcurrencyRunner.Result`
 plus the final vote count for each so the contrast is obvious.

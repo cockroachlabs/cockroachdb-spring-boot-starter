@@ -98,8 +98,18 @@ tasks.register('guides') {
     dependsOn guideBuilds.collect { it.task(':build') }
 }
 
+// Build and test every example app included in settings.gradle; `build` runs them too.
+def examplesDir = file('examples').toPath()
+def exampleBuilds = gradle.includedBuilds.findAll { it.projectDir.toPath().startsWith(examplesDir) }
+
+tasks.register('examples') {
+    group = 'verification'
+    description = 'Builds and tests every example app under examples/ against this starter.'
+    dependsOn exampleBuilds.collect { it.task(':build') }
+}
+
 tasks.named('build') {
-    dependsOn 'guides'
+    dependsOn 'guides', 'examples'
 }
 
 publishing {

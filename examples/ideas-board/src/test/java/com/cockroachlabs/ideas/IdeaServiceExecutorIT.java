@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * Same "3 concurrent persons" proof as {@link IdeaServiceConcurrencyIT}, but driven with a
  * raw {@link ExecutorService} + {@link Future} instead of the starter's
  * {@code CockroachDBConcurrencyRunner}. This shows the contention can be reproduced with
- * nothing but the JDK, and that {@code @CockroachDB} still retries every 40001 conflict so
+ * nothing but the JDK, and that {@code @CockroachDBTransactional} still retries every 40001 conflict so
  * all 60 votes land.
  *
  * <p>Skips (does not fail) when Docker is unavailable.
@@ -78,7 +78,7 @@ class IdeaServiceExecutorIT {
                 futures.add(pool.submit(() -> {
                     startGate.await(); // park until all tasks are ready
                     for (int c = 0; c < clicksEach; c++) {
-                        service.upvote(id); // @CockroachDB retries the 40001 conflicts
+                        service.upvote(id); // @CockroachDBTransactional retries the 40001 conflicts
                     }
                     return null;
                 }));
@@ -91,7 +91,7 @@ class IdeaServiceExecutorIT {
                 f.get();
             }
 
-            // Every concurrent vote counted, because @CockroachDB retried the conflicts.
+            // Every concurrent vote counted, because @CockroachDBTransactional retried the conflicts.
             assertThat(service.currentVotes(id)).isEqualTo(users * clicksEach); // == 60
         } finally {
             pool.shutdownNow();

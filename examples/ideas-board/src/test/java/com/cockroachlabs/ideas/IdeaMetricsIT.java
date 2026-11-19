@@ -15,7 +15,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Proves the starter publishes transaction metrics through Micrometer. Each {@code @CockroachDB}
+ * Proves the starter publishes transaction metrics through Micrometer. Each {@code @CockroachDBTransactional}
  * call records a transaction, so after a handful of upvotes the starter's
  * {@code cockroachdb.transactions.*} meters are registered with a positive count.
  *

@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.1.1'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.cockroachlabs'
+version = '0.0.1'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// tag::repo-maven[]
+repositories {
+    mavenCentral()
+    // CockroachDB starter is published to an anonymous GitHub Pages Maven feed,
+    // not Maven Central. No credentials required.
+    maven { url 'https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/maven/' }
+}
+// end::repo-maven[]
+
+dependencyManagement {
+    imports {
+        // Testcontainers BOM pins the CockroachDB + JUnit module versions,
+        // matching the parent starter build.
+        mavenBom 'org.testcontainers:testcontainers-bom:2.0.5'
+    }
+}
+
+// tag::deps[]
+dependencies {
+    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.3.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // CDC webhook sink is an HTTP endpoint, so the app needs the web stack.
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // tag::test-deps[]
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:testcontainers-cockroachdb'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+    testImplementation 'org.postgresql:postgresql'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // end::test-deps[]
+}
+// end::deps[]
+
+test {
+    useJUnitPlatform()
+}

@@ -64,8 +64,6 @@ loadScripts(document, 'script');</script>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
-<li><a href="#getIsolation()" tabindex="0">getIsolation()</a></li>
-<li><a href="#setIsolation(java.lang.String)" tabindex="0">setIsolation(String)</a></li>
 <li><a href="#getRetry()" tabindex="0">getRetry()</a></li>
 <li><a href="#setRetry(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Retry)" tabindex="0">setRetry(CockroachDBProperties.Retry)</a></li>
 <li><a href="#getRegion()" tabindex="0">getRegion()</a></li>
@@ -139,20 +137,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIsolation()" class="member-name-link">getIsolation</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Metrics.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Metrics</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMetrics()" class="member-name-link">getMetrics</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Metrics.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Metrics</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMetrics()" class="member-name-link">getMetrics</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Region.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegion()" class="member-name-link">getRegion</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Region.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegion()" class="member-name-link">getRegion</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Retry.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Retry</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRetry()" class="member-name-link">getRetry</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIsolation(java.lang.String)" class="member-name-link">setIsolation</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;isolation)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Retry.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Retry</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRetry()" class="member-name-link">getRetry</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMetrics(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Metrics)" class="member-name-link">setMetrics</a><wbr>(<a href="CockroachDBProperties.Metrics.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Metrics</a>&nbsp;metrics)</code></div>
@@ -196,22 +188,6 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
-<li>
-<section class="detail" id="getIsolation()">
-<h3>getIsolation</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getIsolation</span>()</div>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setIsolation(java.lang.String)">
-<h3>setIsolation</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setIsolation</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;isolation)</span></div>
-</div>
-</section>
-</li>
 <li>
 <section class="detail" id="getRetry()">
 <h3>getRetry</h3>

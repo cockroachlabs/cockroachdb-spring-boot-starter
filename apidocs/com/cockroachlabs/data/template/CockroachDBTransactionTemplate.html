@@ -59,7 +59,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
 <ol class="toc-list">
-<li><a href="#%3Cinit%3E(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.metrics.CockroachDBMetrics,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.multiregion.RegionResolver)" tabindex="0">CockroachDBTransactionTemplate(PlatformTransactionManager, CockroachDBProperties, CockroachDBMetrics, JdbcTemplate, RegionResolver)</a></li>
+<li><a href="#%3Cinit%3E(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.transaction.SerializationRetry,com.cockroachlabs.data.transaction.CockroachDBRegions)" tabindex="0">CockroachDBTransactionTemplate(PlatformTransactionManager, SerializationRetry, CockroachDBRegions)</a></li>
 <li><a href="#%3Cinit%3E(com.cockroachlabs.data.template.CockroachDBTransactionTemplate)" tabindex="0">CockroachDBTransactionTemplate(CockroachDBTransactionTemplate)</a></li>
 </ol>
 </li>
@@ -77,7 +77,6 @@ loadScripts(document, 'script');</script>
 <li><a href="#getRegion()" tabindex="0">getRegion()</a></li>
 <li><a href="#inRegion(java.lang.String)" tabindex="0">inRegion(String)</a></li>
 <li><a href="#execute(org.springframework.transaction.support.TransactionCallback)" tabindex="0">execute(TransactionCallback)</a></li>
-<li><a href="#isSerializationError(java.lang.Throwable)" tabindex="0">isSerializationError(Throwable)</a></li>
 </ol>
 </li>
 </ol>
@@ -124,10 +123,13 @@ are declared by <a href="CockroachDBTransactionOperations.html" title="interface
 </ul>
 Unlike <code>TransactionTemplate</code>, the isolation level defaults to SERIALIZABLE.
 <p>
+Like <code>@CockroachDBTransactional</code>, it retries only when it starts the transaction. Called
+inside a transaction that is already running, it runs the callback once and leaves retrying
+to whoever owns that transaction.
+<p>
 As with <code>TransactionTemplate</code>, configure an instance before sharing it between
-threads. To vary settings per call, copy the shared instance with
-<a href="#%3Cinit%3E(com.cockroachlabs.data.template.CockroachDBTransactionTemplate)"><code>CockroachDBTransactionTemplate(CockroachDBTransactionTemplate)</code></a> and configure the copy.
-<code>@CockroachDB</code> methods are run this way.</div>
+threads. To vary settings, copy the shared instance with
+<a href="#%3Cinit%3E(com.cockroachlabs.data.template.CockroachDBTransactionTemplate)"><code>CockroachDBTransactionTemplate(CockroachDBTransactionTemplate)</code></a> and configure the copy.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -168,11 +170,9 @@ threads. To vary settings per call, copy the shared instance with
 <div class="block">Copies <code>template</code>: the same transaction manager, transaction definition
 (isolation, propagation, read-only, timeout, name), retry settings and region.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.metrics.CockroachDBMetrics,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.multiregion.RegionResolver)" class="member-name-link">CockroachDBTransactionTemplate</a><wbr>(org.springframework.transaction.PlatformTransactionManager&nbsp;txManager,
- <a href="../autoconfigure/CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props,
- <a href="../metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a>&nbsp;metrics,
- org.springframework.jdbc.core.JdbcTemplate&nbsp;jdbcTemplate,
- <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver)</code></div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.transaction.SerializationRetry,com.cockroachlabs.data.transaction.CockroachDBRegions)" class="member-name-link">CockroachDBTransactionTemplate</a><wbr>(org.springframework.transaction.PlatformTransactionManager&nbsp;txManager,
+ <a href="../transaction/SerializationRetry.html" title="class in com.cockroachlabs.data.transaction">SerializationRetry</a>&nbsp;retry,
+ <a href="../transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a>&nbsp;regions)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
@@ -182,7 +182,7 @@ threads. To vary settings per call, copy the shared instance with
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -210,41 +210,36 @@ anywhere in the cause chain, whatever exception type wraps it.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegion()" class="member-name-link">getRegion</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">The explicitly set region, or <code>null</code> when it is resolved per call.</div>
+<div class="block">The explicitly set region, or <code>null</code> when it is resolved per transaction.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#inRegion(java.lang.String)" class="member-name-link">inRegion</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">A copy of this template that runs in <code>region</code>; see <a href="#setRegion(java.lang.String)"><code>setRegion(String)</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#isSerializationError(java.lang.Throwable)" class="member-name-link">isSerializationError</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;ex)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">True when any exception in the cause chain is a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link"><code>SQLException</code></a> with SQLSTATE 40001.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDelay(long)" class="member-name-link">setDelay</a><wbr>(long&nbsp;delay)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDelay(long)" class="member-name-link">setDelay</a><wbr>(long&nbsp;delay)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Wait this many ms before the first retry (default <code>cockroachdb.retry.delay</code>).</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxDelay(long)" class="member-name-link">setMaxDelay</a><wbr>(long&nbsp;maxDelay)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxDelay(long)" class="member-name-link">setMaxDelay</a><wbr>(long&nbsp;maxDelay)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Never wait longer than this many ms between retries (default <code>cockroachdb.retry.max-delay</code>).</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxRetries(int)" class="member-name-link">setMaxRetries</a><wbr>(int&nbsp;maxRetries)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMaxRetries(int)" class="member-name-link">setMaxRetries</a><wbr>(int&nbsp;maxRetries)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Retry a conflicting transaction up to this many times (default <code>cockroachdb.retry.max-retries</code>).</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMultiplier(double)" class="member-name-link">setMultiplier</a><wbr>(double&nbsp;multiplier)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMultiplier(double)" class="member-name-link">setMultiplier</a><wbr>(double&nbsp;multiplier)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Multiply the delay by this after each retry (default <code>cockroachdb.retry.multiplier</code>).</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRegion(java.lang.String)" class="member-name-link">setRegion</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRegion(java.lang.String)" class="member-name-link">setRegion</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Run <code>SET crdb_region</code> to this region at the start of each transaction,
 overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the default region.</div>
 </div>
@@ -278,14 +273,12 @@ overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the d
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.metrics.CockroachDBMetrics,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.multiregion.RegionResolver)">
+<section class="detail" id="&lt;init&gt;(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.transaction.SerializationRetry,com.cockroachlabs.data.transaction.CockroachDBRegions)">
 <h3>CockroachDBTransactionTemplate</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CockroachDBTransactionTemplate</span><wbr><span class="parameters">(org.springframework.transaction.PlatformTransactionManager&nbsp;txManager,
- <a href="../autoconfigure/CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props,
- <a href="../metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a>&nbsp;metrics,
- org.springframework.jdbc.core.JdbcTemplate&nbsp;jdbcTemplate,
- <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver)</span></div>
+ <a href="../transaction/SerializationRetry.html" title="class in com.cockroachlabs.data.transaction">SerializationRetry</a>&nbsp;retry,
+ <a href="../transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a>&nbsp;regions)</span></div>
 </div>
 </section>
 </li>
@@ -397,7 +390,7 @@ overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the d
 <h3>getRegion</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getRegion</span>()</div>
-<div class="block">The explicitly set region, or <code>null</code> when it is resolved per call.</div>
+<div class="block">The explicitly set region, or <code>null</code> when it is resolved per transaction.</div>
 </div>
 </section>
 </li>
@@ -423,7 +416,7 @@ overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the d
 <div class="block">Runs <code>action</code> in a transaction, as <code>TransactionTemplate.execute(TransactionCallback)</code> does,
 and retries it in a fresh transaction when it fails with SQLSTATE <code>40001</code>
 anywhere in the cause chain, whatever exception type wraps it. Any other exception
-is rethrown immediately.</div>
+is rethrown immediately. Inside a transaction that is already running, it runs once.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>execute</code>&nbsp;in interface&nbsp;<code>org.springframework.transaction.support.TransactionOperations</code></dd>
@@ -432,15 +425,6 @@ is rethrown immediately.</div>
 <dt>Throws:</dt>
 <dd><code>org.springframework.transaction.TransactionException</code></dd>
 </dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="isSerializationError(java.lang.Throwable)">
-<h3>isSerializationError</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isSerializationError</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;ex)</span></div>
-<div class="block">True when any exception in the cause chain is a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link"><code>SQLException</code></a> with SQLSTATE 40001.</div>
 </div>
 </section>
 </li>

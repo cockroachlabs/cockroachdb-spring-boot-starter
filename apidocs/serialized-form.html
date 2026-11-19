@@ -82,10 +82,6 @@ loadScripts(document, 'script');</script>
 <pre><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a> delay</pre>
 </li>
 <li class="block-list">
-<h5>jdbcTemplate</h5>
-<pre>org.springframework.jdbc.core.JdbcTemplate jdbcTemplate</pre>
-</li>
-<li class="block-list">
 <h5>maxDelay</h5>
 <pre><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a> maxDelay</pre>
 </li>
@@ -94,24 +90,58 @@ loadScripts(document, 'script');</script>
 <pre><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a> maxRetries</pre>
 </li>
 <li class="block-list">
-<h5>metrics</h5>
-<pre><a href="com/cockroachlabs/data/metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a> metrics</pre>
-</li>
-<li class="block-list">
 <h5>multiplier</h5>
 <pre><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html" title="class or interface in java.lang" class="external-link">Double</a> multiplier</pre>
-</li>
-<li class="block-list">
-<h5>properties</h5>
-<pre><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a> properties</pre>
 </li>
 <li class="block-list">
 <h5>region</h5>
 <pre><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a> region</pre>
 </li>
 <li class="block-list">
-<h5>regionResolver</h5>
-<pre><a href="com/cockroachlabs/data/multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a> regionResolver</pre>
+<h5>regions</h5>
+<pre><a href="com/cockroachlabs/data/transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a> regions</pre>
+</li>
+<li class="block-list">
+<h5>retry</h5>
+<pre><a href="com/cockroachlabs/data/transaction/SerializationRetry.html" title="class in com.cockroachlabs.data.transaction">SerializationRetry</a> retry</pre>
+</li>
+</ul>
+</section>
+</li>
+</ul>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<li>
+<section class="serialized-package-container">
+<h2 title="Package">Package&nbsp;<a href="com/cockroachlabs/data/transaction/package-summary.html">com.cockroachlabs.data.transaction</a></h2>
+<ul class="block-list">
+<li>
+<section class="serialized-class-details" id="com.cockroachlabs.data.transaction.CockroachDBTransactionAdvisor">
+<h3>Class&nbsp;<a href="com/cockroachlabs/data/transaction/CockroachDBTransactionAdvisor.html" title="class in com.cockroachlabs.data.transaction">com.cockroachlabs.data.transaction.CockroachDBTransactionAdvisor</a></h3>
+<div class="type-signature">class CockroachDBTransactionAdvisor extends org.springframework.aop.support.AbstractPointcutAdvisor implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a></div>
+<ul class="block-list">
+<li>
+<section class="detail">
+<h4>Serialized Fields</h4>
+<ul class="block-list">
+<li class="block-list">
+<h5>beanFactory</h5>
+<pre>org.springframework.beans.factory.BeanFactory beanFactory</pre>
+</li>
+<li class="block-list">
+<h5>interceptor</h5>
+<pre>com.cockroachlabs.data.transaction.CockroachDBTransactionInterceptor interceptor</pre>
+</li>
+<li class="block-list">
+<h5>pointcut</h5>
+<pre>org.springframework.aop.Pointcut pointcut</pre>
+</li>
+<li class="block-list">
+<h5>transactionAttributeSource</h5>
+<pre>org.springframework.transaction.interceptor.TransactionAttributeSource transactionAttributeSource</pre>
 </li>
 </ul>
 </section>

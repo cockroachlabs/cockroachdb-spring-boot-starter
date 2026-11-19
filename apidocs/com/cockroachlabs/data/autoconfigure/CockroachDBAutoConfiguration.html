@@ -66,8 +66,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#cockroachDBMetrics()" tabindex="0">cockroachDBMetrics()</a></li>
 <li><a href="#cockroachDBJdbcTemplate(javax.sql.DataSource)" tabindex="0">cockroachDBJdbcTemplate(DataSource)</a></li>
 <li><a href="#regionResolver(com.cockroachlabs.data.autoconfigure.CockroachDBProperties)" tabindex="0">regionResolver(CockroachDBProperties)</a></li>
-<li><a href="#cockroachDBTransactionTemplate(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.metrics.CockroachDBMetrics,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.multiregion.RegionResolver)" tabindex="0">cockroachDBTransactionTemplate(PlatformTransactionManager, CockroachDBProperties, CockroachDBMetrics, JdbcTemplate, RegionResolver)</a></li>
-<li><a href="#cockroachDBAspect(com.cockroachlabs.data.template.CockroachDBTransactionTemplate)" tabindex="0">cockroachDBAspect(CockroachDBTransactionTemplate)</a></li>
+<li><a href="#cockroachDBSerializationRetry(com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.metrics.CockroachDBMetrics)" tabindex="0">cockroachDBSerializationRetry(CockroachDBProperties, CockroachDBMetrics)</a></li>
+<li><a href="#cockroachDBRegions(com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.multiregion.RegionResolver,org.springframework.jdbc.core.JdbcTemplate)" tabindex="0">cockroachDBRegions(CockroachDBProperties, RegionResolver, JdbcTemplate)</a></li>
+<li><a href="#cockroachDBTransactionTemplate(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.transaction.SerializationRetry,com.cockroachlabs.data.transaction.CockroachDBRegions)" tabindex="0">cockroachDBTransactionTemplate(PlatformTransactionManager, SerializationRetry, CockroachDBRegions)</a></li>
 <li><a href="#followerReadAspect(org.springframework.transaction.PlatformTransactionManager,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.metrics.CockroachDBMetrics)" tabindex="0">followerReadAspect(PlatformTransactionManager, JdbcTemplate, CockroachDBMetrics)</a></li>
 </ol>
 </li>
@@ -84,7 +85,8 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="annotations">@AutoConfiguration(after=<a href="CockroachDBMetricsAutoConfiguration.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBMetricsAutoConfiguration</a>.class)
+<div class="type-signature"><span class="annotations">@AutoConfiguration(after=<a href="CockroachDBMetricsAutoConfiguration.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBMetricsAutoConfiguration</a>.class,
+                   afterName="org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration")
 @ConditionalOnClass(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/javax/sql/DataSource.html" title="class or interface in javax.sql" class="external-link">DataSource</a>.class)
 @EnableConfigurationProperties(<a href="CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>.class)
 @ImportRuntimeHints(<a href="CockroachDBRuntimeHints.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBRuntimeHints</a>.class)
@@ -119,30 +121,34 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../aop/CockroachDBAspect.html" title="class in com.cockroachlabs.data.aop">CockroachDBAspect</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cockroachDBAspect(com.cockroachlabs.data.template.CockroachDBTransactionTemplate)" class="member-name-link">cockroachDBAspect</a><wbr>(<a href="../template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a>&nbsp;cockroachDBTransactionTemplate)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.springframework.jdbc.core.JdbcTemplate</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cockroachDBJdbcTemplate(javax.sql.DataSource)" class="member-name-link">cockroachDBJdbcTemplate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/javax/sql/DataSource.html" title="class or interface in javax.sql" class="external-link">DataSource</a>&nbsp;dataSource)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>org.springframework.jdbc.core.JdbcTemplate</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cockroachDBJdbcTemplate(javax.sql.DataSource)" class="member-name-link">cockroachDBJdbcTemplate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/javax/sql/DataSource.html" title="class or interface in javax.sql" class="external-link">DataSource</a>&nbsp;dataSource)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cockroachDBMetrics()" class="member-name-link">cockroachDBMetrics</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cockroachDBMetrics()" class="member-name-link">cockroachDBMetrics</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cockroachDBRegions(com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.multiregion.RegionResolver,org.springframework.jdbc.core.JdbcTemplate)" class="member-name-link">cockroachDBRegions</a><wbr>(<a href="CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props,
+ <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver,
+ org.springframework.jdbc.core.JdbcTemplate&nbsp;jdbcTemplate)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cockroachDBTransactionTemplate(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.metrics.CockroachDBMetrics,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.multiregion.RegionResolver)" class="member-name-link">cockroachDBTransactionTemplate</a><wbr>(org.springframework.transaction.PlatformTransactionManager&nbsp;txManager,
- <a href="CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props,
- <a href="../metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a>&nbsp;metrics,
- org.springframework.jdbc.core.JdbcTemplate&nbsp;jdbcTemplate,
- <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../transaction/SerializationRetry.html" title="class in com.cockroachlabs.data.transaction">SerializationRetry</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cockroachDBSerializationRetry(com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.metrics.CockroachDBMetrics)" class="member-name-link">cockroachDBSerializationRetry</a><wbr>(<a href="CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props,
+ <a href="../metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a>&nbsp;metrics)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../aop/FollowerReadAspect.html" title="class in com.cockroachlabs.data.aop">FollowerReadAspect</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#followerReadAspect(org.springframework.transaction.PlatformTransactionManager,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.metrics.CockroachDBMetrics)" class="member-name-link">followerReadAspect</a><wbr>(org.springframework.transaction.PlatformTransactionManager&nbsp;txManager,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cockroachDBTransactionTemplate(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.transaction.SerializationRetry,com.cockroachlabs.data.transaction.CockroachDBRegions)" class="member-name-link">cockroachDBTransactionTemplate</a><wbr>(org.springframework.transaction.PlatformTransactionManager&nbsp;txManager,
+ <a href="../transaction/SerializationRetry.html" title="class in com.cockroachlabs.data.transaction">SerializationRetry</a>&nbsp;retry,
+ <a href="../transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a>&nbsp;regions)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../aop/FollowerReadAspect.html" title="class in com.cockroachlabs.data.aop">FollowerReadAspect</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#followerReadAspect(org.springframework.transaction.PlatformTransactionManager,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.metrics.CockroachDBMetrics)" class="member-name-link">followerReadAspect</a><wbr>(org.springframework.transaction.PlatformTransactionManager&nbsp;txManager,
  org.springframework.jdbc.core.JdbcTemplate&nbsp;jdbcTemplate,
  <a href="../metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a>&nbsp;metrics)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#regionResolver(com.cockroachlabs.data.autoconfigure.CockroachDBProperties)" class="member-name-link">regionResolver</a><wbr>(<a href="CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#regionResolver(com.cockroachlabs.data.autoconfigure.CockroachDBProperties)" class="member-name-link">regionResolver</a><wbr>(<a href="CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -207,26 +213,37 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="cockroachDBTransactionTemplate(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.metrics.CockroachDBMetrics,org.springframework.jdbc.core.JdbcTemplate,com.cockroachlabs.data.multiregion.RegionResolver)">
+<section class="detail" id="cockroachDBSerializationRetry(com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.metrics.CockroachDBMetrics)">
+<h3>cockroachDBSerializationRetry</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations">@Bean
+@ConditionalOnMissingBean
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../transaction/SerializationRetry.html" title="class in com.cockroachlabs.data.transaction">SerializationRetry</a></span>&nbsp;<span class="element-name">cockroachDBSerializationRetry</span><wbr><span class="parameters">(<a href="CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props,
+ <a href="../metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a>&nbsp;metrics)</span></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="cockroachDBRegions(com.cockroachlabs.data.autoconfigure.CockroachDBProperties,com.cockroachlabs.data.multiregion.RegionResolver,org.springframework.jdbc.core.JdbcTemplate)">
+<h3>cockroachDBRegions</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="annotations">@Bean
+@ConditionalOnMissingBean
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a></span>&nbsp;<span class="element-name">cockroachDBRegions</span><wbr><span class="parameters">(<a href="CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props,
+ <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver,
+ org.springframework.jdbc.core.JdbcTemplate&nbsp;jdbcTemplate)</span></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="cockroachDBTransactionTemplate(org.springframework.transaction.PlatformTransactionManager,com.cockroachlabs.data.transaction.SerializationRetry,com.cockroachlabs.data.transaction.CockroachDBRegions)">
 <h3>cockroachDBTransactionTemplate</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="annotations">@Bean
 @ConditionalOnMissingBean
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a></span>&nbsp;<span class="element-name">cockroachDBTransactionTemplate</span><wbr><span class="parameters">(org.springframework.transaction.PlatformTransactionManager&nbsp;txManager,
- <a href="CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a>&nbsp;props,
- <a href="../metrics/CockroachDBMetrics.html" title="interface in com.cockroachlabs.data.metrics">CockroachDBMetrics</a>&nbsp;metrics,
- org.springframework.jdbc.core.JdbcTemplate&nbsp;jdbcTemplate,
- <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver)</span></div>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="cockroachDBAspect(com.cockroachlabs.data.template.CockroachDBTransactionTemplate)">
-<h3>cockroachDBAspect</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="annotations">@Bean
-@ConditionalOnMissingBean
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../aop/CockroachDBAspect.html" title="class in com.cockroachlabs.data.aop">CockroachDBAspect</a></span>&nbsp;<span class="element-name">cockroachDBAspect</span><wbr><span class="parameters">(<a href="../template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a>&nbsp;cockroachDBTransactionTemplate)</span></div>
+ <a href="../transaction/SerializationRetry.html" title="class in com.cockroachlabs.data.transaction">SerializationRetry</a>&nbsp;retry,
+ <a href="../transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a>&nbsp;regions)</span></div>
 </div>
 </section>
 </li>

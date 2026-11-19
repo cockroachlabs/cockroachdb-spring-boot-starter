@@ -68,7 +68,20 @@ jobs:
         working-directory: examples/ideas-board
         run: |
           docker compose -f multiregion-compose.yml ps
+          # Schema the test left behind: did SET LOCALITY REGIONAL BY ROW take, is
+          # there a crdb_region column, is defaultdb actually multi-region?
+          docker compose -f multiregion-compose.yml exec -T crdb-us-east1 \
+            cockroach sql --insecure --host=crdb-us-east1 -e \
+            "SHOW REGIONS FROM DATABASE defaultdb; SHOW CREATE TABLE regional_ideas;" || true
           docker compose -f multiregion-compose.yml logs --tail=300
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regional-it-reports
+          path: examples/ideas-board/build/reports/tests/
+          if-no-files-found: ignore
 
       - name: Tear down cluster
         if: always()

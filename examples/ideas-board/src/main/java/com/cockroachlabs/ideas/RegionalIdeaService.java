@@ -2,7 +2,7 @@ package com.cockroachlabs.ideas;
 
 import com.cockroachlabs.data.annotation.CockroachDB;
 import com.cockroachlabs.data.multiregion.RegionContext;
-import com.cockroachlabs.data.template.CockroachDBTemplate;
+import com.cockroachlabs.data.template.CockroachDBTransactionTemplate;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +14,16 @@ import org.springframework.stereotype.Service;
 public class RegionalIdeaService {
 
     private final RegionalIdeaRepository repository;
-    private final CockroachDBTemplate crdb;
+    private final CockroachDBTransactionTemplate crdb;
 
-    public RegionalIdeaService(RegionalIdeaRepository repository, CockroachDBTemplate crdb) {
+    public RegionalIdeaService(RegionalIdeaRepository repository, CockroachDBTransactionTemplate crdb) {
         this.repository = repository;
         this.crdb = crdb;
     }
 
     // tag::inregion-usage[]
     /**
-     * Pin this unit of work to {@code region}: {@link CockroachDBTemplate#inRegion}
+     * Pin this unit of work to {@code region}: {@link CockroachDBTransactionTemplate#inRegion}
      * issues {@code SET crdb_region} for the transaction, and the same
      * {@link RegionContext} stamps the entity's {@code @CrdbRegion} field, so the row
      * is written into that region.

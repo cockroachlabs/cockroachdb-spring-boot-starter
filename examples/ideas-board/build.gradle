@@ -32,7 +32,7 @@ dependencyManagement {
 
 // tag::deps[]
 dependencies {
-    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.2.0'
+    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.3.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     // CDC webhook sink is an HTTP endpoint, so the app needs the web stack.

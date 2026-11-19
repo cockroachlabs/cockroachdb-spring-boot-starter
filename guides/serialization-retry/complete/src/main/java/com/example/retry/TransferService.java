@@ -3,7 +3,7 @@ package com.example.retry;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.cockroachlabs.data.annotation.CockroachDB;
+import com.cockroachlabs.data.annotation.CockroachDBTransactional;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,8 @@ public class TransferService {
         this.jdbc = jdbc;
     }
 
-    @CockroachDB
+    // Retry a conflicting transfer up to 10 times before giving up.
+    @CockroachDBTransactional(maxRetries = 10)
     public void transfer(int fromId, int toId, BigDecimal amount) {
         attempts.incrementAndGet();
 

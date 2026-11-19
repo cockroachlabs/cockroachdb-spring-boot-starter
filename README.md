@@ -14,19 +14,19 @@ Building from source requires GraalVM 25; Gradle downloads it automatically if m
 
 ![Architecture](images/architecture.svg)
 
-See [docs/architecture.md](docs/architecture.md) for how this repository is organized, including the principles behind its executable getting-started guides and the starter's internals.
+See [docs/architecture.md](docs/architecture.md) for the starter's design philosophy (it follows Spring conventions and extends them to support CockroachDB), how the repository is organized, and its internals. [docs/guides.md](docs/guides.md) has the rules behind the executable getting-started guides.
 
 ## Getting-started guides
 
 Short, executable tutorials, each one focused on a single feature and sized to finish in 30 to 60 minutes:
 
-- [Retrying serialization conflicts with `@CockroachDB`](guides/serialization-retry/README.md)
+- [Retrying serialization conflicts in `@Transactional` code](guides/serialization-retry/README.md)
 
 See [guides/README.md](guides/README.md) for how to follow a guide and how to write a new one.
 
 ## Features
 
-- **`@CockroachDB` annotation** — A drop-in replacement for `@Transactional` that retries serialization conflicts with exponential backoff
+- **Transaction retries** — `@Transactional` methods are retried on serialization conflicts (SQLSTATE `40001`) with exponential backoff; `@CockroachDBTransactional` is `@Transactional` plus per-method retry settings
 - **`CockroachDBTransactionTemplate`** — A `TransactionTemplate` that retries serialization conflicts
 - **Multi-region support** — `RegionContext`, `RegionResolver`, `inRegion()` for REGIONAL BY ROW tables
 - **JPA annotations** — `@RegionalByRow`, `@CrdbRegion`, `@GlobalTable` for entity-level region handling
@@ -90,8 +90,9 @@ cockroachdb:
     multiplier: 2.0       # Exponential backoff multiplier
     max-delay: 5000       # Max delay cap in ms
     jitter: 50            # Randomized jitter in ms
+    apply-to-transactional-methods: true  # Also retry plain @Transactional methods
   region:
-    default: ""           # Default region (empty = gateway region)
+    default-region: ""    # Default region (empty = gateway region)
     validate: false       # Validate against allowed list
     allowed: []           # Allowed regions (empty = allow any)
     resolver: context     # Strategy: static | header | context | bean
@@ -102,44 +103,23 @@ cockroachdb:
 
 ## Usage
 
-### 1. `@CockroachDB` Annotation
+### 1. Transaction retries: `@Transactional` and `@CockroachDBTransactional`
 
-Use `@CockroachDB` where you would use `@Transactional`. It runs the method in a transaction and, when CockroachDB reports a serialization conflict, retries the whole method in a **fresh transaction**.
+CockroachDB runs transactions at SERIALIZABLE isolation. When concurrent transactions conflict, it aborts one of them with SQLSTATE `40001`, which means "run this transaction again from the beginning". The starter does that for you: a transactional method that fails with `40001` is rolled back and run again in a **fresh transaction**, after a short wait that grows with each attempt (exponential backoff with jitter).
 
-Retries are driven by SQLSTATE alone: an attempt is retried when any exception in its cause chain is a `SQLException` with SQLSTATE `40001`, whatever wraps it. That covers plain JDBC (`CannotAcquireLockException`) and JPA/Hibernate (`JpaSystemException`, or `TransactionSystemException` when the commit fails) alike. Any other exception is rethrown immediately without a retry. The same rule applies to `CockroachDBTransactionTemplate`.
-
-Its transaction attributes mean the same as on `@Transactional`, so existing knowledge carries over:
-
-| Attribute | Same as `@Transactional` | Notes |
-|-----------|--------------------------|-------|
-| `value` / `transactionManager` | yes | Qualifier of the `PlatformTransactionManager` to use |
-| `propagation` | yes | Default `REQUIRED` |
-| `isolation` | default differs | Default **`SERIALIZABLE`**, CockroachDB's default level |
-| `timeout` / `timeoutString` | yes | Seconds per attempt; `timeoutString` may be a `${...}` placeholder |
-| `readOnly` | yes | |
-| `rollbackFor`, `rollbackForClassName`, `noRollbackFor`, `noRollbackForClassName` | yes | By default unchecked exceptions roll back and checked exceptions commit; the exception always reaches the caller unchanged. A `40001` always rolls back. |
-| `label` | not supported | |
-
-On top of those, `@CockroachDB` adds:
-
-| Attribute | Default | Meaning |
-|-----------|---------|---------|
-| `maxRetries` | `cockroachdb.retry.max-retries` | Retries after a `40001` before giving up |
-| `delay` | `cockroachdb.retry.delay` | Milliseconds before the first retry |
-| `multiplier` | `cockroachdb.retry.multiplier` | Factor applied to the delay after each retry |
-| `maxDelay` | `cockroachdb.retry.max-delay` | Longest wait between retries, in milliseconds |
-| `region` | resolved per call | Session region for REGIONAL BY ROW tables (see [Multi-Region Support](#3-multi-region-support)) |
-
-Like `@Transactional`, it can go on a class, where it applies to every public method; an annotation on the method wins. Don't put both `@CockroachDB` and `@Transactional` on the same method.
+**Plain `@Transactional` methods are retried automatically.** With the starter on the classpath, every method Spring treats as transactional gets these retries, with the `cockroachdb.retry.*` defaults: `@Transactional` on a method, a class or an interface, composed annotations, and `jakarta.transaction.Transactional`. Existing code needs no changes. To turn this off and retry only `@CockroachDBTransactional` methods, set `cockroachdb.retry.apply-to-transactional-methods=false`.
 
 ```java
 @Service
 public class AccountService {
 
-    @Autowired
-    private AccountRepository accountRepo;
+    private final AccountRepository accountRepo;
 
-    @CockroachDB
+    public AccountService(AccountRepository accountRepo) {
+        this.accountRepo = accountRepo;
+    }
+
+    @Transactional   // retried on 40001 with the cockroachdb.retry.* defaults
     public void transfer(UUID from, UUID to, BigDecimal amount) {
         Account sender = accountRepo.findById(from).orElseThrow();
         Account receiver = accountRepo.findById(to).orElseThrow();
@@ -147,18 +127,44 @@ public class AccountService {
         receiver.credit(amount);
         accountRepo.saveAll(List.of(sender, receiver));
     }
-
-    // Override retry settings per method
-    @CockroachDB(maxRetries = 10, delay = 50, readOnly = true)
-    public BigDecimal totalBalance() {
-        return accountRepo.sumAllBalances();
-    }
 }
 ```
 
+**`@CockroachDBTransactional` is `@Transactional` with retry settings.** It is a composed annotation, meta-annotated with `@Transactional`, so Spring's own transaction support runs the transaction and every `@Transactional` attribute (`value`/`transactionManager`, `label`, `propagation`, `isolation`, `timeout`/`timeoutString`, `readOnly`, `rollbackFor`, `noRollbackFor` and their `ClassName` forms) means exactly what it does there. The one difference is that `isolation` defaults to **SERIALIZABLE**, CockroachDB's default level. On top of those it adds:
+
+| Attribute | Default | Meaning |
+|-----------|---------|---------|
+| `maxRetries` | `cockroachdb.retry.max-retries` | Retries after a `40001` before giving up |
+| `delay` | `cockroachdb.retry.delay` | Milliseconds before the first retry |
+| `multiplier` | `cockroachdb.retry.multiplier` | Factor applied to the delay after each retry |
+| `maxDelay` | `cockroachdb.retry.max-delay` | Longest wait between retries, in milliseconds |
+| `region` | resolved per transaction | Session region for REGIONAL BY ROW tables (see [Multi-Region Support](#3-multi-region-support)) |
+
+Use it where a method needs different retry settings, a fixed region, or retries even when `apply-to-transactional-methods` is off:
+
+```java
+// A hot method under heavy contention gets more retries than the default.
+@CockroachDBTransactional(maxRetries = 10, delay = 50)
+public void transfer(UUID from, UUID to, BigDecimal amount) { ... }
+
+// Every @Transactional attribute works as usual.
+@CockroachDBTransactional(readOnly = true, timeout = 5)
+public BigDecimal totalBalance() { ... }
+```
+
+Like `@Transactional`, it can go on a class, where it applies to every public method; an annotation on the method wins. Use one or the other on a method, not both.
+
+How the retries behave, for both annotations:
+
+- **Only `40001` is retried.** An attempt is retried when any exception in its cause chain is a `SQLException` with SQLSTATE `40001`, whatever wraps it: plain JDBC (`CannotAcquireLockException`) and JPA/Hibernate (`JpaSystemException`, or `TransactionSystemException` when the commit fails) alike. Any other exception is rethrown immediately, with `@Transactional`'s usual commit or rollback.
+- **Only the outermost transactional call retries.** A transactional method called inside a transaction that is already running runs once. If it hits a `40001`, the exception propagates to the method that started the transaction, which retries the whole unit of work. Retrying the inner call alone would be pointless, because CockroachDB has already aborted the transaction it belongs to.
+- **Every attempt runs the whole method again**, so keep side effects outside the database (sending email, calling other services) out of transactional methods, or make them idempotent.
+
+The same rules apply to `CockroachDBTransactionTemplate`.
+
 ### 2. `CockroachDBTransactionTemplate`
 
-For programmatic control, use `CockroachDBTransactionTemplate`. It **is** a Spring `TransactionTemplate` (it extends it), so you use it the same way: the same `execute(TransactionCallback)` and `executeWithoutResult(Consumer<TransactionStatus>)` methods, the same setters (`setIsolationLevel`, `setPropagationBehavior`, `setReadOnly`, `setTimeout`, ...), and it can be injected anywhere a `TransactionOperations` is expected. The difference is that the callback is retried in a fresh transaction on a `40001`, and the isolation level defaults to SERIALIZABLE.
+For programmatic control, use `CockroachDBTransactionTemplate`. It **is** a Spring `TransactionTemplate` (it extends it), so you use it the same way: the same `execute(TransactionCallback)` and `executeWithoutResult(Consumer<TransactionStatus>)` methods, the same setters (`setIsolationLevel`, `setPropagationBehavior`, `setReadOnly`, `setTimeout`, ...), and it can be injected anywhere a `TransactionOperations` is expected. The difference is that the callback is retried in a fresh transaction on a `40001`, and the isolation level defaults to SERIALIZABLE. Like the annotations, it retries only when it starts the transaction: called inside a transaction that is already running, it runs the callback once.
 
 The starter registers one, configured from `cockroachdb.retry.*`:
 
@@ -210,10 +216,12 @@ As with `TransactionTemplate`, configure an instance before sharing it between t
 
 ### 3. Multi-Region Support
 
-#### Set region via `@CockroachDB` annotation
+The starter runs `SET crdb_region = '...'` at the start of every transaction begun by a `@Transactional` method, a `@CockroachDBTransactional` method or `CockroachDBTransactionTemplate`, using the region resolution chain below. With no region from any source, it runs nothing and CockroachDB uses the gateway node's region.
+
+#### Set region via `@CockroachDBTransactional`
 
 ```java
-@CockroachDB(region = "us-east1")
+@CockroachDBTransactional(region = "us-east1")
 public void createOrderEast(Order order) {
     orderRepo.save(order);
 }
@@ -235,8 +243,8 @@ public void createOrder(String region, Order order) {
 // In a filter, interceptor, or manually:
 RegionContext.set("eu-west1");
 
-// All @CockroachDB and CockroachDBTransactionTemplate calls in this thread
-// will use eu-west1 until cleared.
+// Transactions begun in this thread by @Transactional, @CockroachDBTransactional and
+// CockroachDBTransactionTemplate will use eu-west1 until cleared.
 
 // Scoped (auto-cleanup):
 try (var scope = RegionContext.scoped("eu-west1")) {
@@ -285,10 +293,10 @@ When multiple sources provide a region, the highest-priority source wins:
 
 | Priority | Source | Example |
 |----------|--------|---------|
-| 1 | `@CockroachDB(region = "...")` | Explicit per-method |
+| 1 | `@CockroachDBTransactional(region = "...")` or the template's `setRegion` / `inRegion` | Explicit per method or template |
 | 2 | `RegionContext.current()` | ThreadLocal (filter, scoped) |
 | 3 | `RegionResolver` bean | Header, GeoIP, custom |
-| 4 | `cockroachdb.region.default` | `application.yml` |
+| 4 | `cockroachdb.region.default-region` | `application.yml` |
 | 5 | *(empty)* | CockroachDB uses gateway node's region |
 
 ### 4. JPA Entity Annotations
@@ -1084,8 +1092,8 @@ Build and run:
 ### What's registered for native
 
 The starter auto-registers hints for:
-- **Annotations**: `@CockroachDB`, `@FollowerRead`, `@RegionalByRow`, `@GlobalTable`, `@CrdbRegion`, `@ComputedColumn`, `@CockroachDBCDC`, `@VectorSearch`, `@SemanticSearch`, `@VectorColumn`
-- **AOP aspects**: `CockroachDBAspect`, `FollowerReadAspect`, `VectorSearchAspect`, `SemanticSearchAspect`
+- **Annotations**: `@CockroachDBTransactional`, `@EnableCockroachDBTransactionManagement`, `@FollowerRead`, `@RegionalByRow`, `@GlobalTable`, `@CrdbRegion`, `@ComputedColumn`, `@CockroachDBCDC`, `@VectorSearch`, `@SemanticSearch`, `@VectorColumn`
+- **AOP**: `CockroachDBTransactionAdvisor`, `FollowerReadAspect`, `VectorSearchAspect`, `SemanticSearchAspect`
 - **CDC DTOs**: `CDCEnvelope`, `CDCEvent`, `CDCPayload`, `CDCOperationType`
 - **Services**: `CockroachDBTransactionTemplate`, `CockroachDBMetrics`, `VectorSearchTemplate`, `ComputedColumnHelper`
 - **Proxies**: `RegionResolver`, `CockroachDBMetrics`, `CDCMetrics`, `AIMetrics`
@@ -1110,35 +1118,52 @@ public class MyApplication { ... }
 
 ## How It Works
 
-`@CockroachDB` and `CockroachDBTransactionTemplate` share one implementation: the aspect turns the annotation into a configured copy of the template and runs the method through it. The retry loop lives only in the template.
-
-The aspect runs at `@Order(LOWEST_PRECEDENCE - 2)` — **outside** the Spring transaction advisor. This means each retry attempt creates a fresh transaction, which is required for CockroachDB serialization retries (you cannot retry within the same transaction).
+Transactions are run by Spring's own transaction support; the starter adds retries and session regions around it. Spring's transaction advisor does what everyone expects of `@Transactional` (starting the transaction, propagation, isolation, timeouts, rollback rules, commit); the starter's advisor wraps it to add what CockroachDB's SERIALIZABLE model needs.
 
 ```
-@CockroachDB aspect (annotation -> template settings, rollback rules)
-  └─ CockroachDBTransactionTemplate.execute()  (retry loop)
-       └─ TransactionTemplate.execute()  (new tx per attempt)
-            └─ SET crdb_region = '...'  (if multi-region)
-                 └─ Your method body / callback
+CockroachDBTransactionAdvisor  (LOWEST_PRECEDENCE - 2: outside Spring's transaction advisor)
+  └─ retry loop: one attempt per fresh transaction, only at the outermost transactional call
+       └─ Spring's TransactionInterceptor  (LOWEST_PRECEDENCE)
+            └─ transaction begins → CockroachDBRegions listener runs SET crdb_region = '...'
+                 └─ Your method
 ```
 
-On an exception whose cause chain contains a `SQLException` with SQLSTATE `40001` (whatever the wrapper type), the template:
-1. Rolls back the failed transaction
+- **Which methods.** The advisor matches through the same `TransactionAttributeSource` as Spring's transaction advisor, so it covers exactly the methods Spring treats as transactional: `@Transactional` on methods, classes and interfaces, composed annotations such as `@CockroachDBTransactional`, and `jakarta.transaction.Transactional`. Plain `@Transactional` methods are retried unless `cockroachdb.retry.apply-to-transactional-methods=false`.
+- **Retries.** Because the advisor sits outside Spring's transaction interceptor, each attempt re-enters it and gets a new transaction, which CockroachDB requires after a `40001`. When a transaction is already active, the method runs once.
+- **Regions.** `SET crdb_region` must run inside the transaction, after it begins. The starter registers a `TransactionExecutionListener` with every `ConfigurableTransactionManager` bean; when a transaction begins inside a retried call, the listener sets the region from the resolution chain.
+- **Enabled like Spring's transaction management.** Spring's `@EnableTransactionManagement` has a counterpart, `@EnableCockroachDBTransactionManagement`, which registers the retry advisor. You don't normally write either: Spring Boot applies `@EnableTransactionManagement` whenever there is a transaction manager, and the starter applies `@EnableCockroachDBTransactionManagement` with its defaults whenever Spring's transaction advisor is present. Declare it yourself only to change a default, such as the advisor's `order`; the starter's auto-configuration then backs off.
+
+  ```java
+  @Configuration
+  @EnableCockroachDBTransactionManagement(order = Ordered.LOWEST_PRECEDENCE - 10)
+  class TransactionConfig {
+  }
+  ```
+
+- **Requires Spring's transaction management, inside the retry advisor.** Startup fails with an explanation if Spring's transaction advisor is missing, or if the two `order` settings put it outside the retry advisor, where retries could never start a new transaction.
+- **One implementation.** `@Transactional`, `@CockroachDBTransactional` and `CockroachDBTransactionTemplate` share the same retry loop (`SerializationRetry`) and region handling (`CockroachDBRegions`).
+
+On an exception whose cause chain contains a `SQLException` with SQLSTATE `40001` (whatever the wrapper type), the starter:
+1. Lets the failed transaction roll back
 2. Waits with exponential backoff + jitter
-3. Opens a new transaction and retries
+3. Runs the method or callback again in a new transaction
 4. Records metrics (retries, duration, success/failure)
 
-Any other exception is recorded as a failure and rethrown unchanged. Whether its transaction rolls back follows `TransactionTemplate` (always) or, for `@CockroachDB`, the rollback rules described above.
+Any other exception is recorded as a failure and rethrown unchanged, after Spring's usual commit or rollback.
 
 ## Upgrading from 0.2.x
 
-- `CockroachDBTemplate` is now `CockroachDBTransactionTemplate`, extends Spring's `TransactionTemplate`, and implements the new `CockroachDBTransactionOperations` interface. Rename the type where you inject it; `execute(Supplier)`, `executeWithoutResult(Runnable)` and `inRegion(...).execute(...)` work as before.
-- `executeReadCommitted(...)` is removed. Use a copy with `setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED)`, which also gets retries.
-- `inRegion(...)` now returns a `CockroachDBTransactionTemplate` instead of `RegionalExecution`.
-- `@CockroachDB` now follows `@Transactional`'s rollback rules: a **checked** exception commits the transaction by default (it used to roll back), and reaches the caller as itself (it used to be wrapped in a `RuntimeException`). Add `rollbackFor = Exception.class` to keep rolling back.
-- `@CockroachDB` on a class now applies to its public methods. Before, a class-level annotation had no effect.
-- `CockroachDBAspect`'s constructor now takes a `CockroachDBTransactionTemplate`. This only matters if you create the aspect yourself.
-- The `cockroachdb.transactions.failure` metric now counts every failed transaction, not only those that ran out of retries.
+- **`@CockroachDB` is replaced by `@CockroachDBTransactional`.** It is a composed `@Transactional`, so Spring runs the transaction and every `@Transactional` attribute is supported, including `label`. Rename the annotation; its retry and `region` attributes are unchanged.
+- **Plain `@Transactional` methods are now retried on `40001`** whenever the starter is on the classpath. Set `cockroachdb.retry.apply-to-transactional-methods=false` to keep the old behavior.
+- **Only the outermost transactional call retries.** A nested `@CockroachDBTransactional` call or `CockroachDBTransactionTemplate.execute` inside a running transaction no longer retries on its own.
+- **Checked exceptions follow `@Transactional`.** They commit the transaction by default (they used to roll back) and reach the caller as themselves (they used to be wrapped in a `RuntimeException`). Add `rollbackFor = Exception.class` to keep rolling back.
+- **Class-level annotations apply.** `@CockroachDBTransactional` on a class applies to its public methods; a class-level `@CockroachDB` used to have no effect.
+- **`CockroachDBTemplate` is now `CockroachDBTransactionTemplate`**, extends Spring's `TransactionTemplate`, and implements the new `CockroachDBTransactionOperations` interface. Rename the type where you inject it; `execute(Supplier)`, `executeWithoutResult(Runnable)` and `inRegion(...).execute(...)` work as before. Its constructor now takes a `SerializationRetry` and `CockroachDBRegions`, which only matters if you create it yourself.
+- **`executeReadCommitted(...)` is removed.** Use a copy with `setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED)`, which also gets retries.
+- **`inRegion(...)` returns a template** (`CockroachDBTransactionTemplate`, or `CockroachDBTransactionOperations` through the interface) instead of `RegionalExecution`.
+- **The session region is set when a transaction begins**, so a template call that joins a running transaction no longer sets it.
+- **`CockroachDBAspect` and the unused `cockroachdb.isolation` property are removed.**
+- **The `cockroachdb.transactions.failure` metric** now counts every failed transaction, not only those that ran out of retries.
 
 ## License
 

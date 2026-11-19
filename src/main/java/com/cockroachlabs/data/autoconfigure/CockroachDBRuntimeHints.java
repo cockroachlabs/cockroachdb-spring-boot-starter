@@ -10,13 +10,13 @@ import com.cockroachlabs.data.ai.annotation.VectorSearch;
 import com.cockroachlabs.data.ai.aop.SemanticSearchAspect;
 import com.cockroachlabs.data.ai.aop.VectorSearchAspect;
 import com.cockroachlabs.data.ai.metrics.AIMetrics;
-import com.cockroachlabs.data.annotation.CockroachDB;
+import com.cockroachlabs.data.annotation.CockroachDBTransactional;
+import com.cockroachlabs.data.annotation.EnableCockroachDBTransactionManagement;
 import com.cockroachlabs.data.annotation.ComputedColumn;
 import com.cockroachlabs.data.annotation.CrdbRegion;
 import com.cockroachlabs.data.annotation.FollowerRead;
 import com.cockroachlabs.data.annotation.GlobalTable;
 import com.cockroachlabs.data.annotation.RegionalByRow;
-import com.cockroachlabs.data.aop.CockroachDBAspect;
 import com.cockroachlabs.data.aop.FollowerReadAspect;
 import com.cockroachlabs.data.cdc.CDCEnvelope;
 import com.cockroachlabs.data.cdc.CDCEvent;
@@ -51,7 +51,13 @@ import com.cockroachlabs.data.continuum.plenum.TableStorage;
 import com.cockroachlabs.data.multiregion.RegionContext;
 import com.cockroachlabs.data.multiregion.RegionResolver;
 import com.cockroachlabs.data.multiregion.RegionalByRowListener;
+import com.cockroachlabs.data.template.CockroachDBTransactionOperations;
 import com.cockroachlabs.data.template.CockroachDBTransactionTemplate;
+import com.cockroachlabs.data.transaction.CockroachDBRegions;
+import com.cockroachlabs.data.transaction.CockroachDBTransactionAdvisor;
+import com.cockroachlabs.data.transaction.CockroachDBTransactionManagementConfiguration;
+import com.cockroachlabs.data.transaction.RetrySettings;
+import com.cockroachlabs.data.transaction.SerializationRetry;
 import com.cockroachlabs.data.test.CockroachDBConcurrencyRunner;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -66,7 +72,8 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 public class CockroachDBRuntimeHints implements RuntimeHintsRegistrar {
 
     private static final Set<Class<?>> ANNOTATIONS = Set.of(
-            CockroachDB.class,
+            CockroachDBTransactional.class,
+            EnableCockroachDBTransactionManagement.class,
             FollowerRead.class,
             RegionalByRow.class,
             GlobalTable.class,
@@ -79,7 +86,6 @@ public class CockroachDBRuntimeHints implements RuntimeHintsRegistrar {
     );
 
     private static final Set<Class<?>> ASPECTS = Set.of(
-            CockroachDBAspect.class,
             FollowerReadAspect.class,
             VectorSearchAspect.class,
             SemanticSearchAspect.class
@@ -94,6 +100,12 @@ public class CockroachDBRuntimeHints implements RuntimeHintsRegistrar {
 
     private static final Set<Class<?>> SERVICES = Set.of(
             CockroachDBTransactionTemplate.class,
+            CockroachDBTransactionOperations.class,
+            CockroachDBTransactionAdvisor.class,
+            CockroachDBTransactionManagementConfiguration.class,
+            CockroachDBRegions.class,
+            SerializationRetry.class,
+            RetrySettings.class,
             CockroachDBMetrics.class,
             CockroachDBMetrics.InMemory.class,
             CockroachDBProperties.class,

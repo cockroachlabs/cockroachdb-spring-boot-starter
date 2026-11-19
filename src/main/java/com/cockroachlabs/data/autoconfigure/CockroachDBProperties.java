@@ -6,21 +6,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("cockroachdb")
 public class CockroachDBProperties {
 
-    private String isolation = "serializable";
-
     private Retry retry = new Retry();
 
     private Region region = new Region();
 
     private Metrics metrics = new Metrics();
-
-    public String getIsolation() {
-        return isolation;
-    }
-
-    public void setIsolation(String isolation) {
-        this.isolation = isolation;
-    }
 
     public Retry getRetry() {
         return retry;
@@ -48,15 +38,34 @@ public class CockroachDBProperties {
 
     public static class Retry {
 
+        /** Retries after a serialization conflict (SQLSTATE 40001) before giving up. */
         private int maxRetries = 3;
 
+        /** Milliseconds to wait before the first retry. */
         private long delay = 100;
 
+        /** Factor applied to the wait after each retry. */
         private double multiplier = 2.0;
 
+        /** Longest wait between retries, in milliseconds. */
         private long maxDelay = 5000;
 
+        /** Random milliseconds added to or subtracted from each wait. */
         private long jitter = 50;
+
+        /**
+         * Whether plain {@code @Transactional} methods are also retried on SQLSTATE 40001.
+         * {@code @CockroachDBTransactional} methods are always retried.
+         */
+        private boolean applyToTransactionalMethods = true;
+
+        public boolean isApplyToTransactionalMethods() {
+            return applyToTransactionalMethods;
+        }
+
+        public void setApplyToTransactionalMethods(boolean applyToTransactionalMethods) {
+            this.applyToTransactionalMethods = applyToTransactionalMethods;
+        }
 
         public int getMaxRetries() {
             return maxRetries;

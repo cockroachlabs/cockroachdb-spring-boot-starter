@@ -6,11 +6,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.cockroachlabs.data.autoconfigure.CockroachDBProperties;
 import com.cockroachlabs.data.metrics.CockroachDBMetrics;
 import com.cockroachlabs.data.multiregion.RegionContext;
+import com.cockroachlabs.data.transaction.CockroachDBRegions;
+import com.cockroachlabs.data.transaction.MockJdbc;
+import com.cockroachlabs.data.transaction.SerializationRetry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -26,19 +30,21 @@ import static org.mockito.Mockito.*;
  */
 class CockroachDBTransactionTemplateTest {
 
-    private final PlatformTransactionManager txManager = mock(PlatformTransactionManager.class);
-    private final TransactionStatus status = mock(TransactionStatus.class);
-    private final JdbcTemplate jdbc = mock(JdbcTemplate.class);
+    private final MockJdbc jdbc = new MockJdbc();
+    private final DataSourceTransactionManager txManager = new DataSourceTransactionManager(jdbc.dataSource);
     private final CockroachDBProperties properties = new CockroachDBProperties();
     private CockroachDBTransactionTemplate template;
 
     @BeforeEach
     void setUp() {
-        when(txManager.getTransaction(any())).thenReturn(status);
         properties.getRetry().setDelay(0);
         properties.getRetry().setJitter(0);
-        template = new CockroachDBTransactionTemplate(
-                txManager, properties, new CockroachDBMetrics.InMemory(), jdbc, null);
+        CockroachDBRegions regions = new CockroachDBRegions(
+                properties.getRegion(), null, new JdbcTemplate(jdbc.dataSource));
+        // What the starter's auto-configuration does for every transaction manager.
+        txManager.addListener(regions);
+        template = new CockroachDBTransactionTemplate(txManager,
+                new SerializationRetry(properties.getRetry(), new CockroachDBMetrics.InMemory()), regions);
     }
 
     @AfterEach
@@ -85,7 +91,7 @@ class CockroachDBTransactionTemplateTest {
 
         ops.inRegion("us-east1").executeWithoutResult(() -> { });
 
-        verify(jdbc).execute("SET crdb_region = 'us-east1'");
+        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'us-east1'");
     }
 
     @Test
@@ -99,7 +105,7 @@ class CockroachDBTransactionTemplateTest {
         AtomicInteger attempts = new AtomicInteger();
 
         String result = template.execute(s -> {
-            assertThat(s).isSameAs(status);
+            assertThat(s.isNewTransaction()).isTrue();
             if (attempts.incrementAndGet() == 1) {
                 throw conflict();
             }
@@ -121,6 +127,25 @@ class CockroachDBTransactionTemplateTest {
         });
 
         assertThat(attempts).hasValue(2);
+    }
+
+    @Test
+    void insideARunningTransactionItRunsOnceAndTheOuterCallRetries() {
+        template.setMaxRetries(3);
+        AtomicInteger outer = new AtomicInteger();
+        AtomicInteger inner = new AtomicInteger();
+
+        assertThatThrownBy(() -> template.executeWithoutResult(status -> {
+            outer.incrementAndGet();
+            template.executeWithoutResult(nested -> {
+                inner.incrementAndGet();
+                throw conflict();
+            });
+        })).isInstanceOf(CannotAcquireLockException.class);
+
+        // 1 + 3 retries of the outer call; the nested call ran once per outer attempt.
+        assertThat(outer).hasValue(4);
+        assertThat(inner).hasValue(4);
     }
 
     @Test
@@ -177,7 +202,7 @@ class CockroachDBTransactionTemplateTest {
 
         assertThat(east).isNotSameAs(template);
         assertThat(template.getRegion()).isNull();
-        verify(jdbc).execute("SET crdb_region = 'us-east1'");
+        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'us-east1'");
     }
 
     @Test
@@ -186,7 +211,7 @@ class CockroachDBTransactionTemplateTest {
 
         template.inRegion("us-east1").execute(() -> "ok");
 
-        verify(jdbc).execute("SET crdb_region = 'us-east1'");
+        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'us-east1'");
     }
 
     @Test
@@ -195,7 +220,7 @@ class CockroachDBTransactionTemplateTest {
 
         template.execute(() -> "ok");
 
-        verify(jdbc).execute("SET crdb_region = 'eu-west1'");
+        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'eu-west1'");
     }
 
     @Test

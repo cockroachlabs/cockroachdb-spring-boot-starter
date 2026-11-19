@@ -5,18 +5,22 @@ import java.util.regex.Pattern;
 import com.cockroachlabs.data.autoconfigure.CockroachDBProperties;
 import com.cockroachlabs.data.multiregion.RegionContext;
 import com.cockroachlabs.data.multiregion.RegionResolver;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.TransactionExecution;
 import org.springframework.transaction.TransactionExecutionListener;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Sets the session region ({@code SET crdb_region}) at the start of each transaction that a
- * {@code @Transactional}, {@code @CockroachDBTransactional} or
- * {@code CockroachDBTransactionTemplate} call begins.
+ * Binds the resolved region for each transaction that a {@code @Transactional},
+ * {@code @CockroachDBTransactional} or {@code CockroachDBTransactionTemplate} call begins, so
+ * REGIONAL BY ROW rows written in that transaction are homed to it.
  * <p>
  * Those callers {@linkplain #bind(String) bind} a scope on the current thread for the length of
- * the call. When a transaction begins inside that scope, this listener runs
- * {@code SET crdb_region} on the transaction's connection, using the first of:
+ * the call. When a transaction begins inside that scope, this listener publishes the region to
+ * {@link RegionContext} for the duration of the transaction; {@code RegionalByRowListener} then
+ * stamps the entity's {@code @CrdbRegion} column on {@code @PrePersist}. (CockroachDB has no
+ * {@code SET crdb_region} session variable, so the region is never applied as session SQL.) The
+ * region is the first of:
  * <ol>
  *   <li>the region the caller bound explicitly ({@code @CockroachDBTransactional(region = ...)}
  *       or {@code CockroachDBTransactionTemplate.setRegion(...)});</li>
@@ -24,8 +28,9 @@ import org.springframework.transaction.TransactionExecutionListener;
  *   <li>the {@link RegionResolver} bean;</li>
  *   <li>{@code cockroachdb.region.default-region}.</li>
  * </ol>
- * No region, or a transaction begun outside such a scope, leaves the session region alone.
- * The starter registers this listener with every {@code ConfigurableTransactionManager} bean.
+ * No region, a suppressed scope, or a transaction begun outside such a scope leaves
+ * {@link RegionContext} untouched. The starter registers this listener with every
+ * {@code ConfigurableTransactionManager} bean.
  */
 public class CockroachDBRegions implements TransactionExecutionListener {
 
@@ -36,14 +41,11 @@ public class CockroachDBRegions implements TransactionExecutionListener {
 
     private final CockroachDBProperties.Region properties;
     private final RegionResolver regionResolver;
-    private final JdbcTemplate jdbcTemplate;
 
     public CockroachDBRegions(CockroachDBProperties.Region properties,
-                              RegionResolver regionResolver,
-                              JdbcTemplate jdbcTemplate) {
+                              RegionResolver regionResolver) {
         this.properties = properties;
         this.regionResolver = regionResolver;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     /** A scope opened by {@link #bind} or {@link #suppress}; closing it restores the outer scope. */
@@ -91,9 +93,26 @@ public class CockroachDBRegions implements TransactionExecutionListener {
             return;
         }
         String region = resolve(binding.explicitRegion());
-        if (region != null) {
-            jdbcTemplate.execute("SET crdb_region = '" + region + "'");
+        if (region == null || !TransactionSynchronizationManager.isSynchronizationActive()) {
+            // Nothing to apply, or no synchronization to scope the binding to. CockroachDB has no
+            // `SET crdb_region` session variable, so region is never applied as session SQL.
+            return;
         }
+        // Home REGIONAL BY ROW rows by stamping the @CrdbRegion column: RegionalByRowListener reads
+        // RegionContext on @PrePersist. Bind the region for THIS transaction only and restore the
+        // previous value on completion, so a pooled connection/thread never leaks a region.
+        String previous = RegionContext.current().orElse(null);
+        RegionContext.set(region);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCompletion(int status) {
+                if (previous != null) {
+                    RegionContext.set(previous);
+                } else {
+                    RegionContext.clear();
+                }
+            }
+        });
     }
 
     /** {@code explicitRegion} if not null, otherwise the resolution chain; validated; null for none. */

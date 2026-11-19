@@ -76,9 +76,8 @@ public class CockroachDBAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public CockroachDBRegions cockroachDBRegions(CockroachDBProperties props,
-                                                 RegionResolver regionResolver,
-                                                 JdbcTemplate jdbcTemplate) {
-        return new CockroachDBRegions(props.getRegion(), regionResolver, jdbcTemplate);
+                                                 RegionResolver regionResolver) {
+        return new CockroachDBRegions(props.getRegion(), regionResolver);
     }
 
     /**

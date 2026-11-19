@@ -98,7 +98,7 @@ class CockroachDBTransactionalJpaIT {
         AnnotationTransactionAttributeSource attributes = new AnnotationTransactionAttributeSource();
         CockroachDBTransactionInterceptor retries = new CockroachDBTransactionInterceptor(
                 new SerializationRetry(properties.getRetry(), metrics),
-                new CockroachDBRegions(properties.getRegion(), null, jdbc),
+                new CockroachDBRegions(properties.getRegion(), null),
                 applyToTransactionalMethods);
 
         Bank target = new Bank();

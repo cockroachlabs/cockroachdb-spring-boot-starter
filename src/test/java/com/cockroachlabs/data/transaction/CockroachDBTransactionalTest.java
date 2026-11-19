@@ -2,6 +2,8 @@ package com.cockroachlabs.data.transaction;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;
 import com.cockroachlabs.data.annotation.CockroachDBTransactional;
@@ -78,6 +80,9 @@ class CockroachDBTransactionalTest {
 
     public static class Bank {
         final Conflicts conflicts;
+        // The region visible via RegionContext inside each transaction attempt, in order.
+        // Read through a method: fields of a CGLIB proxy are never initialized.
+        final List<String> regionsSeen = new CopyOnWriteArrayList<>();
 
         public Bank(Conflicts conflicts) {
             this.conflicts = conflicts;
@@ -85,6 +90,7 @@ class CockroachDBTransactionalTest {
 
         @Transactional
         public String plain() {
+            regionsSeen.add(RegionContext.current().orElse(null));
             conflicts.attempt();
             return "ok";
         }
@@ -108,6 +114,7 @@ class CockroachDBTransactionalTest {
 
         @CockroachDBTransactional(region = "us-east1")
         public String inRegion() {
+            regionsSeen.add(RegionContext.current().orElse(null));
             return "ok";
         }
 
@@ -121,6 +128,10 @@ class CockroachDBTransactionalTest {
         public void checked() throws IOException {
             conflicts.attempt();
             throw new IOException("checked");
+        }
+
+        public List<String> regionsSeen() {
+            return regionsSeen;
         }
     }
 
@@ -470,7 +481,7 @@ class CockroachDBTransactionalTest {
 
         context.getBean(Bank.class).inRegion();
 
-        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'us-east1'");
+        assertThat(context.getBean(Bank.class).regionsSeen()).containsExactly("us-east1");
     }
 
     @Test
@@ -480,7 +491,7 @@ class CockroachDBTransactionalTest {
 
         context.getBean(Bank.class).plain();
 
-        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'eu-west1'");
+        assertThat(context.getBean(Bank.class).regionsSeen()).containsExactly("eu-west1");
     }
 
     @Test
@@ -489,7 +500,7 @@ class CockroachDBTransactionalTest {
 
         context.getBean(Bank.class).plain();
 
-        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'ap-south1'");
+        assertThat(context.getBean(Bank.class).regionsSeen()).containsExactly("ap-south1");
     }
 
     @Test
@@ -498,6 +509,7 @@ class CockroachDBTransactionalTest {
 
         context.getBean(Bank.class).plain();
 
+        assertThat(context.getBean(Bank.class).regionsSeen()).containsExactly((String) null);
         assertThat(jdbc.executedSql()).isEmpty();
     }
 
@@ -509,6 +521,7 @@ class CockroachDBTransactionalTest {
 
         context.getBean(Bank.class).plain();
 
-        assertThat(jdbc.executedSql()).hasSize(3).containsOnly("SET crdb_region = 'eu-west1'");
+        assertThat(context.getBean(Bank.class).regionsSeen())
+                .containsExactly("eu-west1", "eu-west1", "eu-west1");
     }
 }

@@ -1,6 +1,6 @@
 package com.cockroachlabs.ideas;
 
-import com.cockroachlabs.data.annotation.CockroachDB;
+import com.cockroachlabs.data.annotation.CockroachDBTransactional;
 import com.cockroachlabs.data.multiregion.RegionContext;
 import com.cockroachlabs.data.template.CockroachDBTransactionTemplate;
 import java.util.UUID;
@@ -36,7 +36,7 @@ public class RegionalIdeaService {
     }
 
     /** Region fixed at the call site via the annotation instead of RegionContext. */
-    @CockroachDB(region = "us-east1")
+    @CockroachDBTransactional(region = "us-east1")
     public RegionalIdea createInUsEast(String text) {
         try (RegionContext.RegionScope scope = RegionContext.scoped("us-east1")) {
             return repository.save(new RegionalIdea(UUID.randomUUID(), text, 0));

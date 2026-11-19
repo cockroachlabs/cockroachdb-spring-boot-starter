@@ -1,6 +1,6 @@
 package com.cockroachlabs.ideas;
 
-import com.cockroachlabs.data.annotation.CockroachDB;
+import com.cockroachlabs.data.annotation.CockroachDBTransactional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ public class IdeaService {
     // end::plain[]
 
     // tag::retry[]
-    @CockroachDB
+    @CockroachDBTransactional
     public void upvote(UUID id) {
         Idea idea = repository.findById(id).orElseThrow();
         idea.setVotes(idea.getVotes() + 1);

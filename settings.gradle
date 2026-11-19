@@ -5,15 +5,22 @@ plugins {
 
 rootProject.name = 'cockroachdb-spring-boot-starter'
 
-// Each getting-started guide (guides/<slug>/initial and complete) is a standalone
-// build. Including them here builds and tests them with this build, and
-// includeBuild('.') lets them resolve the starter from this checkout instead of
-// the published release.
+// Each getting-started guide (guides/<slug>/initial and complete) and each example
+// app (examples/<name>) is a standalone build. Including them here builds and tests
+// them with this build, and includeBuild('.') lets them resolve the starter from this
+// checkout instead of the published release.
 includeBuild('.')
 file('guides').eachDir { guide ->
     ['initial', 'complete'].each { stage ->
         includeBuild("guides/${guide.name}/${stage}") {
             name = "${guide.name}-${stage}"
+        }
+    }
+}
+file('examples').eachDir { example ->
+    if (new File(example, 'settings.gradle').exists() || new File(example, 'settings.gradle.kts').exists()) {
+        includeBuild("examples/${example.name}") {
+            name = "example-${example.name}"
         }
     }
 }

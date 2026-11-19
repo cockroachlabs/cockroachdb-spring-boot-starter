@@ -17,7 +17,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 /**
  * The real "2-3 concurrent persons" proof against a live CockroachDB. Under SERIALIZABLE
  * isolation, concurrent read-modify-write upvotes collide (40001). Without retry some
- * votes are lost or fail; with {@code @CockroachDB} every vote is counted exactly.
+ * votes are lost or fail; with {@code @CockroachDBTransactional} every vote is counted exactly.
  *
  * <p>Skips (does not fail) when Docker is unavailable.
  */
@@ -70,7 +70,7 @@ class IdeaServiceConcurrencyIT {
 
     @Test
     void withRetry_countsEveryVote() {
-        // @CockroachDB auto-retries on 40001, so every concurrent vote lands: three people
+        // @CockroachDBTransactional auto-retries on 40001, so every concurrent vote lands: three people
         // clicking 20 times each yields exactly 60, with no failures.
         service.resetVotes(id);
 

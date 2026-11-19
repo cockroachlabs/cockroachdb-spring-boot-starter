@@ -25,9 +25,14 @@ management:
 
 # tag::region-config[]
 cockroachdb:
+  retry:
+    # The starter retries plain @Transactional methods on 40001 too. This demo turns that
+    # off so upvoteWithoutRetry(...) shows what Spring alone does under contention, next
+    # to the @CockroachDBTransactional upvote(...), which is always retried.
+    apply-to-transactional-methods: false
   region:
     # Allowed regions are enforced whenever a region is used explicitly — via
-    # @CockroachDB(region=...), RegionContext, or inRegion(...). No default-region
+    # @CockroachDBTransactional(region=...), RegionContext, or inRegion(...). No default-region
     # is set, so single-node runs never issue SET crdb_region.
     validate: true
     allowed:

@@ -13,12 +13,14 @@ Guidance for coding agents working in this repository.
 ## Build and test
 
 ```bash
-./gradlew build                  # starter + every guide under guides/
+./gradlew build                  # starter + every guide under guides/ + every example under examples/
 ./gradlew build -PtestJvm=21     # starter tests on another supported JVM (17, 21, 25)
 ./gradlew guides                 # only the guides
+./gradlew examples               # only the example apps
 ```
 
-- Starter tests run on the JVM chosen by `-PtestJvm` (default 17). Guide tests run on the JVM running Gradle; set `JAVA_HOME` to test them on another version.
+- Starter tests run on the JVM chosen by `-PtestJvm` (default 17). Guide tests run on the JVM running Gradle; set `JAVA_HOME` to test them on another version. Example apps use the toolchain their own build pins.
+- Guides and examples resolve the starter from this checkout (composite build), so an API change that breaks one fails the build. Update them in the same pull request.
 
 - The build uses GraalVM 25 and compiles with `--release 17`. Do not use Java APIs or language features newer than Java 17.
 - Integration tests use Testcontainers and need a running container runtime (Docker or Podman).

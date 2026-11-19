@@ -57,12 +57,15 @@ cockroachdb-spring-boot-starter/
 ├── docs/guides.md         Rules and structure for the getting-started guides
 ├── docs/rules.md          Rules for how changes are scoped, tracked and reviewed
 ├── docker/                Local multi-node CockroachDB clusters for manual testing
+├── examples/              Standalone example apps (one directory each, own Gradle build)
 └── guides/                Executable getting-started guides
     ├── README.md          Guide index and the end-to-end process for writing them
     └── <slug>/            One directory per guide
 ```
 
-The starter is the product. Everything in `guides/` exists to teach someone how to use it; see [guides.md](guides.md) for the rules every guide follows and [guides/README.md](../guides/README.md) for how to write one.
+The starter is the product. Everything in `guides/` exists to teach someone how to use it; see [guides.md](guides.md) for the rules every guide follows and [guides/README.md](../guides/README.md) for how to write one. `examples/` holds fuller demo applications.
+
+The root build includes every guide (`guides/<slug>/initial` and `complete`) and every example (`examples/<name>`, any directory with its own `settings.gradle`, included as `example-<name>`, which the example's own `settings.gradle` also sets as `rootProject.name` so IDEs such as IntelliJ IDEA show the same name) as a [composite build](https://docs.gradle.org/current/userguide/composite_builds.html), resolving the starter from this checkout instead of the published release. `./gradlew build` builds and tests all of them, so a starter change that breaks a guide or an example fails before it ships; `./gradlew guides` and `./gradlew examples` build each set on its own.
 
 ## Starter internals
 
@@ -133,7 +136,7 @@ CDC handlers are discovered at startup via `@CockroachDBCDC` annotation scanning
 ### Build
 
 ```bash
-./gradlew build          # Compile + test
+./gradlew build          # Compile + test the starter, every guide and every example
 ./gradlew publishToMavenLocal   # Install to ~/.m2
 ```
 

@@ -14,9 +14,9 @@ import org.mockito.ArgumentCaptor;
  * Fast unit test of {@link IdeaService}'s read-modify-write logic with a mocked
  * repository and no database.
  *
- * <p>Note: the {@code @CockroachDB} auto-retry is applied by a Spring AOP aspect that
- * is only active when the service is a Spring-managed proxy. A service constructed with
- * {@code new} here has no aspect, so this test cannot exercise retries — that is proven
+ * <p>Note: the {@code @CockroachDBTransactional} auto-retry is applied by Spring AOP (the
+ * starter's retry advisor) and is only active when the service is a Spring-managed proxy. A
+ * service constructed with {@code new} here has no advice, so this test cannot exercise retries — that is proven
  * end-to-end in {@link IdeaServiceConcurrencyIT}. What this test does verify is the
  * service's own data logic: that each upvote increments by exactly one and that reset
  * zeroes the count.

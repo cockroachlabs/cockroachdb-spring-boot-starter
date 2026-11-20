@@ -3,6 +3,7 @@ package com.cockroachlabs.data.template;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import com.cockroachlabs.data.autoconfigure.CockroachDBProperties;
 import com.cockroachlabs.data.metrics.CockroachDBMetrics;
 import com.cockroachlabs.data.multiregion.RegionContext;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.CannotAcquireLockException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -40,7 +40,7 @@ class CockroachDBTransactionTemplateTest {
         properties.getRetry().setDelay(0);
         properties.getRetry().setJitter(0);
         CockroachDBRegions regions = new CockroachDBRegions(
-                properties.getRegion(), null, new JdbcTemplate(jdbc.dataSource));
+                properties.getRegion(), null);
         // What the starter's auto-configuration does for every transaction manager.
         txManager.addListener(regions);
         template = new CockroachDBTransactionTemplate(txManager,
@@ -88,10 +88,11 @@ class CockroachDBTransactionTemplateTest {
     @Test
     void inRegionThroughTheInterfaceSetsTheSessionRegion() {
         CockroachDBTransactionOperations ops = template;
+        AtomicReference<String> seen = new AtomicReference<>();
 
-        ops.inRegion("us-east1").executeWithoutResult(() -> { });
+        ops.inRegion("us-east1").executeWithoutResult(() -> seen.set(RegionContext.current().orElse(null)));
 
-        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'us-east1'");
+        assertThat(seen).hasValue("us-east1");
     }
 
     @Test
@@ -197,30 +198,42 @@ class CockroachDBTransactionTemplateTest {
     @Test
     void inRegionReturnsACopyThatSetsTheSessionRegion() {
         CockroachDBTransactionTemplate east = template.inRegion("us-east1");
+        AtomicReference<String> seen = new AtomicReference<>();
 
-        east.execute(() -> "ok");
+        east.execute(() -> {
+            seen.set(RegionContext.current().orElse(null));
+            return "ok";
+        });
 
         assertThat(east).isNotSameAs(template);
         assertThat(template.getRegion()).isNull();
-        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'us-east1'");
+        assertThat(seen).hasValue("us-east1");
     }
 
     @Test
     void explicitRegionWinsOverRegionContext() {
         RegionContext.set("eu-west1");
+        AtomicReference<String> seen = new AtomicReference<>();
 
-        template.inRegion("us-east1").execute(() -> "ok");
+        template.inRegion("us-east1").execute(() -> {
+            seen.set(RegionContext.current().orElse(null));
+            return "ok";
+        });
 
-        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'us-east1'");
+        assertThat(seen).hasValue("us-east1");
     }
 
     @Test
     void regionComesFromRegionContextWhenNotSet() {
         RegionContext.set("eu-west1");
+        AtomicReference<String> seen = new AtomicReference<>();
 
-        template.execute(() -> "ok");
+        template.execute(() -> {
+            seen.set(RegionContext.current().orElse(null));
+            return "ok";
+        });
 
-        assertThat(jdbc.executedSql()).containsExactly("SET crdb_region = 'eu-west1'");
+        assertThat(seen).hasValue("eu-west1");
     }
 
     @Test

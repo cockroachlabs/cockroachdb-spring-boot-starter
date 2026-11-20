@@ -40,7 +40,7 @@ class CockroachDBTransactionTemplateRetryTest {
 
         template = new CockroachDBTransactionTemplate(txManager,
                 new SerializationRetry(properties.getRetry(), metrics),
-                new CockroachDBRegions(properties.getRegion(), null, mock(JdbcTemplate.class)));
+                new CockroachDBRegions(properties.getRegion(), null));
     }
 
     static SQLException sqlState(String state) {

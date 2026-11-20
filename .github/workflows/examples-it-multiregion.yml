@@ -1,0 +1,89 @@
+name: examples-it-multiregion
+
+# Runs the Ideas Board multi-region integration test (RegionalIdeaIT) against a
+# real 3-region CockroachDB cluster brought up with docker-compose (one node each
+# in us-east1, us-west1, us-central1). This is the only way RegionalIdeaIT actually
+# executes: it SKIPs unless CRDB_MULTIREGION=true and CRDB_URL point at a cluster
+# whose defaultdb already has us-east1 (primary) + us-west1 as regions.
+#
+# Kept as a separate workflow from examples-it.yml so the single-node Testcontainers
+# job is untouched. The example is a standalone Gradle build that depends on the
+# PUBLISHED starter 0.3.0 from the anonymous Pages Maven feed, so this never builds
+# the starter itself.
+on:
+  pull_request:
+    paths:
+      - 'examples/ideas-board/**'
+      - '.github/workflows/examples-it-multiregion.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'examples/ideas-board/**'
+      - '.github/workflows/examples-it-multiregion.yml'
+  workflow_dispatch:
+
+jobs:
+  ideas-board-multiregion-it:
+    name: Ideas Board multi-region IT (docker-compose cluster)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      # Temurin 17 matches the example's declared Java toolchain
+      # (examples/ideas-board/build.gradle), so it both runs Gradle and satisfies
+      # the toolchain with no auto-provisioning.
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Start 3-region CockroachDB cluster
+        working-directory: examples/ideas-board
+        run: docker compose -f multiregion-compose.yml up -d crdb-us-east1 crdb-us-west1 crdb-us-central1
+
+      - name: Initialize cluster and configure regions
+        working-directory: examples/ideas-board
+        # Hard cap so a cluster that never reaches quorum fails the step (and runs
+        # the diagnostics below) instead of blocking the job.
+        run: timeout 420 docker compose -f multiregion-compose.yml run --rm crdb-init
+
+      - name: Run multi-region integration test
+        working-directory: examples/ideas-board
+        env:
+          CRDB_MULTIREGION: "true"
+          # RegionalIdeaIT reads CRDB_URL straight into spring.datasource.url, so it
+          # must be a JDBC URL (not postgres://). node1's SQL port is the only one
+          # published to the host.
+          CRDB_URL: "jdbc:postgresql://localhost:26257/defaultdb?sslmode=disable"
+          CRDB_USER: "root"
+          CRDB_PASSWORD: ""
+        # The example has no wrapper of its own; use the root gradlew against the
+        # example project dir. Filter to RegionalIdeaIT so the Testcontainers ITs
+        # (covered by examples-it.yml) don't also run here.
+        run: ../../gradlew test --tests '*RegionalIdeaIT*' --no-daemon
+
+      - name: Cluster diagnostics on failure
+        if: failure()
+        working-directory: examples/ideas-board
+        run: |
+          docker compose -f multiregion-compose.yml ps
+          # Schema the test left behind: did SET LOCALITY REGIONAL BY ROW take, is
+          # there a crdb_region column, is defaultdb actually multi-region?
+          docker compose -f multiregion-compose.yml exec -T crdb-us-east1 \
+            cockroach sql --insecure --host=crdb-us-east1 -e \
+            "SHOW REGIONS FROM DATABASE defaultdb; SHOW CREATE TABLE regional_ideas;" || true
+          docker compose -f multiregion-compose.yml logs --tail=300
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regional-it-reports
+          path: examples/ideas-board/build/reports/tests/
+          if-no-files-found: ignore
+
+      - name: Tear down cluster
+        if: always()
+        working-directory: examples/ideas-board
+        run: docker compose -f multiregion-compose.yml down -v

@@ -567,6 +567,10 @@ A time more recent than `follower_read_timestamp()` (about 4.2s ago) still reads
 
 The follower-read transaction is always a new one (`PROPAGATION_REQUIRES_NEW`). If the method is called inside an existing transaction, that transaction is suspended, not joined, so it stays read-write and current. While the method runs it uses a second connection from the pool, so size the pool for that if you nest follower reads in transactions.
 
+#### Exceptions
+
+Any exception the method throws, checked or unchecked, reaches the caller as the same instance, so a method declared `throws IOException` still throws `IOException`. The follower-read transaction is rolled back; it is read-only, so nothing is lost.
+
 #### Upgrading from `staleParam`
 
 Earlier versions had a `staleParam` attribute, defaulting to `"stale"`, that did a follower read only when the method had a `boolean` argument with that name set to `true`. It's removed, and `@FollowerRead` now always does a follower read. To choose at runtime, call a `@FollowerRead` method or a regular one:
@@ -985,6 +989,8 @@ try (var scope = VirtualClusterContext.scoped("analytics", Workload.Priority.LOW
 }
 ```
 
+Any exception the method throws, checked or unchecked, reaches the caller as the same instance, and rolls back the transaction. Unlike `@Transactional`, a checked exception does not commit it.
+
 > vCluster v1 is workload **tagging / QoS**. Routing to a distinct vCluster endpoint is platform-dependent and not performed by the starter.
 
 ### Plenum — storage insights
@@ -1157,6 +1163,7 @@ Any other exception is recorded as a failure and rethrown unchanged, after Sprin
 - **Plain `@Transactional` methods are now retried on `40001`** whenever the starter is on the classpath. Set `cockroachdb.retry.apply-to-transactional-methods=false` to keep the old behavior.
 - **Only the outermost transactional call retries.** A nested `@CockroachDBTransactional` call or `CockroachDBTransactionTemplate.execute` inside a running transaction no longer retries on its own.
 - **Checked exceptions follow `@Transactional`.** They commit the transaction by default (they used to roll back) and reach the caller as themselves (they used to be wrapped in a `RuntimeException`). Add `rollbackFor = Exception.class` to keep rolling back.
+- **Checked exceptions from `@FollowerRead` and `@VirtualCluster` methods reach the caller as themselves.** They used to be wrapped in a `RuntimeException`; code that caught that wrapper now sees the original exception. They still roll back the transaction.
 - **Class-level annotations apply.** `@CockroachDBTransactional` on a class applies to its public methods; a class-level `@CockroachDB` used to have no effect.
 - **`CockroachDBTemplate` is now `CockroachDBTransactionTemplate`**, extends Spring's `TransactionTemplate`, and implements the new `CockroachDBTransactionOperations` interface. Rename the type where you inject it; `execute(Supplier)`, `executeWithoutResult(Runnable)` and `inRegion(...).execute(...)` work as before. Its constructor now takes a `SerializationRetry` and `CockroachDBRegions`, which only matters if you create it yourself.
 - **`executeReadCommitted(...)` is removed.** Use a copy with `setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED)`, which also gets retries.

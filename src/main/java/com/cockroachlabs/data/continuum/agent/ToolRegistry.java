@@ -33,7 +33,7 @@ public class ToolRegistry {
     }
 
     /** All registered tool descriptors, in registration order (MCP tools/list). */
-    public List<ToolDescriptor> descriptors() {
+    List<ToolDescriptor> descriptors() {
         List<ToolDescriptor> out = new ArrayList<>();
         for (Registered r : tools.values()) {
             out.add(r.descriptor());
@@ -41,7 +41,7 @@ public class ToolRegistry {
         return out;
     }
 
-    public boolean has(String name) {
+    boolean has(String name) {
         return tools.containsKey(name);
     }
 

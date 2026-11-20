@@ -30,7 +30,9 @@ Default to package-private, not `public`. A class, constructor, method or field 
 
 - Prefer a package-private class, with package-private constructors, for implementation pieces such as interceptors and helpers.
 - When a type must be `public` because another package uses it, keep its other members package-private or `private`.
-- Spring doesn't need `public` either: it can create beans from package-private classes and call package-private `@Bean` methods.
+- Spring doesn't need `public` either: it can create beans from package-private classes.
+- Where this principle and Spring conventions conflict, the Spring convention wins. `@Bean` methods in auto-configurations stay `public`, as they are in Spring Boot itself, and so do `@ConfigurationProperties` accessors.
+- Some members must be `public` for Java or for reflection: interface method implementations, and methods discovered with `getMethods()` (such as `@AgentTool` methods).
 - Tests live in the same package as the code they test, so they don't need `public` access.
 
 ### Turn on only what's needed

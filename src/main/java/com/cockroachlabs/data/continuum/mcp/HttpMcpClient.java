@@ -25,10 +25,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * Construct with {@link #create(String, String)} in production, or pass a pre-built
  * {@link RestClient} (e.g. bound to a {@code MockRestServiceServer}) in tests.
  */
-public class HttpMcpClient implements McpClient {
+class HttpMcpClient implements McpClient {
 
     /** The MCP revision this client negotiates. */
-    public static final String PROTOCOL_VERSION = "2025-06-18";
+    static final String PROTOCOL_VERSION = "2025-06-18";
 
     private static final JsonParser JSON = JsonParserFactory.getJsonParser();
 
@@ -39,18 +39,18 @@ public class HttpMcpClient implements McpClient {
     private String sessionId;
     private boolean init;
 
-    public HttpMcpClient(RestClient rest) {
+    HttpMcpClient(RestClient rest) {
         this(rest, "cockroachdb-spring", "0.1");
     }
 
-    public HttpMcpClient(RestClient rest, String clientName, String clientVersion) {
+    HttpMcpClient(RestClient rest, String clientName, String clientVersion) {
         this.rest = rest;
         this.clientName = clientName;
         this.clientVersion = clientVersion;
     }
 
     /** Builds a client posting to {@code endpoint} with a Bearer token. */
-    public static HttpMcpClient create(String endpoint, String token) {
+    static HttpMcpClient create(String endpoint, String token) {
         RestClient rc = RestClient.builder()
                 .baseUrl(endpoint)
                 .defaultHeader("Authorization", "Bearer " + token)

@@ -70,10 +70,6 @@ loadScripts(document, 'script');</script>
 <h1 title="Interface McpClient" class="title">Interface McpClient</h1>
 </div>
 <section class="class-description" id="class-description">
-<dl class="notes">
-<dt>All Known Implementing Classes:</dt>
-<dd><code><a href="HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">HttpMcpClient</a>, <a href="SimulatedMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">SimulatedMcpClient</a></code></dd>
-</dl>
 <hr>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">McpClient</span></div>
@@ -84,8 +80,8 @@ API) this speaks the real wire format over the Streamable HTTP transport: the
 initialize handshake, <code>tools/list</code>, and <code>tools/call</code>. It is used, for
 example, to reach the Cockroach Continuum Cloud MCP server.
 
-<p>The default fully-functional implementation is <a href="SimulatedMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp"><code>SimulatedMcpClient</code></a>; the
-real one is <a href="HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp"><code>HttpMcpClient</code></a>. Select with <a href="ContinuumMcpFactory.html" title="class in com.cockroachlabs.data.continuum.mcp"><code>ContinuumMcpFactory</code></a>.</div>
+<p>The default fully-functional implementation is <code>SimulatedMcpClient</code>; the
+real one is <code>HttpMcpClient</code>. Select with <a href="ContinuumMcpFactory.html" title="class in com.cockroachlabs.data.continuum.mcp"><code>ContinuumMcpFactory</code></a>.</div>
 </div>
 </section>
 <section class="summary">

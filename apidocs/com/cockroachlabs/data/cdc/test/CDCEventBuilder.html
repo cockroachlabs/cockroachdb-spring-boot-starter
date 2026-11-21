@@ -68,10 +68,6 @@ loadScripts(document, 'script');</script>
 <li><a href="#buildAsEnvelope(tools.jackson.databind.ObjectMapper)" tabindex="0">buildAsEnvelope(ObjectMapper)</a></li>
 <li><a href="#buildAsJson(tools.jackson.databind.ObjectMapper)" tabindex="0">buildAsJson(ObjectMapper)</a></li>
 <li><a href="#buildAsJson()" tabindex="0">buildAsJson()</a></li>
-<li><a href="#resolvedEnvelope(java.time.Instant)" tabindex="0">resolvedEnvelope(Instant)</a></li>
-<li><a href="#insertEnvelope(T,tools.jackson.databind.ObjectMapper,java.lang.Object...)" tabindex="0">insertEnvelope(T, ObjectMapper, Object...)</a></li>
-<li><a href="#updateEnvelope(T,T,tools.jackson.databind.ObjectMapper,java.lang.Object...)" tabindex="0">updateEnvelope(T, T, ObjectMapper, Object...)</a></li>
-<li><a href="#deleteEnvelope(tools.jackson.databind.ObjectMapper,java.lang.Object...)" tabindex="0">deleteEnvelope(ObjectMapper, Object...)</a></li>
 </ol>
 </li>
 </ol>
@@ -125,36 +121,18 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a><wbr>&lt;T&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="../CDCEnvelope.html" title="class in com.cockroachlabs.data.cdc">CDCEnvelope</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#deleteEnvelope(tools.jackson.databind.ObjectMapper,java.lang.Object...)" class="member-name-link">deleteEnvelope</a><wbr>(tools.jackson.databind.ObjectMapper&nbsp;objectMapper,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;keyParts)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="../CDCEnvelope.html" title="class in com.cockroachlabs.data.cdc">CDCEnvelope</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#insertEnvelope(T,tools.jackson.databind.ObjectMapper,java.lang.Object...)" class="member-name-link">insertEnvelope</a><wbr>(T&nbsp;entity,
- tools.jackson.databind.ObjectMapper&nbsp;objectMapper,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;keyParts)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a><wbr>&lt;<a href="#type-param-T" title="type parameter in CDCEventBuilder">T</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#key(java.lang.Object...)" class="member-name-link">key</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;keyParts)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a><wbr>&lt;<a href="#type-param-T" title="type parameter in CDCEventBuilder">T</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#operation(com.cockroachlabs.data.cdc.CDCOperationType)" class="member-name-link">operation</a><wbr>(<a href="../CDCOperationType.html" title="enum class in com.cockroachlabs.data.cdc">CDCOperationType</a>&nbsp;operation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../CDCEnvelope.html" title="class in com.cockroachlabs.data.cdc">CDCEnvelope</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#resolvedEnvelope(java.time.Instant)" class="member-name-link">resolvedEnvelope</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;timestamp)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a><wbr>&lt;<a href="#type-param-T" title="type parameter in CDCEventBuilder">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#table(java.lang.String)" class="member-name-link">table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;table)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a><wbr>&lt;<a href="#type-param-T" title="type parameter in CDCEventBuilder">T</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#timestamp(java.time.Instant)" class="member-name-link">timestamp</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;timestamp)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#table(java.lang.String)" class="member-name-link">table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;table)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;T&gt;&nbsp;<a href="../CDCEnvelope.html" title="class in com.cockroachlabs.data.cdc">CDCEnvelope</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#updateEnvelope(T,T,tools.jackson.databind.ObjectMapper,java.lang.Object...)" class="member-name-link">updateEnvelope</a><wbr>(T&nbsp;before,
- T&nbsp;after,
- tools.jackson.databind.ObjectMapper&nbsp;objectMapper,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;keyParts)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a><wbr>&lt;<a href="#type-param-T" title="type parameter in CDCEventBuilder">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#timestamp(java.time.Instant)" class="member-name-link">timestamp</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;timestamp)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -257,44 +235,6 @@ loadScripts(document, 'script');</script>
 <h3>buildAsJson</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">buildAsJson</span>()</div>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="resolvedEnvelope(java.time.Instant)">
-<h3>resolvedEnvelope</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../CDCEnvelope.html" title="class in com.cockroachlabs.data.cdc">CDCEnvelope</a></span>&nbsp;<span class="element-name">resolvedEnvelope</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a>&nbsp;timestamp)</span></div>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="insertEnvelope(T,tools.jackson.databind.ObjectMapper,java.lang.Object...)">
-<h3 id="insertEnvelope(java.lang.Object,tools.jackson.databind.ObjectMapper,java.lang.Object[])">insertEnvelope</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="../CDCEnvelope.html" title="class in com.cockroachlabs.data.cdc">CDCEnvelope</a></span>&nbsp;<span class="element-name">insertEnvelope</span><wbr><span class="parameters">(T&nbsp;entity,
- tools.jackson.databind.ObjectMapper&nbsp;objectMapper,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;keyParts)</span></div>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="updateEnvelope(T,T,tools.jackson.databind.ObjectMapper,java.lang.Object...)">
-<h3 id="updateEnvelope(java.lang.Object,java.lang.Object,tools.jackson.databind.ObjectMapper,java.lang.Object[])">updateEnvelope</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="../CDCEnvelope.html" title="class in com.cockroachlabs.data.cdc">CDCEnvelope</a></span>&nbsp;<span class="element-name">updateEnvelope</span><wbr><span class="parameters">(T&nbsp;before,
- T&nbsp;after,
- tools.jackson.databind.ObjectMapper&nbsp;objectMapper,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;keyParts)</span></div>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="deleteEnvelope(tools.jackson.databind.ObjectMapper,java.lang.Object...)">
-<h3>deleteEnvelope</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="../CDCEnvelope.html" title="class in com.cockroachlabs.data.cdc">CDCEnvelope</a></span>&nbsp;<span class="element-name">deleteEnvelope</span><wbr><span class="parameters">(tools.jackson.databind.ObjectMapper&nbsp;objectMapper,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;keyParts)</span></div>
 </div>
 </section>
 </li>

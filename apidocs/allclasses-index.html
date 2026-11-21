@@ -288,8 +288,8 @@ virtual clusters.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/mcp/ContinuumMcpFactory.html" title="class in com.cockroachlabs.data.continuum.mcp">ContinuumMcpFactory</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">Factory for <a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp"><code>McpClient</code></a>: returns a <a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp"><code>SimulatedMcpClient</code></a> when the
-client is disabled or has no endpoint, otherwise an <a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp"><code>HttpMcpClient</code></a>.</div>
+<div class="block">Factory for <a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp"><code>McpClient</code></a>: returns a <code>SimulatedMcpClient</code> when the
+client is disabled or has no endpoint, otherwise an <code>HttpMcpClient</code>.</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/agent/CrdbAgent.html" title="class in com.cockroachlabs.data.continuum.agent">CrdbAgent</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
@@ -338,97 +338,88 @@ consistent snapshot from the past that the nearest replica can serve.</div>
 <div class="block">HTTP-backed <a href="com/cockroachlabs/data/continuum/cloud/CloudClient.html" title="interface in com.cockroachlabs.data.continuum.cloud"><code>CloudClient</code></a> that talks to the real CockroachDB Cloud API
 using a service-account Bearer token.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">HttpMcpClient</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/aegis/McpAegisClient.html" title="class in com.cockroachlabs.data.continuum.aegis">McpAegisClient</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">HTTP-backed <a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp"><code>McpClient</code></a> speaking the MCP Streamable HTTP transport (spec
-2025-06-18).</div>
-</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/aegis/McpAegisClient.html" title="class in com.cockroachlabs.data.continuum.aegis">McpAegisClient</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Adapts an <a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp"><code>McpClient</code></a> to the <a href="com/cockroachlabs/data/continuum/aegis/AegisClient.html" title="interface in com.cockroachlabs.data.continuum.aegis"><code>AegisClient</code></a> interface.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/aegis/McpAegisClient.ToolNames.html" title="class in com.cockroachlabs.data.continuum.aegis">McpAegisClient.ToolNames</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/aegis/McpAegisClient.ToolNames.html" title="class in com.cockroachlabs.data.continuum.aegis">McpAegisClient.ToolNames</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Maps Aegis operations to the tool names an MCP server advertises.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp">McpClient</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp">McpClient</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Minimal client for the Model Context Protocol (MCP).</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.CallResult.html" title="class in com.cockroachlabs.data.continuum.mcp">McpClient.CallResult</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.CallResult.html" title="class in com.cockroachlabs.data.continuum.mcp">McpClient.CallResult</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">The result of a <code>tools/call</code>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.Config.html" title="class in com.cockroachlabs.data.continuum.mcp">McpClient.Config</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.Config.html" title="class in com.cockroachlabs.data.continuum.mcp">McpClient.Config</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
 <div class="block">Configuration for an MCP client.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.Content.html" title="class in com.cockroachlabs.data.continuum.mcp">McpClient.Content</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.Content.html" title="class in com.cockroachlabs.data.continuum.mcp">McpClient.Content</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">One content block of a tool-call result.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.Tool.html" title="class in com.cockroachlabs.data.continuum.mcp">McpClient.Tool</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/mcp/McpClient.Tool.html" title="class in com.cockroachlabs.data.continuum.mcp">McpClient.Tool</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
 <div class="block">A tool advertised by an MCP server.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/cloud/MetricExport.html" title="class in com.cockroachlabs.data.continuum.cloud">MetricExport</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/cloud/MetricExport.html" title="class in com.cockroachlabs.data.continuum.cloud">MetricExport</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Typed builders for the three metric-export sinks.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/ai/metrics/MicrometerAIMetrics.html" title="class in com.cockroachlabs.data.ai.metrics">MicrometerAIMetrics</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/cdc/metrics/MicrometerCDCMetrics.html" title="class in com.cockroachlabs.data.cdc.metrics">MicrometerCDCMetrics</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/ai/metrics/MicrometerAIMetrics.html" title="class in com.cockroachlabs.data.ai.metrics">MicrometerAIMetrics</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/metrics/MicrometerCockroachDBMetrics.html" title="class in com.cockroachlabs.data.metrics">MicrometerCockroachDBMetrics</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/cdc/metrics/MicrometerCDCMetrics.html" title="class in com.cockroachlabs.data.cdc.metrics">MicrometerCDCMetrics</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/aegis/Recommendation.html" title="class in com.cockroachlabs.data.continuum.aegis">Recommendation</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/metrics/MicrometerCockroachDBMetrics.html" title="class in com.cockroachlabs.data.metrics">MicrometerCockroachDBMetrics</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/continuum/aegis/Recommendation.html" title="class in com.cockroachlabs.data.continuum.aegis">Recommendation</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
 <div class="block">A Cockroach Aegis recommendation: a suggested action tied to one or more
 findings.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="com/cockroachlabs/data/annotation/RegionalByRow.html" title="annotation interface in com.cockroachlabs.data.annotation">RegionalByRow</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/multiregion/RegionalByRowListener.html" title="class in com.cockroachlabs.data.multiregion">RegionalByRowListener</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/multiregion/RegionContext.html" title="class in com.cockroachlabs.data.multiregion">RegionContext</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab6"><a href="com/cockroachlabs/data/annotation/RegionalByRow.html" title="annotation interface in com.cockroachlabs.data.annotation">RegionalByRow</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab6">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/multiregion/RegionalByRowListener.html" title="class in com.cockroachlabs.data.multiregion">RegionalByRowListener</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/multiregion/RegionContext.RegionScope.html" title="class in com.cockroachlabs.data.multiregion">RegionContext.RegionScope</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/multiregion/RegionContext.html" title="class in com.cockroachlabs.data.multiregion">RegionContext</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/multiregion/RegionContextFilter.html" title="class in com.cockroachlabs.data.multiregion">RegionContextFilter</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/multiregion/RegionContext.RegionScope.html" title="class in com.cockroachlabs.data.multiregion">RegionContext.RegionScope</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/cockroachlabs/data/multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/transaction/RetrySettings.html" title="class in com.cockroachlabs.data.transaction">RetrySettings</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/multiregion/RegionContextFilter.html" title="class in com.cockroachlabs.data.multiregion">RegionContextFilter</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/cockroachlabs/data/multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="com/cockroachlabs/data/transaction/RetrySettings.html" title="class in com.cockroachlabs.data.transaction">RetrySettings</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">
 <div class="block">How a transaction that fails with SQLSTATE <code>40001</code> is retried: up to
 <code>maxRetries</code> times, waiting <code>delay</code> ms before the first retry, multiplying the
 wait by <code>multiplier</code> after each one, never waiting longer than <code>maxDelay</code> ms,
 and adding up to <code>jitter</code> ms of randomness either way.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab6"><a href="com/cockroachlabs/data/ai/annotation/SemanticSearch.html" title="annotation interface in com.cockroachlabs.data.ai.annotation">SemanticSearch</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab6">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/ai/aop/SemanticSearchAspect.html" title="class in com.cockroachlabs.data.ai.aop">SemanticSearchAspect</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/transaction/SerializationRetry.html" title="class in com.cockroachlabs.data.transaction">SerializationRetry</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab6"><a href="com/cockroachlabs/data/ai/annotation/SemanticSearch.html" title="annotation interface in com.cockroachlabs.data.ai.annotation">SemanticSearch</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab6">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/ai/aop/SemanticSearchAspect.html" title="class in com.cockroachlabs.data.ai.aop">SemanticSearchAspect</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/transaction/SerializationRetry.html" title="class in com.cockroachlabs.data.transaction">SerializationRetry</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">The one retry loop behind <code>@CockroachDBTransactional</code>, retried <code>@Transactional</code>
 methods and <code>CockroachDBTransactionTemplate</code>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="com/cockroachlabs/data/transaction/SerializationRetry.Attempt.html" title="interface in com.cockroachlabs.data.transaction">SerializationRetry.Attempt&lt;T&gt;</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/cockroachlabs/data/transaction/SerializationRetry.Attempt.html" title="interface in com.cockroachlabs.data.transaction">SerializationRetry.Attempt&lt;T&gt;</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">One attempt of the work being retried.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/aegis/SimulatedAegisClient.html" title="class in com.cockroachlabs.data.continuum.aegis">SimulatedAegisClient</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/aegis/SimulatedAegisClient.html" title="class in com.cockroachlabs.data.continuum.aegis">SimulatedAegisClient</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">In-memory Cockroach Aegis client for local development and tests.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/cloud/SimulatedCloudClient.html" title="class in com.cockroachlabs.data.continuum.cloud">SimulatedCloudClient</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">In-memory <a href="com/cockroachlabs/data/continuum/cloud/CloudClient.html" title="interface in com.cockroachlabs.data.continuum.cloud"><code>CloudClient</code></a> for development and tests.</div>
-</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">SimulatedMcpClient</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/continuum/cloud/SimulatedCloudClient.html" title="class in com.cockroachlabs.data.continuum.cloud">SimulatedCloudClient</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">In-memory <a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp"><code>McpClient</code></a> for development and tests.</div>
+<div class="block">In-memory <a href="com/cockroachlabs/data/continuum/cloud/CloudClient.html" title="interface in com.cockroachlabs.data.continuum.cloud"><code>CloudClient</code></a> for development and tests.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/cockroachlabs/data/multiregion/StaticRegionResolver.html" title="class in com.cockroachlabs.data.multiregion">StaticRegionResolver</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>

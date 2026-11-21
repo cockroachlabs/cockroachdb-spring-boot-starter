@@ -203,18 +203,10 @@ when not <code>null</code>, otherwise the resolution chain.</div>
 <dd>
 <div class="block">Creates an instance of a <code>CallResult</code> record class.</div>
 </dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html#calls()" class="member-name-link">calls()</a> - Method in class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">SimulatedMcpClient</a></dt>
-<dd>
-<div class="block">Recorded (name, arguments) tool calls, in order.</div>
-</dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html#callTool(java.lang.String,java.util.Map)" class="member-name-link">callTool(String, Map)</a> - Method in class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">HttpMcpClient</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/continuum/mcp/McpClient.html#callTool(java.lang.String,java.util.Map)" class="member-name-link">callTool(String, Map)</a> - Method in interface com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp">McpClient</a></dt>
 <dd>
 <div class="block">Invoke a tool by name with the given arguments.</div>
 </dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html#callTool(java.lang.String,java.util.Map)" class="member-name-link">callTool(String, Map)</a> - Method in class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">SimulatedMcpClient</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/factory/CockroachDBCDCFactory.html#cancel(long)" class="member-name-link">cancel(long)</a> - Method in class com.cockroachlabs.data.cdc.factory.<a href="com/cockroachlabs/data/cdc/factory/CockroachDBCDCFactory.html" title="class in com.cockroachlabs.data.cdc.factory">CockroachDBCDCFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/handler/CDCHandlerRegistry.SignatureType.html#CDC_EVENT" class="member-name-link">CDC_EVENT</a> - Enum constant in enum class com.cockroachlabs.data.cdc.handler.<a href="com/cockroachlabs/data/cdc/handler/CDCHandlerRegistry.SignatureType.html" title="enum class in com.cockroachlabs.data.cdc.handler">CDCHandlerRegistry.SignatureType</a></dt>
@@ -680,8 +672,8 @@ virtual clusters.</div>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/continuum/mcp/ContinuumMcpFactory.html" class="type-name-link" title="class in com.cockroachlabs.data.continuum.mcp">ContinuumMcpFactory</a> - Class in <a href="com/cockroachlabs/data/continuum/mcp/package-summary.html">com.cockroachlabs.data.continuum.mcp</a></dt>
 <dd>
-<div class="block">Factory for <a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp"><code>McpClient</code></a>: returns a <a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp"><code>SimulatedMcpClient</code></a> when the
-client is disabled or has no endpoint, otherwise an <a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp"><code>HttpMcpClient</code></a>.</div>
+<div class="block">Factory for <a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp"><code>McpClient</code></a>: returns a <code>SimulatedMcpClient</code> when the
+client is disabled or has no endpoint, otherwise an <code>HttpMcpClient</code>.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/ai/springai/CockroachDBFilterExpressionConverter.html#convertExpression(org.springframework.ai.vectorstore.filter.Filter.Expression)" class="member-name-link">convertExpression(Filter.Expression)</a> - Method in class com.cockroachlabs.data.ai.springai.<a href="com/cockroachlabs/data/ai/springai/CockroachDBFilterExpressionConverter.html" title="class in com.cockroachlabs.data.ai.springai">CockroachDBFilterExpressionConverter</a></dt>
 <dd>&nbsp;</dd>
@@ -718,10 +710,6 @@ pointer to retry metrics.</div>
 <dt><a href="com/cockroachlabs/data/continuum/cloud/HttpCloudClient.html#create(java.lang.String,java.lang.String)" class="member-name-link">create(String, String)</a> - Static method in class com.cockroachlabs.data.continuum.cloud.<a href="com/cockroachlabs/data/continuum/cloud/HttpCloudClient.html" title="class in com.cockroachlabs.data.continuum.cloud">HttpCloudClient</a></dt>
 <dd>
 <div class="block">Builds an <a href="com/cockroachlabs/data/continuum/cloud/HttpCloudClient.html" title="class in com.cockroachlabs.data.continuum.cloud"><code>HttpCloudClient</code></a> for the given base URL and API key.</div>
-</dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html#create(java.lang.String,java.lang.String)" class="member-name-link">create(String, String)</a> - Static method in class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">HttpMcpClient</a></dt>
-<dd>
-<div class="block">Builds a client posting to <code>endpoint</code> with a Bearer token.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/cdc/factory/ChangefeedInfo.html#created()" class="member-name-link">created()</a> - Method in record class com.cockroachlabs.data.cdc.factory.<a href="com/cockroachlabs/data/cdc/factory/ChangefeedInfo.html" title="class in com.cockroachlabs.data.cdc.factory">ChangefeedInfo</a></dt>
 <dd>
@@ -769,8 +757,6 @@ pointer to retry metrics.</div>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/CDCOperationType.html#DELETE" class="member-name-link">DELETE</a> - Enum constant in enum class com.cockroachlabs.data.cdc.<a href="com/cockroachlabs/data/cdc/CDCOperationType.html" title="enum class in com.cockroachlabs.data.cdc">CDCOperationType</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html#deleteEnvelope(tools.jackson.databind.ObjectMapper,java.lang.Object...)" class="member-name-link">deleteEnvelope(ObjectMapper, Object...)</a> - Static method in class com.cockroachlabs.data.cdc.test.<a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/factory/ChangefeedInfo.html#description()" class="member-name-link">description()</a> - Method in record class com.cockroachlabs.data.cdc.factory.<a href="com/cockroachlabs/data/cdc/factory/ChangefeedInfo.html" title="class in com.cockroachlabs.data.cdc.factory">ChangefeedInfo</a></dt>
 <dd>
 <div class="block">Returns the value of the <code>description</code> record component.</div>
@@ -786,10 +772,6 @@ pointer to retry metrics.</div>
 <dt><a href="com/cockroachlabs/data/continuum/mcp/McpClient.Tool.html#description()" class="member-name-link">description()</a> - Method in record class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/McpClient.Tool.html" title="class in com.cockroachlabs.data.continuum.mcp">McpClient.Tool</a></dt>
 <dd>
 <div class="block">Returns the value of the <code>description</code> record component.</div>
-</dd>
-<dt><a href="com/cockroachlabs/data/continuum/agent/ToolRegistry.html#descriptors()" class="member-name-link">descriptors()</a> - Method in class com.cockroachlabs.data.continuum.agent.<a href="com/cockroachlabs/data/continuum/agent/ToolRegistry.html" title="class in com.cockroachlabs.data.continuum.agent">ToolRegistry</a></dt>
-<dd>
-<div class="block">All registered tool descriptors, in registration order (MCP tools/list).</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/continuum/agent/AgentTool.html#destructive()" class="member-name-link">destructive()</a> - Element in annotation interface com.cockroachlabs.data.continuum.agent.<a href="com/cockroachlabs/data/continuum/agent/AgentTool.html" title="annotation interface in com.cockroachlabs.data.continuum.agent">AgentTool</a></dt>
 <dd>
@@ -1319,8 +1301,6 @@ for all <a href="com/cockroachlabs/data/annotation/ComputedColumn.html" title="a
 </dd>
 <dt><a href="com/cockroachlabs/data/cdc/handler/CDCWebhookController.html#handleWebhook(java.lang.String,java.lang.String,java.lang.String)" class="member-name-link">handleWebhook(String, String, String)</a> - Method in class com.cockroachlabs.data.cdc.handler.<a href="com/cockroachlabs/data/cdc/handler/CDCWebhookController.html" title="class in com.cockroachlabs.data.cdc.handler">CDCWebhookController</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/cockroachlabs/data/continuum/agent/ToolRegistry.html#has(java.lang.String)" class="member-name-link">has(String)</a> - Method in class com.cockroachlabs.data.continuum.agent.<a href="com/cockroachlabs/data/continuum/agent/ToolRegistry.html" title="class in com.cockroachlabs.data.continuum.agent">ToolRegistry</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/ai/VectorSearchResult.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class com.cockroachlabs.data.ai.<a href="com/cockroachlabs/data/ai/VectorSearchResult.html" title="class in com.cockroachlabs.data.ai">VectorSearchResult</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
@@ -1436,17 +1416,6 @@ for all <a href="com/cockroachlabs/data/annotation/ComputedColumn.html" title="a
 <div class="block">HTTP-backed <a href="com/cockroachlabs/data/continuum/cloud/CloudClient.html" title="interface in com.cockroachlabs.data.continuum.cloud"><code>CloudClient</code></a> that talks to the real CockroachDB Cloud API
 using a service-account Bearer token.</div>
 </dd>
-<dt><a href="com/cockroachlabs/data/continuum/cloud/HttpCloudClient.html#%3Cinit%3E(org.springframework.web.client.RestClient)" class="member-name-link">HttpCloudClient(RestClient)</a> - Constructor for class com.cockroachlabs.data.continuum.cloud.<a href="com/cockroachlabs/data/continuum/cloud/HttpCloudClient.html" title="class in com.cockroachlabs.data.continuum.cloud">HttpCloudClient</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" class="type-name-link" title="class in com.cockroachlabs.data.continuum.mcp">HttpMcpClient</a> - Class in <a href="com/cockroachlabs/data/continuum/mcp/package-summary.html">com.cockroachlabs.data.continuum.mcp</a></dt>
-<dd>
-<div class="block">HTTP-backed <a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp"><code>McpClient</code></a> speaking the MCP Streamable HTTP transport (spec
-2025-06-18).</div>
-</dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html#%3Cinit%3E(org.springframework.web.client.RestClient)" class="member-name-link">HttpMcpClient(RestClient)</a> - Constructor for class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">HttpMcpClient</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html#%3Cinit%3E(org.springframework.web.client.RestClient,java.lang.String,java.lang.String)" class="member-name-link">HttpMcpClient(RestClient, String, String)</a> - Constructor for class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">HttpMcpClient</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:I">I</h2>
 <dl class="index">
@@ -1495,8 +1464,6 @@ default region.</div>
 <div class="block">A copy of this template that runs in <code>region</code>; see <a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html#setRegion(java.lang.String)"><code>CockroachDBTransactionTemplate.setRegion(String)</code></a>.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/cdc/CDCOperationType.html#INSERT" class="member-name-link">INSERT</a> - Enum constant in enum class com.cockroachlabs.data.cdc.<a href="com/cockroachlabs/data/cdc/CDCOperationType.html" title="enum class in com.cockroachlabs.data.cdc">CDCOperationType</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html#insertEnvelope(T,tools.jackson.databind.ObjectMapper,java.lang.Object...)" class="member-name-link">insertEnvelope(T, ObjectMapper, Object...)</a> - Static method in class com.cockroachlabs.data.cdc.test.<a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/handler/CDCMethodInvoker.html#invoke(com.cockroachlabs.data.cdc.handler.CDCHandlerRegistry.HandlerDescriptor,com.cockroachlabs.data.cdc.CDCEnvelope)" class="member-name-link">invoke(CDCHandlerRegistry.HandlerDescriptor, CDCEnvelope)</a> - Method in class com.cockroachlabs.data.cdc.handler.<a href="com/cockroachlabs/data/cdc/handler/CDCMethodInvoker.html" title="class in com.cockroachlabs.data.cdc.handler">CDCMethodInvoker</a></dt>
 <dd>&nbsp;</dd>
@@ -1623,14 +1590,10 @@ default region.</div>
 <dd>
 <div class="block">MCP <code>tools/list</code>.</div>
 </dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html#listTools()" class="member-name-link">listTools()</a> - Method in class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">HttpMcpClient</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/continuum/mcp/McpClient.html#listTools()" class="member-name-link">listTools()</a> - Method in interface com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp">McpClient</a></dt>
 <dd>
 <div class="block">Discover the tools the server advertises.</div>
 </dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html#listTools()" class="member-name-link">listTools()</a> - Method in class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">SimulatedMcpClient</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/continuum/annotation/Workload.Priority.html#LOW" class="member-name-link">LOW</a> - Enum constant in enum class com.cockroachlabs.data.continuum.annotation.<a href="com/cockroachlabs/data/continuum/annotation/Workload.Priority.html" title="enum class in com.cockroachlabs.data.continuum.annotation">Workload.Priority</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -1867,10 +1830,6 @@ default region.</div>
 <dd>
 <div class="block">Transaction propagation, as on <code>@Transactional</code>.</div>
 </dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html#PROTOCOL_VERSION" class="member-name-link">PROTOCOL_VERSION</a> - Static variable in class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/HttpMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">HttpMcpClient</a></dt>
-<dd>
-<div class="block">The MCP revision this client negotiates.</div>
-</dd>
 </dl>
 <h2 class="title" id="I:Q">Q</h2>
 <dl class="index">
@@ -2033,8 +1992,6 @@ each transaction.</div>
 <dd>
 <div class="block">Returns the value of the <code>resolved</code> record component.</div>
 </dd>
-<dt><a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html#resolvedEnvelope(java.time.Instant)" class="member-name-link">resolvedEnvelope(Instant)</a> - Static method in class com.cockroachlabs.data.cdc.test.<a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/CDCPayload.html#resolveOperation()" class="member-name-link">resolveOperation()</a> - Method in record class com.cockroachlabs.data.cdc.<a href="com/cockroachlabs/data/cdc/CDCPayload.html" title="class in com.cockroachlabs.data.cdc">CDCPayload</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/test/CockroachDBConcurrencyRunner.Result.html#%3Cinit%3E(int,int,long,long,long,long,java.util.List)" class="member-name-link">Result(int, int, long, long, long, long, List)</a> - Constructor for record class com.cockroachlabs.data.test.<a href="com/cockroachlabs/data/test/CockroachDBConcurrencyRunner.Result.html" title="class in com.cockroachlabs.data.test">CockroachDBConcurrencyRunner.Result</a></dt>
@@ -2289,12 +2246,6 @@ overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the d
 <dt><a href="com/cockroachlabs/data/continuum/cloud/SimulatedCloudClient.html#%3Cinit%3E()" class="member-name-link">SimulatedCloudClient()</a> - Constructor for class com.cockroachlabs.data.continuum.cloud.<a href="com/cockroachlabs/data/continuum/cloud/SimulatedCloudClient.html" title="class in com.cockroachlabs.data.continuum.cloud">SimulatedCloudClient</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/test/CDCTestHarness.html#simulateDelete(java.lang.String,java.lang.Object...)" class="member-name-link">simulateDelete(String, Object...)</a> - Method in class com.cockroachlabs.data.cdc.test.<a href="com/cockroachlabs/data/cdc/test/CDCTestHarness.html" title="class in com.cockroachlabs.data.cdc.test">CDCTestHarness</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html" class="type-name-link" title="class in com.cockroachlabs.data.continuum.mcp">SimulatedMcpClient</a> - Class in <a href="com/cockroachlabs/data/continuum/mcp/package-summary.html">com.cockroachlabs.data.continuum.mcp</a></dt>
-<dd>
-<div class="block">In-memory <a href="com/cockroachlabs/data/continuum/mcp/McpClient.html" title="interface in com.cockroachlabs.data.continuum.mcp"><code>McpClient</code></a> for development and tests.</div>
-</dd>
-<dt><a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html#%3Cinit%3E()" class="member-name-link">SimulatedMcpClient()</a> - Constructor for class com.cockroachlabs.data.continuum.mcp.<a href="com/cockroachlabs/data/continuum/mcp/SimulatedMcpClient.html" title="class in com.cockroachlabs.data.continuum.mcp">SimulatedMcpClient</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/test/CDCTestHarness.html#simulateInsert(java.lang.String,T,java.lang.Object...)" class="member-name-link">simulateInsert(String, T, Object...)</a> - Method in class com.cockroachlabs.data.cdc.test.<a href="com/cockroachlabs/data/cdc/test/CDCTestHarness.html" title="class in com.cockroachlabs.data.cdc.test">CDCTestHarness</a></dt>
 <dd>&nbsp;</dd>
@@ -2588,8 +2539,6 @@ exposes them as described, invokable tools.</div>
 <dd>
 <div class="block">Returns the value of the <code>updated</code> record component.</div>
 </dd>
-<dt><a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html#updateEnvelope(T,T,tools.jackson.databind.ObjectMapper,java.lang.Object...)" class="member-name-link">updateEnvelope(T, T, ObjectMapper, Object...)</a> - Static method in class com.cockroachlabs.data.cdc.test.<a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:V">V</h2>
 <dl class="index">

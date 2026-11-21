@@ -9,7 +9,7 @@ import java.util.Map;
  * tool set and echoes tool calls, so code that drives an MCP server runs offline.
  * Records every call for assertions via {@link #calls()}.
  */
-public class SimulatedMcpClient implements McpClient {
+class SimulatedMcpClient implements McpClient {
 
     private final List<Map.Entry<String, Map<String, Object>>> calls = new ArrayList<>();
 
@@ -29,7 +29,7 @@ public class SimulatedMcpClient implements McpClient {
     }
 
     /** Recorded (name, arguments) tool calls, in order. */
-    public List<Map.Entry<String, Map<String, Object>>> calls() {
+    List<Map.Entry<String, Map<String, Object>>> calls() {
         return List.copyOf(calls);
     }
 

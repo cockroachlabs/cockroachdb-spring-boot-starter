@@ -98,12 +98,12 @@ public final class CDCEventBuilder<T> {
         return (Class<Map<String, Object>>) (Class<?>) Map.class;
     }
 
-    public static CDCEnvelope resolvedEnvelope(Instant timestamp) {
+    static CDCEnvelope resolvedEnvelope(Instant timestamp) {
         String hlc = timestamp.getEpochSecond() + ".0000000000";
         return new CDCEnvelope(null, 0, hlc);
     }
 
-    public static <T> CDCEnvelope insertEnvelope(T entity, ObjectMapper objectMapper, Object... keyParts) {
+    static <T> CDCEnvelope insertEnvelope(T entity, ObjectMapper objectMapper, Object... keyParts) {
         return CDCEventBuilder.<T>create()
                 .operation(CDCOperationType.INSERT)
                 .after(entity)
@@ -111,7 +111,7 @@ public final class CDCEventBuilder<T> {
                 .buildAsEnvelope(objectMapper);
     }
 
-    public static <T> CDCEnvelope updateEnvelope(T before, T after, ObjectMapper objectMapper, Object... keyParts) {
+    static <T> CDCEnvelope updateEnvelope(T before, T after, ObjectMapper objectMapper, Object... keyParts) {
         return CDCEventBuilder.<T>create()
                 .operation(CDCOperationType.UPDATE)
                 .before(before)
@@ -120,7 +120,7 @@ public final class CDCEventBuilder<T> {
                 .buildAsEnvelope(objectMapper);
     }
 
-    public static <T> CDCEnvelope deleteEnvelope(ObjectMapper objectMapper, Object... keyParts) {
+    static <T> CDCEnvelope deleteEnvelope(ObjectMapper objectMapper, Object... keyParts) {
         return CDCEventBuilder.<T>create()
                 .operation(CDCOperationType.DELETE)
                 .key(keyParts)

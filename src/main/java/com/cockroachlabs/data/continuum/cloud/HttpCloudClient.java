@@ -29,7 +29,7 @@ public class HttpCloudClient implements CloudClient {
 
     private final RestClient rest;
 
-    public HttpCloudClient(RestClient rest) {
+    HttpCloudClient(RestClient rest) {
         this.rest = rest;
     }
 

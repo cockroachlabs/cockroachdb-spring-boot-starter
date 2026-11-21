@@ -39,20 +39,26 @@ public class VirtualClusterAspect {
     public Object around(ProceedingJoinPoint pjp, VirtualCluster virtualCluster) throws Throwable {
         Workload workload = workloadOf(pjp);
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
-        return txTemplate.execute(status -> {
-            jdbcTemplate.execute("SET LOCAL application_name = " + quote(virtualCluster.value()));
-            if (workload != null) {
-                jdbcTemplate.execute("SET LOCAL default_transaction_quality_of_service = "
-                        + quote(workload.value().qos()));
-            }
-            try {
-                return pjp.proceed();
-            } catch (RuntimeException | Error e) {
-                throw e;
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        });
+        try {
+            return txTemplate.execute(status -> {
+                jdbcTemplate.execute("SET LOCAL application_name = " + quote(virtualCluster.value()));
+                if (workload != null) {
+                    jdbcTemplate.execute("SET LOCAL default_transaction_quality_of_service = "
+                            + quote(workload.value().qos()));
+                }
+                try {
+                    return pjp.proceed();
+                } catch (RuntimeException | Error e) {
+                    throw e;
+                } catch (Throwable e) {
+                    // The callback can't throw checked exceptions; carry it out, then rethrow
+                    // the original so the method keeps its declared contract.
+                    throw new CheckedExceptionTunnel(e);
+                }
+            });
+        } catch (CheckedExceptionTunnel tunnel) {
+            throw tunnel.getCause();
+        }
     }
 
     private static Workload workloadOf(ProceedingJoinPoint pjp) {

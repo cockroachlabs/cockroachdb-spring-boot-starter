@@ -57,11 +57,16 @@ public class FollowerReadAspect {
                 } catch (RuntimeException | Error e) {
                     throw e;
                 } catch (Throwable e) {
-                    throw new RuntimeException(e);
+                    // The callback can't throw checked exceptions; carry it out, then rethrow
+                    // the original so the method keeps its declared contract.
+                    throw new CheckedExceptionTunnel(e);
                 }
             });
             metrics.recordFollowerRead(start, true);
             return result;
+        } catch (CheckedExceptionTunnel tunnel) {
+            metrics.recordFollowerRead(start, false);
+            throw tunnel.getCause();
         } catch (RuntimeException | Error ex) {
             metrics.recordFollowerRead(start, false);
             throw ex;

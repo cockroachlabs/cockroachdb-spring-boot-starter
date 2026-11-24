@@ -53,6 +53,7 @@ dependencies {
     compileOnly 'io.micrometer:micrometer-core'
     compileOnly 'jakarta.servlet:jakarta.servlet-api'
     compileOnly 'jakarta.persistence:jakarta.persistence-api'
+    compileOnly 'org.hibernate.orm:hibernate-core'
     compileOnly 'org.springframework:spring-web'
     compileOnly 'tools.jackson.core:jackson-databind'
     compileOnly 'org.springframework.boot:spring-boot-starter-actuator'

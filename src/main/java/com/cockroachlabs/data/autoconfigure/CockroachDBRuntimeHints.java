@@ -111,6 +111,8 @@ public class CockroachDBRuntimeHints implements RuntimeHintsRegistrar {
             CockroachDBProperties.class,
             CockroachDBProperties.Retry.class,
             CockroachDBProperties.Region.class,
+            CockroachDBProperties.Multiregion.class,
+            CockroachDBProperties.Multiregion.Mode.class,
             VectorSearchTemplate.class,
             VectorSearchResult.class,
             DistanceMetric.class,

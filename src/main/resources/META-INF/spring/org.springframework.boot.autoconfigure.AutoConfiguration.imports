@@ -10,3 +10,4 @@ com.cockroachlabs.data.ai.springai.CockroachDBSpringAIAutoConfiguration
 com.cockroachlabs.data.continuum.autoconfigure.CockroachDBContinuumAutoConfiguration
 com.cockroachlabs.data.continuum.cloud.autoconfigure.CockroachDBContinuumCloudAutoConfiguration
 com.cockroachlabs.data.continuum.cloud.autoconfigure.CockroachDBContinuumCloudActuatorAutoConfiguration
+com.cockroachlabs.data.multiregion.CockroachDBMultiregionAutoConfiguration

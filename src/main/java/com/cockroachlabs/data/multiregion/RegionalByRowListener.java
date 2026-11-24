@@ -32,7 +32,7 @@ public class RegionalByRowListener {
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(
-                        "Failed to set crdb_region on " + clazz.getSimpleName(), e);
+                        "Failed to set crdb_region on " + MultiregionEntities.className(clazz), e);
             }
         }
     }

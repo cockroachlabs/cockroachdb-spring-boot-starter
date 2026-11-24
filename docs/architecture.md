@@ -110,6 +110,7 @@ Each feature area registers its own auto-configuration class:
 |-------|------|---------|
 | `CockroachDBAutoConfiguration` | Always active | Transaction retry advisor, template, region listener and beans |
 | `CockroachDBMetricsAutoConfiguration` | Micrometer on classpath | Transaction metrics |
+| `CockroachDBMultiregionAutoConfiguration` | Hibernate on classpath (on by default, `cockroachdb.multiregion.mode=warn`) | Startup check that `@GlobalTable`/`@RegionalByRow` annotations and the live schema agree, in both directions |
 | `CockroachDBCDCAutoConfiguration` | `cockroachdb.cdc.enabled=true` | CDC webhook endpoint registration |
 | `CockroachDBCDCMetricsAutoConfiguration` | CDC + Micrometer | CDC metrics |
 | `CockroachDBAIAutoConfiguration` | `cockroachdb.ai.enabled=true` | Vector search beans |
@@ -128,6 +129,9 @@ CockroachDB requires a new transaction after a serialization error (SQLSTATE 400
 
 #### Region resolution chain
 Multi-region support uses a priority chain: annotation or template setting > ThreadLocal (`RegionContext`) > `RegionResolver` bean > `cockroachdb.region.default-region` > gateway region. This lets applications mix static routing (annotation), request-scoped routing (context/filter), and dynamic routing (GeoIP resolver).
+
+#### Multi-region check reads, never writes
+`cockroachdb.multiregion.mode` (`none`, `warn` by default, `validate`) is named after `spring.jpa.hibernate.ddl-auto` but deliberately has no `update`: changing locality from the application at startup would let the schema drift from the migration history, would run on every replica that starts at once, and rewrites `REGIONAL BY ROW` tables. Instead the report carries the SQL that fixes each problem. The check is a `SmartInitializingSingleton`, so it runs after Flyway or Liquibase. It runs in both directions: annotated entities must match their tables, and every entity whose table is `GLOBAL` or `REGIONAL BY ROW` must carry the matching annotation, so the annotations stay a complete, trustworthy picture of the schema. It takes table and column names from Hibernate's metamodel (so the application's naming strategy applies) and reads the database only through `SHOW` statements and `information_schema`, avoiding `crdb_internal`. Gaps (a locality not yet applied, a database not yet multi-region, a missing annotation) only warn by default, but a contradiction (`@GlobalTable` on a `REGIONAL BY ROW` table or the reverse, or annotations that disagree with each other) fails startup in `warn` mode too: the code and the schema disagree about where rows live, so one of them is wrong and running on is unsafe. Because it is on by default, it first confirms the database is CockroachDB (`SELECT version()`) and skips any other, so applications that test against another database see nothing. The token for this feature is `multiregion`; "locality" stays reserved for CockroachDB's own concept.
 
 #### CDC as AOP + Spring MVC
 CDC handlers are discovered at startup via `@CockroachDBCDC` annotation scanning. The registry maps endpoint paths to handler methods. A single `CDCWebhookController` dispatches incoming webhook payloads to the correct handler, deserializing the JSON envelope into typed `CDCEvent<T>` objects using Jackson's `TypeReference` resolution.

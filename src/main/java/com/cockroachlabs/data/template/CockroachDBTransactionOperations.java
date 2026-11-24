@@ -1,6 +1,7 @@
 package com.cockroachlabs.data.template;
 
 import java.util.function.Supplier;
+import org.jspecify.annotations.Nullable;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
@@ -19,7 +20,7 @@ public interface CockroachDBTransactionOperations extends TransactionOperations 
      * Like {@link #execute(TransactionCallback)}, for a callback that doesn't need the
      * {@code TransactionStatus}.
      */
-    default <T> T execute(Supplier<T> action) {
+    default <T extends @Nullable Object> T execute(Supplier<T> action) {
         return execute(status -> action.get());
     }
 

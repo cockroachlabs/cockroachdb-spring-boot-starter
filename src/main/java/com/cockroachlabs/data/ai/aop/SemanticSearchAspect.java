@@ -9,6 +9,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
@@ -26,7 +27,7 @@ public class SemanticSearchAspect {
     }
 
     @Around("@annotation(semanticSearch)")
-    public Object around(ProceedingJoinPoint pjp,
+    public @Nullable Object around(ProceedingJoinPoint pjp,
                          SemanticSearch semanticSearch) throws Throwable {
 
         float[] queryVector = extractQueryVector(pjp, semanticSearch.queryParam());
@@ -64,7 +65,7 @@ public class SemanticSearchAspect {
         }
     }
 
-    private float[] extractQueryVector(ProceedingJoinPoint pjp, String paramName) {
+    private float @Nullable [] extractQueryVector(ProceedingJoinPoint pjp, String paramName) {
         MethodSignature sig = (MethodSignature) pjp.getSignature();
         String[] paramNames = sig.getParameterNames();
         Object[] args = pjp.getArgs();
@@ -78,7 +79,7 @@ public class SemanticSearchAspect {
     }
 
     private String resolveFilter(String filterTemplate, ProceedingJoinPoint pjp) {
-        if (filterTemplate == null || filterTemplate.isBlank()) {
+        if (filterTemplate.isBlank()) {
             return "";
         }
 
@@ -98,7 +99,7 @@ public class SemanticSearchAspect {
         return resolved;
     }
 
-    private String formatValue(Object value) {
+    private String formatValue(@Nullable Object value) {
         if (value == null) return "NULL";
         if (value instanceof Number) return value.toString();
         if (value instanceof Boolean) return value.toString();

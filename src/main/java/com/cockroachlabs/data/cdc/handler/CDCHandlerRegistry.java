@@ -12,6 +12,7 @@ import com.cockroachlabs.data.cdc.CDCEnvelope;
 import com.cockroachlabs.data.cdc.CDCEvent;
 import com.cockroachlabs.data.cdc.CDCOperationType;
 import com.cockroachlabs.data.cdc.annotation.CockroachDBCDC;
+import org.jspecify.annotations.Nullable;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -21,7 +22,7 @@ public class CDCHandlerRegistry implements BeanPostProcessor {
     private final Map<String, HandlerDescriptor> handlers = new ConcurrentHashMap<>();
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public @Nullable Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Class<?> targetClass = AopUtils.getTargetClass(bean);
         for (Method method : targetClass.getDeclaredMethods()) {
             CockroachDBCDC annotation = method.getAnnotation(CockroachDBCDC.class);
@@ -34,7 +35,7 @@ public class CDCHandlerRegistry implements BeanPostProcessor {
         return bean;
     }
 
-    public HandlerDescriptor getHandler(String endpoint) {
+    public @Nullable HandlerDescriptor getHandler(String endpoint) {
         return handlers.get(normalizeEndpoint(endpoint));
     }
 

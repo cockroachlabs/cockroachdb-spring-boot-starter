@@ -11,6 +11,7 @@ import com.cockroachlabs.data.cdc.CDCEnvelope;
 import com.cockroachlabs.data.cdc.CDCEvent;
 import com.cockroachlabs.data.cdc.CDCOperationType;
 import com.cockroachlabs.data.cdc.CDCPayload;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
@@ -18,11 +19,11 @@ import tools.jackson.databind.json.JsonMapper;
 public final class CDCEventBuilder<T> {
 
     private CDCOperationType operation = CDCOperationType.INSERT;
-    private T after;
-    private T before;
-    private List<Object> key = new ArrayList<>();
+    private @Nullable T after;
+    private @Nullable T before;
+    private List<@Nullable Object> key = new ArrayList<>();
     private String table = "unknown";
-    private Instant timestamp = Instant.now();
+    private @Nullable Instant timestamp = Instant.now();
 
     private CDCEventBuilder() {}
 
@@ -45,7 +46,7 @@ public final class CDCEventBuilder<T> {
         return this;
     }
 
-    public CDCEventBuilder<T> key(Object... keyParts) {
+    public CDCEventBuilder<T> key(@Nullable Object... keyParts) {
         this.key = Arrays.asList(keyParts);
         return this;
     }
@@ -55,7 +56,8 @@ public final class CDCEventBuilder<T> {
         return this;
     }
 
-    public CDCEventBuilder<T> timestamp(Instant timestamp) {
+    /** The event's timestamp (default: when the builder was created); {@code null} for none. */
+    public CDCEventBuilder<T> timestamp(@Nullable Instant timestamp) {
         this.timestamp = timestamp;
         return this;
     }
@@ -65,10 +67,10 @@ public final class CDCEventBuilder<T> {
     }
 
     public CDCEnvelope buildAsEnvelope(ObjectMapper objectMapper) {
-        Map<String, Object> afterMap = after != null
+        @Nullable Map<String, @Nullable Object> afterMap = after != null
                 ? objectMapper.convertValue(after, mapType())
                 : null;
-        Map<String, Object> beforeMap = before != null
+        @Nullable Map<String, @Nullable Object> beforeMap = before != null
                 ? objectMapper.convertValue(before, mapType())
                 : null;
 
@@ -94,13 +96,13 @@ public final class CDCEventBuilder<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private static Class<Map<String, Object>> mapType() {
-        return (Class<Map<String, Object>>) (Class<?>) Map.class;
+    private static Class<Map<String, @Nullable Object>> mapType() {
+        return (Class<Map<String, @Nullable Object>>) (Class<?>) Map.class;
     }
 
     static CDCEnvelope resolvedEnvelope(Instant timestamp) {
         String hlc = timestamp.getEpochSecond() + ".0000000000";
-        return new CDCEnvelope(null, 0, hlc);
+        return new CDCEnvelope(List.of(), 0, hlc);
     }
 
     static <T> CDCEnvelope insertEnvelope(T entity, ObjectMapper objectMapper, Object... keyParts) {

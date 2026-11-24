@@ -2,6 +2,7 @@ package com.cockroachlabs.data.continuum.agent;
 
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Agent / MCP facade over {@code @AgentTool}-annotated providers.
@@ -21,7 +22,7 @@ public final class CrdbAgent {
 
     private final List<Object> providers;
     private boolean allowDestructive;
-    private ToolRegistry registry;
+    private @Nullable ToolRegistry registry;
 
     private CrdbAgent(List<Object> providers) {
         this.providers = providers;
@@ -48,7 +49,7 @@ public final class CrdbAgent {
         return listTools();
     }
 
-    public ToolDescriptor tool(String name) {
+    public @Nullable ToolDescriptor tool(String name) {
         return registry().descriptors().stream()
                 .filter(d -> d.name().equals(name))
                 .findFirst()
@@ -56,7 +57,7 @@ public final class CrdbAgent {
     }
 
     /** MCP {@code tools/call}. */
-    public Object invoke(String name, Map<String, Object> args) {
+    public @Nullable Object invoke(String name, @Nullable Map<String, Object> args) {
         return registry().invoke(name, args);
     }
 

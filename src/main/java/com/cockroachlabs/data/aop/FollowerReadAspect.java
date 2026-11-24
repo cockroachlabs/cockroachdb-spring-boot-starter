@@ -7,6 +7,7 @@ import com.cockroachlabs.data.transaction.CockroachDBRegions;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,7 +33,7 @@ public class FollowerReadAspect {
     }
 
     @Around("@annotation(followerRead)")
-    public Object around(ProceedingJoinPoint pjp,
+    public @Nullable Object around(ProceedingJoinPoint pjp,
                          FollowerRead followerRead) throws Throwable {
 
         String setAsOf = "SET TRANSACTION AS OF SYSTEM TIME " + asOfExpression(pjp, followerRead);

@@ -41,6 +41,7 @@ See [guides/README.md](guides/README.md) for how to follow a guide and how to wr
 - **`VectorSearchTemplate`** — Programmatic API for embedding storage, similarity search, and hybrid queries (vector + relational filters)
 - **Spring AI `VectorStore`** — `CockroachDBVectorStore` implementing Spring AI's `VectorStore` for seamless RAG with `ChatClient` and `QuestionAnswerAdvisor`
 - **AI metrics** — Vector search count, latency, and result-set tracking (auto-enabled with Actuator)
+- **Null safety** — The API is null-marked with [JSpecify](https://jspecify.dev/), as Spring Framework 7 is (see [Null Safety](#null-safety))
 
 ## Installation
 
@@ -1208,6 +1209,12 @@ aegisOverMcp.findings();
 | `cockroachdb.continuum.cloud.enabled` | `true` | Expose a `CloudClient` bean |
 | `cockroachdb.continuum.cloud.api-key` | (blank) | Blank → `SimulatedCloudClient`; set → real HTTP client (Bearer) |
 | `cockroachdb.continuum.cloud.base-url` | (blank) | Blank → `https://cockroachlabs.cloud/api/v1` |
+
+## Null Safety
+
+The starter follows [Spring's null-safety approach](https://docs.spring.io/spring-framework/reference/core/null-safety.html). Every package is annotated with JSpecify's `@NullMarked`, so parameters, return values and fields are non-null unless they are annotated `@Nullable`. For example, `RegionResolver.resolve()` and `CockroachDBTransactionTemplate.getRegion()` are `@Nullable`: `null` means "no region". Methods that override Spring APIs keep Spring's nullness. `CockroachDBTransactionTemplate.execute(...)`, for instance, returns whatever the callback returns, `null` included.
+
+IDEs and NullAway read these annotations, and Kotlin turns them into nullable and non-null Kotlin types. The starter's own code is checked with [NullAway](https://github.com/uber/NullAway) at compile time. `org.jspecify:jspecify` is an `api` dependency of the starter.
 
 ## GraalVM Native Image
 

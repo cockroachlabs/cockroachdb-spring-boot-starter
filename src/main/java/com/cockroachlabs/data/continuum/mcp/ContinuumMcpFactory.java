@@ -10,7 +10,7 @@ public final class ContinuumMcpFactory {
     }
 
     public static McpClient create(McpClient.Config config) {
-        if (config == null || !config.enabled() || config.endpoint().isBlank()) {
+        if (!config.enabled() || config.endpoint().isBlank()) {
             return new SimulatedMcpClient();
         }
         return HttpMcpClient.create(config.endpoint(), config.token());

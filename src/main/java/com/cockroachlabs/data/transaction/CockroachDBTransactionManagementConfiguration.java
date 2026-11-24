@@ -3,6 +3,7 @@ package com.cockroachlabs.data.transaction;
 import java.util.Map;
 import com.cockroachlabs.data.annotation.EnableCockroachDBTransactionManagement;
 import com.cockroachlabs.data.autoconfigure.CockroachDBProperties;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
@@ -32,10 +33,10 @@ public class CockroachDBTransactionManagementConfiguration implements ImportAwar
 
     @Override
     public void setImportMetadata(AnnotationMetadata importMetadata) {
-        Map<String, Object> attributes =
+        Map<String, @Nullable Object> attributes =
                 importMetadata.getAnnotationAttributes(EnableCockroachDBTransactionManagement.class.getName());
-        if (attributes != null) {
-            this.order = (Integer) attributes.get("order");
+        if (attributes != null && attributes.get("order") instanceof Integer order) {
+            this.order = order;
         }
     }
 

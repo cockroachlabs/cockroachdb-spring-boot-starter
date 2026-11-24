@@ -51,7 +51,7 @@ public class CockroachDBContinuumAutoConfiguration {
             havingValue = "true", matchIfMissing = true)
     public AegisClient aegisClient(CockroachDBContinuumProperties props) {
         CockroachDBContinuumProperties.Aegis a = props.getAegis();
-        if (a.getEndpoint() != null && !a.getEndpoint().isBlank()) {
+        if (!a.getEndpoint().isBlank()) {
             return new HttpAegisClient(a.getEndpoint(), a.getToken());
         }
         return new SimulatedAegisClient();

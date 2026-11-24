@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import com.cockroachlabs.data.multiregion.MultiregionState.TableInfo;
 import com.cockroachlabs.data.multiregion.MultiregionState.TableName;
 import com.cockroachlabs.data.multiregion.MultiregionTable.Kind;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Compares annotated entities with the live multi-region configuration of their database
@@ -201,7 +202,7 @@ final class MultiregionCheck {
         return report;
     }
 
-    private static void global(MultiregionReport report, String qualified, TableInfo info,
+    private static void global(MultiregionReport report, String qualified, @Nullable TableInfo info,
                                MultiregionTable table, boolean multiregion) {
         if (info == null) {
             missing(report, qualified, "@GlobalTable", table);
@@ -223,7 +224,7 @@ final class MultiregionCheck {
      * An entity without either annotation whose table is {@code GLOBAL} or {@code REGIONAL BY ROW}:
      * the code, not the schema, needs fixing.
      */
-    private static void unannotated(MultiregionReport report, String qualified, TableInfo info,
+    private static void unannotated(MultiregionReport report, String qualified, @Nullable TableInfo info,
                                     List<MultiregionTable> entities, boolean multiregion) {
         if (info == null || !multiregion) {
             return;
@@ -258,7 +259,7 @@ final class MultiregionCheck {
     }
 
     private static void regionalByRow(MultiregionReport report, MultiregionState state, MultiregionTable table,
-                                      String qualified, TableInfo info, boolean multiregion) {
+                                      String qualified, @Nullable TableInfo info, boolean multiregion) {
         if (info == null) {
             missing(report, qualified, "@RegionalByRow", table);
             return;
@@ -307,7 +308,7 @@ final class MultiregionCheck {
      * The region column of a {@code REGIONAL BY ROW} locality, or {@code null} for any other
      * locality.
      */
-    static String regionalByRowColumn(String locality) {
+    static @Nullable String regionalByRowColumn(@Nullable String locality) {
         if (locality == null || !locality.startsWith(REGIONAL_BY_ROW)) {
             return null;
         }

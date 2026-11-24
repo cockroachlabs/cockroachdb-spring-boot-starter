@@ -35,11 +35,6 @@ public class McpAegisClient implements AegisClient {
      * Continuum MCP tool contract is not pinned here; names differ by server.
      */
     public record ToolNames(String findings, String recommendations, String emit) {
-        public ToolNames {
-            findings = findings == null ? "" : findings;
-            recommendations = recommendations == null ? "" : recommendations;
-            emit = emit == null ? "" : emit;
-        }
     }
 
     @Override
@@ -70,7 +65,7 @@ public class McpAegisClient implements AegisClient {
         Map<String, Object> args = Map.of(
                 "kind", event.kind(),
                 "source", event.source(),
-                "attrs", event.attrs() == null ? Map.of() : event.attrs(),
+                "attrs", event.attrs(),
                 "epochMillis", event.epochMillis());
         McpClient.CallResult res = mcp.callTool(tools.emit(), args);
         if (res.isError()) {
@@ -80,7 +75,7 @@ public class McpAegisClient implements AegisClient {
 
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> readList(String tool, String what) {
-        if (tool == null || tool.isBlank()) {
+        if (tool.isBlank()) {
             throw new IllegalStateException("aegis: MCP tool name not configured: " + what);
         }
         McpClient.CallResult res = mcp.callTool(tool, Map.of());
@@ -88,7 +83,7 @@ public class McpAegisClient implements AegisClient {
             throw new IllegalStateException("aegis: " + what + " tool reported error: " + res.text());
         }
         String text = res.text();
-        if (text == null || text.isBlank()) {
+        if (text.isBlank()) {
             return List.of();
         }
         List<Object> arr = JSON.parseList(text);

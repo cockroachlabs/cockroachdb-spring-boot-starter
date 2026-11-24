@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.concurrent.ThreadLocalRandom;
 import com.cockroachlabs.data.autoconfigure.CockroachDBProperties;
 import com.cockroachlabs.data.metrics.CockroachDBMetrics;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The one retry loop behind {@code @CockroachDBTransactional}, retried {@code @Transactional}
@@ -18,7 +19,7 @@ public final class SerializationRetry {
 
     /** One attempt of the work being retried. */
     @FunctionalInterface
-    public interface Attempt<T> {
+    public interface Attempt<T extends @Nullable Object> {
         T run() throws Throwable;
     }
 
@@ -40,7 +41,7 @@ public final class SerializationRetry {
      * {@code 40001}, up to {@code settings.maxRetries()} times. Records the outcome in the
      * transaction metrics.
      */
-    public <T> T execute(RetrySettings settings, Attempt<T> attempt) throws Throwable {
+    public <T extends @Nullable Object> T execute(RetrySettings settings, Attempt<T> attempt) throws Throwable {
         long start = System.nanoTime();
         long currentDelay = settings.delay();
         int retries = 0;

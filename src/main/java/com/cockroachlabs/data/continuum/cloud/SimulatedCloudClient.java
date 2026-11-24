@@ -26,16 +26,13 @@ public class SimulatedCloudClient implements CloudClient {
     @Override
     public Cluster getCluster(String clusterId) {
         return clusters.stream()
-                .filter(c -> c.id().equals(clusterId))
+                .filter(c -> clusterId.equals(c.id()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("cloud: cluster not found: " + clusterId));
     }
 
     @Override
     public void configureMetricExport(String clusterId, MetricExportConfig config) {
-        if (config == null || config.target() == null) {
-            throw new IllegalArgumentException("cloud: metric export target is required");
-        }
         exports.put(clusterId, config);
     }
 

@@ -59,6 +59,7 @@ import com.cockroachlabs.data.transaction.CockroachDBTransactionManagementConfig
 import com.cockroachlabs.data.transaction.RetrySettings;
 import com.cockroachlabs.data.transaction.SerializationRetry;
 import com.cockroachlabs.data.test.CockroachDBConcurrencyRunner;
+import org.jspecify.annotations.Nullable;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -160,7 +161,7 @@ public class CockroachDBRuntimeHints implements RuntimeHintsRegistrar {
     );
 
     @Override
-    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+    public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
         var reflection = hints.reflection();
 
         for (var clazz : ANNOTATIONS) {

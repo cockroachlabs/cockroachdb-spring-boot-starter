@@ -12,6 +12,7 @@ import com.cockroachlabs.data.template.CockroachDBTransactionTemplate;
 import com.cockroachlabs.data.transaction.CockroachDBRegions;
 import com.cockroachlabs.data.transaction.CockroachDBTransactionManagementConfiguration;
 import com.cockroachlabs.data.transaction.SerializationRetry;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -90,11 +91,11 @@ public class CockroachDBAutoConfiguration {
     static BeanPostProcessor cockroachDBRegionsListenerRegistrar(ObjectProvider<CockroachDBRegions> regions) {
         return new BeanPostProcessor() {
             @Override
-            public Object postProcessAfterInitialization(Object bean, String beanName) {
+            public @Nullable Object postProcessAfterInitialization(Object bean, String beanName) {
                 if (bean instanceof ConfigurableTransactionManager transactionManager) {
                     transactionManager.addListener(new TransactionExecutionListener() {
                         @Override
-                        public void afterBegin(TransactionExecution transaction, Throwable beginFailure) {
+                        public void afterBegin(TransactionExecution transaction, @Nullable Throwable beginFailure) {
                             CockroachDBRegions listener = regions.getIfAvailable();
                             if (listener != null) {
                                 listener.afterBegin(transaction, beginFailure);

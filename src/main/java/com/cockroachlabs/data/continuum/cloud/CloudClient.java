@@ -2,6 +2,7 @@ package com.cockroachlabs.data.continuum.cloud;
 
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Client for the CockroachDB Cloud control-plane API (part of Cockroach
@@ -26,8 +27,8 @@ public interface CloudClient {
     void configureMetricExport(String clusterId, MetricExportConfig config);
 
     /** A CockroachDB Cloud cluster (control-plane view). */
-    record Cluster(String id, String name, String plan, String state,
-                   String cloudProvider, List<String> regions) {
+    record Cluster(@Nullable String id, @Nullable String name, @Nullable String plan, @Nullable String state,
+                   @Nullable String cloudProvider, List<String> regions) {
     }
 
     /**
@@ -35,7 +36,7 @@ public interface CloudClient {
      * connecting (which differs from the control-plane cluster ID); see
      * {@link VirtualClusterManager#routingConnString}.
      */
-    record VirtualCluster(String name, String id, String routingId, String state) {
+    record VirtualCluster(String name, String id, String routingId, @Nullable String state) {
     }
 
     /** A Cloud metric-export sink. */

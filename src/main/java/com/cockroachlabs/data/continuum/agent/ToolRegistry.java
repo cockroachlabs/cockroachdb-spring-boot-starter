@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Reflects over {@code @AgentTool}-annotated methods on provider objects and
@@ -46,13 +47,13 @@ public class ToolRegistry {
     }
 
     /** Invoke a tool by name with named arguments (MCP tools/call). */
-    public Object invoke(String name, Map<String, Object> args) {
+    public @Nullable Object invoke(String name, @Nullable Map<String, Object> args) {
         Registered r = tools.get(name);
         if (r == null) {
             throw new IllegalArgumentException("Unknown tool: " + name);
         }
         Parameter[] params = r.method().getParameters();
-        Object[] call = new Object[params.length];
+        @Nullable Object[] call = new Object[params.length];
         for (int i = 0; i < params.length; i++) {
             Object v = args == null ? null : args.get(params[i].getName());
             call[i] = coerce(v, params[i].getType());
@@ -96,7 +97,7 @@ public class ToolRegistry {
         return "string";
     }
 
-    private static Object coerce(Object v, Class<?> t) {
+    private static @Nullable Object coerce(@Nullable Object v, Class<?> t) {
         if (v == null) {
             return t.isPrimitive() ? defaultPrimitive(t) : null;
         }

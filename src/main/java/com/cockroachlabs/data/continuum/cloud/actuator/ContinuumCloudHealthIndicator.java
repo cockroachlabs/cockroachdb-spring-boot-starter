@@ -2,6 +2,7 @@ package com.cockroachlabs.data.continuum.cloud.actuator;
 
 import com.cockroachlabs.data.continuum.cloud.CloudClient;
 import com.cockroachlabs.data.continuum.cloud.SimulatedCloudClient;
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
 
@@ -19,7 +20,7 @@ public class ContinuumCloudHealthIndicator implements HealthIndicator {
     }
 
     @Override
-    public Health health() {
+    public @Nullable Health health() {
         String mode = cloud instanceof SimulatedCloudClient ? "simulated" : "live";
         try {
             int count = cloud.listClusters().size();

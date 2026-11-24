@@ -26,7 +26,7 @@ public class VirtualClusterManager {
     }
 
     private static void validate(String name) {
-        if (name == null || !IDENT.matcher(name).matches()) {
+        if (!IDENT.matcher(name).matches()) {
             throw new IllegalArgumentException(
                     "cloud: invalid virtual-cluster name '" + name
                             + "' (allowed: letters, digits, underscore; must not start with a digit)");

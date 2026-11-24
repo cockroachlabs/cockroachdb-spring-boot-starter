@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,8 +24,7 @@ public class CockroachDBCDCFactory {
         String sql = spec.toSQL();
         log.info("Creating changefeed: {}", sql);
 
-        Map<String, Object> result = jdbcTemplate.queryForMap(sql);
-        long jobId = ((Number) result.get("job_id")).longValue();
+        long jobId = jobId(jdbcTemplate.queryForMap(sql));
 
         log.info("Changefeed created with job_id={}", jobId);
         return new ChangefeedInfo(jobId, "running", sql, spec.getWebhookUrl(), Instant.now(), Instant.now());
@@ -46,12 +46,12 @@ public class CockroachDBCDCFactory {
     }
 
     public List<ChangefeedInfo> list() {
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList("SHOW CHANGEFEED JOBS");
+        List<Map<String, @Nullable Object>> rows = jdbcTemplate.queryForList("SHOW CHANGEFEED JOBS");
         List<ChangefeedInfo> results = new ArrayList<>();
 
-        for (Map<String, Object> row : rows) {
+        for (Map<String, @Nullable Object> row : rows) {
             results.add(new ChangefeedInfo(
-                    ((Number) row.get("job_id")).longValue(),
+                    jobId(row),
                     stringOrNull(row.get("status")),
                     stringOrNull(row.get("description")),
                     stringOrNull(row.get("sink_uri")),
@@ -63,10 +63,10 @@ public class CockroachDBCDCFactory {
     }
 
     public ChangefeedInfo getJob(long jobId) {
-        Map<String, Object> row = jdbcTemplate.queryForMap(
+        Map<String, @Nullable Object> row = jdbcTemplate.queryForMap(
                 "SHOW CHANGEFEED JOB " + jobId);
         return new ChangefeedInfo(
-                ((Number) row.get("job_id")).longValue(),
+                jobId(row),
                 stringOrNull(row.get("status")),
                 stringOrNull(row.get("description")),
                 stringOrNull(row.get("sink_uri")),
@@ -75,11 +75,18 @@ public class CockroachDBCDCFactory {
         );
     }
 
-    private static String stringOrNull(Object value) {
+    private static long jobId(Map<String, @Nullable Object> row) {
+        if (!(row.get("job_id") instanceof Number jobId)) {
+            throw new IllegalStateException("No job_id in " + row);
+        }
+        return jobId.longValue();
+    }
+
+    private static @Nullable String stringOrNull(@Nullable Object value) {
         return value != null ? value.toString() : null;
     }
 
-    private static Instant toInstant(Object value) {
+    private static @Nullable Instant toInstant(@Nullable Object value) {
         if (value instanceof Timestamp ts) return ts.toInstant();
         if (value instanceof Instant inst) return inst;
         return null;

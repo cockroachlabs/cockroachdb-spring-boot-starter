@@ -1,5 +1,6 @@
 package com.cockroachlabs.data.continuum.cloud;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.MediaType;
@@ -35,7 +36,7 @@ public class HttpCloudClient implements CloudClient {
 
     /** Builds an {@link HttpCloudClient} for the given base URL and API key. */
     public static HttpCloudClient create(String baseUrl, String apiKey) {
-        String base = (baseUrl == null || baseUrl.isBlank()) ? DEFAULT_BASE_URL : baseUrl.replaceAll("/+$", "");
+        String base = baseUrl.isBlank() ? DEFAULT_BASE_URL : baseUrl.replaceAll("/+$", "");
         RestClient rc = RestClient.builder()
                 .baseUrl(base)
                 .defaultHeader("Authorization", "Bearer " + apiKey)
@@ -70,13 +71,10 @@ public class HttpCloudClient implements CloudClient {
 
     @Override
     public void configureMetricExport(String clusterId, MetricExportConfig config) {
-        if (config == null || config.target() == null) {
-            throw new IllegalArgumentException("cloud: metric export target is required");
-        }
         rest.post()
                 .uri("/clusters/{id}/metricexport/{target}", clusterId, config.target().path())
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(toJson(config.settings() == null ? Map.of() : config.settings()))
+                .body(toJson(config.settings()))
                 .retrieve()
                 .toBodilessEntity();
     }
@@ -91,7 +89,7 @@ public class HttpCloudClient implements CloudClient {
                         : List.of());
     }
 
-    private static String str(Map<String, Object> m, String key) {
+    private static @Nullable String str(Map<String, Object> m, String key) {
         Object v = m.get(key);
         return v == null ? null : v.toString();
     }
@@ -110,7 +108,7 @@ public class HttpCloudClient implements CloudClient {
         return sb.append('}').toString();
     }
 
-    private static String value(Object v) {
+    private static String value(@Nullable Object v) {
         if (v == null) {
             return "null";
         }

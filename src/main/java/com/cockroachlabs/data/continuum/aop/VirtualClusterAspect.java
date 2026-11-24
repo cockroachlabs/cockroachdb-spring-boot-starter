@@ -6,6 +6,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,7 +37,7 @@ public class VirtualClusterAspect {
     }
 
     @Around("@annotation(virtualCluster)")
-    public Object around(ProceedingJoinPoint pjp, VirtualCluster virtualCluster) throws Throwable {
+    public @Nullable Object around(ProceedingJoinPoint pjp, VirtualCluster virtualCluster) throws Throwable {
         Workload workload = workloadOf(pjp);
         TransactionTemplate txTemplate = new TransactionTemplate(txManager);
         try {
@@ -61,7 +62,7 @@ public class VirtualClusterAspect {
         }
     }
 
-    private static Workload workloadOf(ProceedingJoinPoint pjp) {
+    private static @Nullable Workload workloadOf(ProceedingJoinPoint pjp) {
         Method method = ((MethodSignature) pjp.getSignature()).getMethod();
         return method.getAnnotation(Workload.class);
     }

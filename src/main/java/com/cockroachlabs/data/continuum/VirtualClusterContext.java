@@ -3,6 +3,7 @@ package com.cockroachlabs.data.continuum;
 import com.cockroachlabs.data.continuum.annotation.Workload.Priority;
 
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Thread-scoped Cockroach vCluster context for programmatic use, mirroring
@@ -15,7 +16,7 @@ public final class VirtualClusterContext {
     public record Binding(String name, Priority priority) {
     }
 
-    private static final ThreadLocal<Binding> HOLDER = new ThreadLocal<>();
+    private static final ThreadLocal<@Nullable Binding> HOLDER = new ThreadLocal<>();
 
     private VirtualClusterContext() {
     }
@@ -39,7 +40,7 @@ public final class VirtualClusterContext {
 
     public static final class Scope implements AutoCloseable {
 
-        private final Binding previous;
+        private final @Nullable Binding previous;
 
         Scope(String name, Priority priority) {
             this.previous = HOLDER.get();

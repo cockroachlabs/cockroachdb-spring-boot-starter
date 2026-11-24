@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'net.ltgt.errorprone' version '5.2.0'
 }
 
 group = 'com.cockroachlabs'
@@ -23,6 +24,22 @@ tasks.withType(JavaCompile).configureEach {
     options.release = 17
 }
 
+// Null safety, the way Spring Framework does it: every package is JSpecify
+// @NullMarked, and NullAway (run through Error Prone) checks main sources at
+// compile time. Tests are not checked.
+tasks.named('compileJava', JavaCompile) {
+    options.errorprone {
+        disableAllChecks = true
+        option('NullAway:AnnotatedPackages', 'com.cockroachlabs')
+        option('NullAway:JSpecifyMode', 'true')
+        option('NullAway:CustomContractAnnotations', 'org.springframework.lang.Contract')
+        error('NullAway')
+    }
+}
+tasks.named('compileTestJava', JavaCompile) {
+    options.errorprone.enabled = false
+}
+
 tasks.withType(Javadoc).configureEach {
     options.addStringOption('-release', '17')
 }
@@ -40,6 +57,7 @@ dependencyManagement {
 }
 
 dependencies {
+    api 'org.jspecify:jspecify'
     api 'org.springframework.boot:spring-boot-starter'
     api 'org.springframework:spring-aop'
     api 'org.aspectj:aspectjweaver'
@@ -60,6 +78,9 @@ dependencies {
 
     compileOnly 'org.springframework.ai:spring-ai-vector-store'
     compileOnly 'org.springframework.ai:spring-ai-model'
+
+    errorprone 'com.google.errorprone:error_prone_core:2.52.0'
+    errorprone 'com.uber.nullaway:nullaway:0.14.3'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation 'org.springframework:spring-web'
@@ -82,6 +103,11 @@ test {
     useJUnitPlatform()
     // TestJvmTest asserts the forked JVM really is this version and prints it.
     systemProperty 'expectedTestJvm', testJvm
+    // NullSafetyConventionsTest loads the main classes in their own class loader, with the
+    // optional (compileOnly) dependencies they reference, without adding those to the tests.
+    def nullSafetyClasspath = sourceSets.main.output + sourceSets.main.compileClasspath
+    inputs.files(nullSafetyClasspath).withPropertyName('nullSafetyClasspath').withNormalizer(ClasspathNormalizer)
+    jvmArgumentProviders.add({ ["-DnullSafety.classpath=${nullSafetyClasspath.asPath}".toString()] } as CommandLineArgumentProvider)
     addTestOutputListener({ descriptor, event ->
         if (descriptor.className?.endsWith('.TestJvmTest')) {
             logger.lifecycle(event.message.trim())

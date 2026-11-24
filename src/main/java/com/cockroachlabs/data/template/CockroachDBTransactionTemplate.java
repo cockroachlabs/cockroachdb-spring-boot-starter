@@ -1,10 +1,12 @@
 package com.cockroachlabs.data.template;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Objects;
 import java.util.function.Supplier;
 import com.cockroachlabs.data.transaction.CockroachDBRegions;
 import com.cockroachlabs.data.transaction.RetrySettings;
 import com.cockroachlabs.data.transaction.SerializationRetry;
+import org.jspecify.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
@@ -48,12 +50,12 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
     private final CockroachDBRegions regions;
 
     // null = use the cockroachdb.retry.* property
-    private Integer maxRetries;
-    private Long delay;
-    private Double multiplier;
-    private Long maxDelay;
+    private @Nullable Integer maxRetries;
+    private @Nullable Long delay;
+    private @Nullable Double multiplier;
+    private @Nullable Long maxDelay;
     // null = resolve from RegionContext, RegionResolver, then the default region
-    private String region;
+    private @Nullable String region;
 
     public CockroachDBTransactionTemplate(PlatformTransactionManager txManager,
                                           SerializationRetry retry,
@@ -70,7 +72,7 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
      * Configure the copy without affecting the original.
      */
     public CockroachDBTransactionTemplate(CockroachDBTransactionTemplate template) {
-        super(template.getTransactionManager(), template);
+        super(Objects.requireNonNull(template.getTransactionManager(), "template has no transaction manager"), template);
         this.retry = template.retry;
         this.regions = template.regions;
         this.maxRetries = template.maxRetries;
@@ -126,12 +128,12 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
      * @throws IllegalArgumentException if the region is malformed or not in
      *         {@code cockroachdb.region.allowed} (when validation is on)
      */
-    public void setRegion(String region) {
+    public void setRegion(@Nullable String region) {
         this.region = (region == null || region.isBlank()) ? null : regions.validate(region);
     }
 
     /** The explicitly set region, or {@code null} when it is resolved per transaction. */
-    public String getRegion() {
+    public @Nullable String getRegion() {
         return region;
     }
 
@@ -152,7 +154,7 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
      * is rethrown immediately. Inside a transaction that is already running, it runs once.
      */
     @Override
-    public <T> T execute(TransactionCallback<T> action) throws TransactionException {
+    public <T extends @Nullable Object> T execute(TransactionCallback<T> action) throws TransactionException {
         try (CockroachDBRegions.Scope scope = CockroachDBRegions.bind(region)) {
             if (TransactionSynchronizationManager.isActualTransactionActive()) {
                 return super.execute(action);

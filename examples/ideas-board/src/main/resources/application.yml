@@ -40,3 +40,11 @@ cockroachdb:
       - us-west1
       - eu-west1
 # end::region-config[]
+
+# tag::mr-check-config[]
+  # Startup multi-region check (0.6.0+): compares @GlobalTable / @RegionalByRow entities
+  # against the live table/database locality and logs any mismatch with fix-up SQL. It only
+  # reads, only runs against CockroachDB + Hibernate, and is on by default.
+  multiregion:
+    mode: warn      # warn = log and continue (default); validate = fail startup; none = off
+# end::mr-check-config[]

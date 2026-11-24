@@ -70,6 +70,8 @@ loadScripts(document, 'script');</script>
 <li><a href="#setRegion(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Region)" tabindex="0">setRegion(CockroachDBProperties.Region)</a></li>
 <li><a href="#getMetrics()" tabindex="0">getMetrics()</a></li>
 <li><a href="#setMetrics(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Metrics)" tabindex="0">setMetrics(CockroachDBProperties.Metrics)</a></li>
+<li><a href="#getMultiregion()" tabindex="0">getMultiregion()</a></li>
+<li><a href="#setMultiregion(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Multiregion)" tabindex="0">setMultiregion(CockroachDBProperties.Multiregion)</a></li>
 </ol>
 </li>
 </ol>
@@ -105,11 +107,14 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="CockroachDBProperties.Metrics.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Metrics</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static class&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="CockroachDBProperties.Region.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a></code></div>
+<div class="col-second odd-row-color"><code><a href="CockroachDBProperties.Multiregion.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static class&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="CockroachDBProperties.Retry.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Retry</a></code></div>
+<div class="col-second even-row-color"><code><a href="CockroachDBProperties.Region.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="CockroachDBProperties.Retry.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Retry</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -140,14 +145,20 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Metrics.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Metrics</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMetrics()" class="member-name-link">getMetrics</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Region.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegion()" class="member-name-link">getRegion</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Multiregion.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMultiregion()" class="member-name-link">getMultiregion</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Retry.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Retry</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRetry()" class="member-name-link">getRetry</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Region.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegion()" class="member-name-link">getRegion</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CockroachDBProperties.Retry.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Retry</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRetry()" class="member-name-link">getRetry</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMetrics(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Metrics)" class="member-name-link">setMetrics</a><wbr>(<a href="CockroachDBProperties.Metrics.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Metrics</a>&nbsp;metrics)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMetrics(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Metrics)" class="member-name-link">setMetrics</a><wbr>(<a href="CockroachDBProperties.Metrics.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Metrics</a>&nbsp;metrics)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMultiregion(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Multiregion)" class="member-name-link">setMultiregion</a><wbr>(<a href="CockroachDBProperties.Multiregion.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion</a>&nbsp;multiregion)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRegion(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Region)" class="member-name-link">setRegion</a><wbr>(<a href="CockroachDBProperties.Region.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a>&nbsp;region)</code></div>
@@ -233,6 +244,22 @@ loadScripts(document, 'script');</script>
 <h3>setMetrics</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setMetrics</span><wbr><span class="parameters">(<a href="CockroachDBProperties.Metrics.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Metrics</a>&nbsp;metrics)</span></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getMultiregion()">
+<h3>getMultiregion</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CockroachDBProperties.Multiregion.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion</a></span>&nbsp;<span class="element-name">getMultiregion</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setMultiregion(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Multiregion)">
+<h3>setMultiregion</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setMultiregion</span><wbr><span class="parameters">(<a href="CockroachDBProperties.Multiregion.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion</a>&nbsp;multiregion)</span></div>
 </div>
 </section>
 </li>

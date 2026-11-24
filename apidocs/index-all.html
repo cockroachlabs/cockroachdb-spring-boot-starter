@@ -448,12 +448,28 @@ contributor API are on the classpath and a <a href="com/cockroachlabs/data/conti
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBMetricsAutoConfiguration.html#cockroachDBMicrometerMetrics(io.micrometer.core.instrument.MeterRegistry)" class="member-name-link">cockroachDBMicrometerMetrics(MeterRegistry)</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBMetricsAutoConfiguration.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBMetricsAutoConfiguration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/multiregion/CockroachDBMultiregionAutoConfiguration.html" class="type-name-link" title="class in com.cockroachlabs.data.multiregion">CockroachDBMultiregionAutoConfiguration</a> - Class in <a href="com/cockroachlabs/data/multiregion/package-summary.html">com.cockroachlabs.data.multiregion</a></dt>
+<dd>
+<div class="block">Checks at startup that <code>@GlobalTable</code> and <code>@RegionalByRow</code> annotations agree with
+the multi-region configuration of their tables and database.</div>
+</dd>
+<dt><a href="com/cockroachlabs/data/multiregion/CockroachDBMultiregionAutoConfiguration.html#%3Cinit%3E()" class="member-name-link">CockroachDBMultiregionAutoConfiguration()</a> - Constructor for class com.cockroachlabs.data.multiregion.<a href="com/cockroachlabs/data/multiregion/CockroachDBMultiregionAutoConfiguration.html" title="class in com.cockroachlabs.data.multiregion">CockroachDBMultiregionAutoConfiguration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/multiregion/CockroachDBMultiregionAutoConfiguration.html#cockroachDBMultiregionVerifier(com.cockroachlabs.data.autoconfigure.CockroachDBProperties,org.springframework.beans.factory.ObjectProvider)" class="member-name-link">cockroachDBMultiregionVerifier(CockroachDBProperties, ObjectProvider)</a> - Method in class com.cockroachlabs.data.multiregion.<a href="com/cockroachlabs/data/multiregion/CockroachDBMultiregionAutoConfiguration.html" title="class in com.cockroachlabs.data.multiregion">CockroachDBMultiregionAutoConfiguration</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a> - Class in <a href="com/cockroachlabs/data/autoconfigure/package-summary.html">com.cockroachlabs.data.autoconfigure</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html#%3Cinit%3E()" class="member-name-link">CockroachDBProperties()</a> - Constructor for class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Metrics.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Metrics</a> - Class in <a href="com/cockroachlabs/data/autoconfigure/package-summary.html">com.cockroachlabs.data.autoconfigure</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion</a> - Class in <a href="com/cockroachlabs/data/autoconfigure/package-summary.html">com.cockroachlabs.data.autoconfigure</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html" class="type-name-link" title="enum class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion.Mode</a> - Enum Class in <a href="com/cockroachlabs/data/autoconfigure/package-summary.html">com.cockroachlabs.data.autoconfigure</a></dt>
+<dd>
+<div class="block">What the startup multi-region check does, named after
+<code>spring.jpa.hibernate.ddl-auto</code>.</div>
+</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Region.html" class="type-name-link" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a> - Class in <a href="com/cockroachlabs/data/autoconfigure/package-summary.html">com.cockroachlabs.data.autoconfigure</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Region.ResolverType.html" class="type-name-link" title="enum class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region.ResolverType</a> - Enum Class in <a href="com/cockroachlabs/data/autoconfigure/package-summary.html">com.cockroachlabs.data.autoconfigure</a></dt>
@@ -1208,9 +1224,13 @@ for all <a href="com/cockroachlabs/data/annotation/ComputedColumn.html" title="a
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html#getMetrics()" class="member-name-link">getMetrics()</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.html#getMode()" class="member-name-link">getMode()</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Retry.html#getMultiplier()" class="member-name-link">getMultiplier()</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Retry.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Retry</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html#getMultiplier()" class="member-name-link">getMultiplier()</a> - Method in class com.cockroachlabs.data.template.<a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html#getMultiregion()" class="member-name-link">getMultiregion()</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/ai/springai/CockroachDBVectorStore.html#getName()" class="member-name-link">getName()</a> - Method in class com.cockroachlabs.data.ai.springai.<a href="com/cockroachlabs/data/ai/springai/CockroachDBVectorStore.html" title="class in com.cockroachlabs.data.ai.springai">CockroachDBVectorStore</a></dt>
 <dd>&nbsp;</dd>
@@ -1711,6 +1731,8 @@ default region.</div>
 <dd>
 <div class="block">Returns the value of the <code>multiplier</code> record component.</div>
 </dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.html#%3Cinit%3E()" class="member-name-link">Multiregion()</a> - Constructor for class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:N">N</h2>
 <dl class="index">
@@ -1733,6 +1755,10 @@ default region.</div>
 <dt><a href="com/cockroachlabs/data/continuum/VirtualClusterContext.Binding.html#name()" class="member-name-link">name()</a> - Method in record class com.cockroachlabs.data.continuum.<a href="com/cockroachlabs/data/continuum/VirtualClusterContext.Binding.html" title="class in com.cockroachlabs.data.continuum">VirtualClusterContext.Binding</a></dt>
 <dd>
 <div class="block">Returns the value of the <code>name</code> record component.</div>
+</dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html#NONE" class="member-name-link">NONE</a> - Enum constant in enum class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html" title="enum class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion.Mode</a></dt>
+<dd>
+<div class="block">No check.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/ai/metrics/AIMetrics.Noop.html#%3Cinit%3E()" class="member-name-link">Noop()</a> - Constructor for class com.cockroachlabs.data.ai.metrics.<a href="com/cockroachlabs/data/ai/metrics/AIMetrics.Noop.html" title="class in com.cockroachlabs.data.ai.metrics">AIMetrics.Noop</a></dt>
 <dd>&nbsp;</dd>
@@ -2192,12 +2218,16 @@ methods and <code>CockroachDBTransactionTemplate</code>.</div>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html#setMetrics(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Metrics)" class="member-name-link">setMetrics(CockroachDBProperties.Metrics)</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.html#setMode(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Multiregion.Mode)" class="member-name-link">setMode(CockroachDBProperties.Multiregion.Mode)</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Retry.html#setMultiplier(double)" class="member-name-link">setMultiplier(double)</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Retry.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Retry</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html#setMultiplier(double)" class="member-name-link">setMultiplier(double)</a> - Method in class com.cockroachlabs.data.template.<a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a></dt>
 <dd>
 <div class="block">Multiply the delay by this after each retry (default <code>cockroachdb.retry.multiplier</code>).</div>
 </dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html#setMultiregion(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Multiregion)" class="member-name-link">setMultiregion(CockroachDBProperties.Multiregion)</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html#setRegion(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Region)" class="member-name-link">setRegion(CockroachDBProperties.Region)</a> - Method in class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html#setRegion(java.lang.String)" class="member-name-link">setRegion(String)</a> - Method in class com.cockroachlabs.data.template.<a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a></dt>
@@ -2552,6 +2582,10 @@ on the given class use <code>stored = true</code>.</div>
 <div class="block">Checks that <code>region</code> is well formed and, when <code>cockroachdb.region.validate</code>
 is on, in <code>cockroachdb.region.allowed</code>.</div>
 </dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html#VALIDATE" class="member-name-link">VALIDATE</a> - Enum constant in enum class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html" title="enum class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion.Mode</a></dt>
+<dd>
+<div class="block">Fail startup on any problem, with SQL that fixes it.</div>
+</dd>
 <dt><a href="com/cockroachlabs/data/annotation/CockroachDBTransactional.html#value()" class="member-name-link">value()</a> - Element in annotation interface com.cockroachlabs.data.annotation.<a href="com/cockroachlabs/data/annotation/CockroachDBTransactional.html" title="annotation interface in com.cockroachlabs.data.annotation">CockroachDBTransactional</a></dt>
 <dd>
 <div class="block">Alias for <a href="com/cockroachlabs/data/annotation/CockroachDBTransactional.html#transactionManager()"><code>CockroachDBTransactional.transactionManager()</code></a>.</div>
@@ -2569,6 +2603,10 @@ is on, in <code>cockroachdb.region.allowed</code>.</div>
 <div class="block">The workload priority class.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/ai/DistanceMetric.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.cockroachlabs.data.ai.<a href="com/cockroachlabs/data/ai/DistanceMetric.html" title="enum class in com.cockroachlabs.data.ai">DistanceMetric</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this class with the specified name.</div>
+</dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html" title="enum class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion.Mode</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
@@ -2593,6 +2631,11 @@ is on, in <code>cockroachdb.region.allowed</code>.</div>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/ai/DistanceMetric.html#values()" class="member-name-link">values()</a> - Static method in enum class com.cockroachlabs.data.ai.<a href="com/cockroachlabs/data/ai/DistanceMetric.html" title="enum class in com.cockroachlabs.data.ai">DistanceMetric</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum class, in
+the order they are declared.</div>
+</dd>
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html#values()" class="member-name-link">values()</a> - Static method in enum class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html" title="enum class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion.Mode</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>
@@ -2702,6 +2745,10 @@ statements.</div>
 </dl>
 <h2 class="title" id="I:W">W</h2>
 <dl class="index">
+<dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html#WARN" class="member-name-link">WARN</a> - Enum constant in enum class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Multiregion.Mode.html" title="enum class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Multiregion.Mode</a></dt>
+<dd>
+<div class="block">Log any problems, with SQL that fixes them, and continue startup (the default).</div>
+</dd>
 <dt><a href="com/cockroachlabs/data/cdc/factory/ChangefeedSpec.Builder.html#webhookUrl(java.lang.String)" class="member-name-link">webhookUrl(String)</a> - Method in class com.cockroachlabs.data.cdc.factory.<a href="com/cockroachlabs/data/cdc/factory/ChangefeedSpec.Builder.html" title="class in com.cockroachlabs.data.cdc.factory">ChangefeedSpec.Builder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/cdc/factory/ChangefeedSpec.Builder.html#withAuthHeader(java.lang.String)" class="member-name-link">withAuthHeader(String)</a> - Method in class com.cockroachlabs.data.cdc.factory.<a href="com/cockroachlabs/data/cdc/factory/ChangefeedSpec.Builder.html" title="class in com.cockroachlabs.data.cdc.factory">ChangefeedSpec.Builder</a></dt>

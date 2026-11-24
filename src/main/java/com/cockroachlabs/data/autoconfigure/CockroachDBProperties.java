@@ -12,6 +12,8 @@ public class CockroachDBProperties {
 
     private Metrics metrics = new Metrics();
 
+    private Multiregion multiregion = new Multiregion();
+
     public Retry getRetry() {
         return retry;
     }
@@ -34,6 +36,14 @@ public class CockroachDBProperties {
 
     public void setMetrics(Metrics metrics) {
         this.metrics = metrics;
+    }
+
+    public Multiregion getMultiregion() {
+        return multiregion;
+    }
+
+    public void setMultiregion(Multiregion multiregion) {
+        this.multiregion = multiregion;
     }
 
     public static class Retry {
@@ -175,6 +185,37 @@ public class CockroachDBProperties {
 
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
+        }
+    }
+
+    public static class Multiregion {
+
+        /**
+         * What to do when, at startup, entity annotations ({@code @GlobalTable},
+         * {@code @RegionalByRow}) and the multi-region configuration of their tables and database
+         * don't agree. The check runs only against CockroachDB, and only with Hibernate.
+         */
+        private Mode mode = Mode.WARN;
+
+        /**
+         * What the startup multi-region check does, named after
+         * {@code spring.jpa.hibernate.ddl-auto}. The check never changes the schema.
+         */
+        public enum Mode {
+            /** No check. */
+            NONE,
+            /** Log any problems, with SQL that fixes them, and continue startup (the default). */
+            WARN,
+            /** Fail startup on any problem, with SQL that fixes it. */
+            VALIDATE
+        }
+
+        public Mode getMode() {
+            return mode;
+        }
+
+        public void setMode(Mode mode) {
+            this.mode = mode;
         }
     }
 }

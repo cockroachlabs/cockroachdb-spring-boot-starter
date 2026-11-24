@@ -29,7 +29,7 @@ See [guides/README.md](guides/README.md) for how to follow a guide and how to wr
 - **Transaction retries** — `@Transactional` methods are retried on serialization conflicts (SQLSTATE `40001`) with exponential backoff; `@CockroachDBTransactional` is `@Transactional` plus per-method retry settings
 - **`CockroachDBTransactionTemplate`** — A `TransactionTemplate` that retries serialization conflicts
 - **Multi-region support** — `RegionContext`, `RegionResolver`, `inRegion()` for REGIONAL BY ROW tables
-- **JPA annotations** — `@RegionalByRow`, `@CrdbRegion`, `@GlobalTable` for entity-level region handling
+- **JPA annotations** — `@RegionalByRow`, `@CrdbRegion`, `@GlobalTable` for entity-level region handling, checked against the live schema at startup (`cockroachdb.multiregion.mode`, `warn` by default)
 - **Micrometer metrics** — Transaction count, retries, failures, and duration (auto-enabled with Actuator)
 - **Concurrency runner** — `CockroachDBConcurrencyRunner` for stress-testing serialization behavior
 - **CDC webhook handlers** — `@CockroachDBCDC` annotation for consuming CockroachDB changefeeds via HTTP webhook sink
@@ -99,6 +99,8 @@ cockroachdb:
     header-name: X-CockroachDB-Region
   metrics:
     enabled: true         # Enable transaction metrics
+  multiregion:
+    mode: warn            # Startup check of @GlobalTable/@RegionalByRow: none | warn | validate
 ```
 
 ## Usage
@@ -301,7 +303,79 @@ When multiple sources provide a region, the highest-priority source wins:
 
 ### 4. JPA Entity Annotations
 
-For REGIONAL BY ROW tables, annotate entities so the `crdb_region` field is auto-populated from `RegionContext`:
+Three annotations say where an entity's rows live in a multi-region database:
+
+| Annotation | Goes on | The table must be | Use it for |
+|------------|---------|-------------------|------------|
+| `@GlobalTable` | the entity class | `GLOBAL` | Reference data that every region reads and few write: currencies, countries, feature flags. Reads are fast in every region; writes take longer. |
+| `@RegionalByRow` | the entity class | `REGIONAL BY ROW` | Data that belongs to a user, tenant or place. Each row is stored in its home region, so reads and writes from there are fast. |
+| `@CrdbRegion` | a `String` field of a `@RegionalByRow` entity | the table's region column | The row's home region. |
+
+An entity with neither annotation maps to an ordinary table, which in a multi-region database is `REGIONAL BY TABLE` and lives in the primary region.
+
+The annotations don't create or change tables. Your migrations (Flyway or Liquibase) do that, and the [startup check](#checking-tables-against-the-annotations) confirms that the tables and the annotations agree. Setting it up takes four steps.
+
+#### Step 1: give the cluster regions
+
+Start every node with a region in its locality, for example `cockroach start --locality=region=us-east1,zone=us-east1-b ...`. CockroachDB Cloud multi-region clusters already have them. `SHOW REGIONS FROM CLUSTER` lists the regions the cluster has.
+
+To try this on a laptop, `cockroach demo --global --nodes 9` simulates three regions, and [`examples/ideas-board/multiregion-compose.yml`](examples/ideas-board/multiregion-compose.yml) runs a three-region cluster in Docker.
+
+#### Step 2: make the database multi-region
+
+In a migration, choose the primary region and add the others. Region names must be ones the cluster has:
+
+```sql
+ALTER DATABASE app SET PRIMARY REGION "us-east1";
+ALTER DATABASE app ADD REGION "us-west1";
+ALTER DATABASE app ADD REGION "eu-west1";
+```
+
+The primary region is where tables without a locality live, and the home of rows that don't name one. Only the database's regions are valid home regions for rows.
+
+#### Step 3: create the tables with their locality
+
+```sql
+-- @GlobalTable
+CREATE TABLE currencies (
+    code STRING PRIMARY KEY,
+    name STRING NOT NULL
+) LOCALITY GLOBAL;
+
+-- @RegionalByRow, region in the hidden crdb_region column
+CREATE TABLE orders (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    customer_name STRING NOT NULL,
+    total         DECIMAL(12,2) NOT NULL
+) LOCALITY REGIONAL BY ROW;
+
+-- @RegionalByRow, region in a column of your own
+CREATE TABLE customers (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name        STRING NOT NULL,
+    home_region crdb_internal_region NOT NULL
+                DEFAULT default_to_database_primary_region(gateway_region())::crdb_internal_region
+) LOCALITY REGIONAL BY ROW AS home_region;
+```
+
+`LOCALITY REGIONAL BY ROW` adds a hidden column, `crdb_region crdb_internal_region NOT VISIBLE NOT NULL`, which defaults to the region of the node that ran the insert. `REGIONAL BY ROW AS <column>` uses your column instead; it must be of type `crdb_internal_region`.
+
+For a table that already exists, use `ALTER TABLE currencies SET LOCALITY GLOBAL;` or `ALTER TABLE orders SET LOCALITY REGIONAL BY ROW;`. Changing a table to `REGIONAL BY ROW` rewrites it, so schedule that migration.
+
+#### Step 4: annotate the entities
+
+```java
+@Entity
+@Table(name = "currencies")
+@GlobalTable
+public class Currency {
+
+    @Id
+    private String code;
+
+    private String name;
+}
+```
 
 ```java
 @Entity
@@ -319,26 +393,87 @@ public class Order {
     private String region;
 
     private String customerName;
+
     private BigDecimal total;
 }
 ```
 
-The `@PrePersist` listener sets the region from `RegionContext` (or the `defaultRegion`) if the field is null on save.
+For the `customers` table, map the `@CrdbRegion` field to `home_region` instead: `@Column(name = "home_region")`. The `columnDefinition` only matters if Hibernate generates the schema; with migrations it can be left out.
 
-For GLOBAL tables, use the marker annotation for documentation:
+Imports: the annotations are in `com.cockroachlabs.data.annotation`, and `RegionalByRowListener` is in `com.cockroachlabs.data.multiregion`.
+
+#### How a row gets its region
+
+When a `@RegionalByRow` entity is persisted, `RegionalByRowListener` fills an empty `@CrdbRegion` field with the first of:
+
+1. the transaction's region, from `@CockroachDBTransactional(region = ...)`, `inRegion(...)`, `RegionContext`, a `RegionResolver` or `cockroachdb.region.default-region` ([section 3](#3-multi-region-support));
+2. the entity's `@RegionalByRow(defaultRegion = ...)`.
+
+A region you set on the field yourself is kept.
 
 ```java
-@Entity
-@Table(name = "currencies")
-@GlobalTable
-public class Currency {
-    @Id
-    private String code;
-    private String name;
+@CockroachDBTransactional(region = "eu-west1")
+public Order placeOrder(Order order) {
+    return orders.save(order);   // order.region is empty, so the row is stored in eu-west1
 }
 ```
 
-> **Note:** The starter does not manage DDL. Create your REGIONAL BY ROW and GLOBAL tables via Flyway or Liquibase.
+Things to know:
+
+- **Register the listener.** Without `@EntityListeners(RegionalByRowListener.class)`, nothing fills the field.
+- **A row needs a region.** If none is found, Hibernate inserts `NULL` and CockroachDB rejects the row: `null value in column "crdb_region" violates not-null constraint`. Set `defaultRegion`, or `cockroachdb.region.default-region`. Alternatively, `@DynamicInsert` on the entity leaves the column out of the insert, so its default (the node's region) applies.
+- **The region must be one of the database's.** Anything else fails with `invalid input value for enum crdb_internal_region`.
+- **Persist only.** The listener sets the region when a row is created. To move an existing row to another region, change the field and save it.
+- **Annotate the entity class itself.** The listener reads `@RegionalByRow` and `@CrdbRegion` from the entity's own class, not its superclasses. (The startup check does look at superclasses.)
+
+#### Checking tables against the annotations
+
+On their own, `@GlobalTable` and `@RegionalByRow` don't change the schema, so a migration that forgot `ALTER TABLE ... SET LOCALITY`, or a database that was never made multi-region, goes unnoticed. At startup, after Flyway or Liquibase have run, the starter compares every entity with the live database in both directions: annotated entities must match their tables, and `GLOBAL` or `REGIONAL BY ROW` tables must have annotated entities:
+
+| Mode | Behavior |
+|------|----------|
+| `none` | No check |
+| `warn` (default) | Log any problems, with SQL that fixes them, and continue startup. A contradiction (below) still fails startup |
+| `validate` | Fail startup on any problem, with SQL that fixes it |
+
+Most problems are gaps: a migration that hasn't set the locality yet, a database that isn't multi-region yet, or an annotation that's missing. A **contradiction** is different: the annotations and the schema disagree about where rows live, so one of them is wrong. Contradictions fail startup in `warn` as well as `validate`, and are marked `Contradiction:` in the report:
+
+- `@GlobalTable` on a `REGIONAL BY ROW` table, or `@RegionalByRow` on a `GLOBAL` table.
+- An entity annotated with both `@GlobalTable` and `@RegionalByRow`, or entities mapped to the same table with different annotations.
+
+Only `none` lets an application start with a contradiction.
+
+The values follow `spring.jpa.hibernate.ddl-auto`, but there is no `update`: the check only reads, and never changes the schema. Your migration tool stays in charge of it.
+
+The check runs only with Hibernate and only against CockroachDB: if your tests use another database, it skips quietly. Set `cockroachdb.multiregion.mode` to `validate` to make problems fail startup (for example in CI), or to `none` to turn the check off.
+
+It checks, in order:
+
+1. **The database.** If it isn't multi-region, that is reported once rather than for every entity. When the cluster's nodes have regions, the report suggests `ALTER DATABASE ... SET PRIMARY REGION` and `ADD REGION` for them; when they don't (nodes started without `--locality=region=...`), it says so.
+2. **Each annotated entity's table.** A `@GlobalTable` table must be `GLOBAL`. A `@RegionalByRow` table must be `REGIONAL BY ROW`; when the entity has a `@CrdbRegion` field, the table must be regional by that field's column, which must be of type `crdb_internal_region`. A missing table is reported too.
+3. **Every other entity's table.** An entity without either annotation whose table is `GLOBAL` or `REGIONAL BY ROW` is reported, with the annotation to add. A table mapped by entities with conflicting annotations is reported too.
+
+Annotations are found on the entity class or any superclass, so a subclass in a single-table hierarchy shares its parent's annotation.
+
+Table and column names come from Hibernate's metamodel, so a custom `PhysicalNamingStrategy` or quoted names work as they do for your queries. The check needs Hibernate and runs for every `EntityManagerFactory`.
+
+Every problem is listed in one report, with the suggested SQL in one block to review and add to a migration. Problems with the annotations themselves get no SQL; the report names the annotation to add or fix:
+
+```
+CockroachDB multiregion check (com.cockroachlabs.data.multiregion.MultiregionCheck, cockroachdb.multiregion.mode=warn) found 1 problem:
+  - Database app is not multi-region; @GlobalTable/@RegionalByRow on 2 entities (com.example.Currency, com.example.Order) have no effect.
+    The cluster has regions: us-east1, us-west1. Choose the primary region deliberately; the SQL below uses the first one.
+
+Suggested SQL (review, then add to a migration; or alter the annotations):
+  ALTER DATABASE app SET PRIMARY REGION "us-east1";
+  ALTER DATABASE app ADD REGION "us-west1";
+  ALTER TABLE public.currencies SET LOCALITY GLOBAL;
+  ALTER TABLE public.orders SET LOCALITY REGIONAL BY ROW;  -- rewrites the table
+
+See also: https://docs.cockroachlabs.com/docs/stable/multiregion-overview
+```
+
+Changing a table to `REGIONAL BY ROW` rewrites it, so schedule that migration accordingly.
 
 ### 5. Metrics
 

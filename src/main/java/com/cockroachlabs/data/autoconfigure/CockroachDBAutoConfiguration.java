@@ -40,7 +40,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 @ConditionalOnClass(DataSource.class)
 @EnableConfigurationProperties(CockroachDBProperties.class)
 @ImportRuntimeHints(CockroachDBRuntimeHints.class)
-@RegisterReflectionForBinding({CockroachDBProperties.class, CockroachDBProperties.Retry.class, CockroachDBProperties.Region.class})
+@RegisterReflectionForBinding({CockroachDBProperties.class, CockroachDBProperties.Retry.class, CockroachDBProperties.Region.class,
+        CockroachDBProperties.Multiregion.class})
 public class CockroachDBAutoConfiguration {
 
     @Bean

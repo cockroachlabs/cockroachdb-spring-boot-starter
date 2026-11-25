@@ -3,7 +3,7 @@
   "component": {
     "group": "com.cockroachlabs",
     "module": "cockroachdb-spring-boot-starter",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -69,8 +69,8 @@
       ],
       "files": [
         {
-          "name": "cockroachdb-spring-boot-starter-0.6.0.jar",
-          "url": "cockroachdb-spring-boot-starter-0.6.0.jar",
+          "name": "cockroachdb-spring-boot-starter-0.7.0.jar",
+          "url": "cockroachdb-spring-boot-starter-0.7.0.jar",
           "size": 264813,
           "sha512": "4025a34abb0d2384937557553bc17e204623fc57d88790fb2a44edb8df2ff586251bca8454baec43dac3829e483cba03d71e07fcb3989e165d1535ae30f8c913",
           "sha256": "643c33939c2c263dde664c05e10fac998022ff19306983a0edf6424751587ae5",
@@ -141,8 +141,8 @@
       ],
       "files": [
         {
-          "name": "cockroachdb-spring-boot-starter-0.6.0.jar",
-          "url": "cockroachdb-spring-boot-starter-0.6.0.jar",
+          "name": "cockroachdb-spring-boot-starter-0.7.0.jar",
+          "url": "cockroachdb-spring-boot-starter-0.7.0.jar",
           "size": 264813,
           "sha512": "4025a34abb0d2384937557553bc17e204623fc57d88790fb2a44edb8df2ff586251bca8454baec43dac3829e483cba03d71e07fcb3989e165d1535ae30f8c913",
           "sha256": "643c33939c2c263dde664c05e10fac998022ff19306983a0edf6424751587ae5",
@@ -161,8 +161,8 @@
       },
       "files": [
         {
-          "name": "cockroachdb-spring-boot-starter-0.6.0-sources.jar",
-          "url": "cockroachdb-spring-boot-starter-0.6.0-sources.jar",
+          "name": "cockroachdb-spring-boot-starter-0.7.0-sources.jar",
+          "url": "cockroachdb-spring-boot-starter-0.7.0-sources.jar",
           "size": 132439,
           "sha512": "29a94b54bbf07e1835f1072315a415ad1dc384975f9f1786096070402f5d76d4d147f4d54b4e690c99c42703045dd080d96bff1eec51ac8cce55615e3fd9052d",
           "sha256": "d4088f8aa6625456de65b63d53969a0a8c5e2a973cc15c3a34f88c76193496b4",
@@ -181,13 +181,13 @@
       },
       "files": [
         {
-          "name": "cockroachdb-spring-boot-starter-0.6.0-javadoc.jar",
-          "url": "cockroachdb-spring-boot-starter-0.6.0-javadoc.jar",
-          "size": 4768955,
-          "sha512": "cf178f661fdb0967bce6b653e8cd9709082cc3e0e5bea81b5e00571532a1172cee1c4e1b5877d021012d1b8d2c09b3d0c048e6857c38e8d79528f5f000d8bd78",
-          "sha256": "9c2a42177a8adeebb0b97edb8a9be5cbecec3d2e398d52b685786bbaabd8ff66",
-          "sha1": "4b61efaa919346494d96a1277132e2cea1fe4ab7",
-          "md5": "8d3672048473e63a02d564fee7a7f197"
+          "name": "cockroachdb-spring-boot-starter-0.7.0-javadoc.jar",
+          "url": "cockroachdb-spring-boot-starter-0.7.0-javadoc.jar",
+          "size": 4768718,
+          "sha512": "22e81306908b3c525f854972eb977d766ec02e9ff3483eacb33d5a2c48cb4bbf1cde88a3bc95cbbb72659cbe3f442e797a2b555bfaf7565ee08182d5535a352e",
+          "sha256": "cbbc9ffddab87d5359fb9dd5ba74adb437c341dd9c9dc90bd3e887ea61ab2d49",
+          "sha1": "5f8dd26d7d20f93e78a6d25b2ba6c7f19102d9f2",
+          "md5": "b26109a05f80b3f92e1e78dac8ebf55a"
         }
       ]
     }

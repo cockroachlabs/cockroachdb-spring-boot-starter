@@ -58,7 +58,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.7.1'
+    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.7.2'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     runtimeOnly 'org.postgresql:postgresql'
 

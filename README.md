@@ -56,7 +56,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.7.1'
+    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.7.2'
 }
 ```
 
@@ -73,7 +73,7 @@ dependencies {
 <dependency>
     <groupId>com.cockroachlabs</groupId>
     <artifactId>cockroachdb-spring-boot-starter</artifactId>
-    <version>0.7.1</version>
+    <version>0.7.2</version>
 </dependency>
 ```
 
@@ -988,7 +988,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.7.1'
+    implementation 'com.cockroachlabs:cockroachdb-spring-boot-starter:0.7.2'
     implementation 'org.springframework.ai:spring-ai-starter-model-ollama'  // or openai, etc.
     implementation 'org.springframework.ai:spring-ai-advisors-vector-store' // for RAG
 }

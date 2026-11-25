@@ -1,0 +1,9 @@
+# CockroachDB Spring Boot Starter
+
+> A Spring Boot starter that makes Spring applications work well on CockroachDB: automatic retries of serialization errors (SQLSTATE 40001) for @Transactional code, multi-region support, follower reads, CDC webhook handlers, vector search and a Spring AI VectorStore.
+
+## Docs
+
+- [Guide for coding agents](https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/agents/AGENTS.md): what the starter already handles, which API to use for each job, configuration and anti-patterns
+- [README](https://github.com/cockroachlabs/cockroachdb-spring-boot-starter/blob/main/README.md): full user reference
+- [API reference (Javadoc)](https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/apidocs/)

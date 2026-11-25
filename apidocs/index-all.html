@@ -167,9 +167,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html#before(T)" class="member-name-link">before(T)</a> - Method in class com.cockroachlabs.data.cdc.test.<a href="com/cockroachlabs/data/cdc/test/CDCEventBuilder.html" title="class in com.cockroachlabs.data.cdc.test">CDCEventBuilder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/cockroachlabs/data/transaction/CockroachDBRegions.html#beforeBegin(org.springframework.transaction.TransactionExecution)" class="member-name-link">beforeBegin(TransactionExecution)</a> - Method in class com.cockroachlabs.data.transaction.<a href="com/cockroachlabs/data/transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/transaction/CockroachDBRegions.html#bind(java.lang.String)" class="member-name-link">bind(String)</a> - Static method in class com.cockroachlabs.data.transaction.<a href="com/cockroachlabs/data/transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a></dt>
 <dd>
-<div class="block">Opens a scope in which transactions that begin get a session region: <code>explicitRegion</code>
+<div class="block">Opens a scope in which transactions that begin are bound to a region: <code>explicitRegion</code>
 when not <code>null</code>, otherwise the resolution chain.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/continuum/VirtualClusterContext.Binding.html#%3Cinit%3E(java.lang.String,com.cockroachlabs.data.continuum.annotation.Workload.Priority)" class="member-name-link">Binding(String, Workload.Priority)</a> - Constructor for record class com.cockroachlabs.data.continuum.<a href="com/cockroachlabs/data/continuum/VirtualClusterContext.Binding.html" title="class in com.cockroachlabs.data.continuum">VirtualClusterContext.Binding</a></dt>
@@ -1479,8 +1481,8 @@ using a service-account Bearer token.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/template/CockroachDBTransactionOperations.html#inRegion(java.lang.String)" class="member-name-link">inRegion(String)</a> - Method in interface com.cockroachlabs.data.template.<a href="com/cockroachlabs/data/template/CockroachDBTransactionOperations.html" title="interface in com.cockroachlabs.data.template">CockroachDBTransactionOperations</a></dt>
 <dd>
-<div class="block">Operations that run <code>SET crdb_region</code> to <code>region</code> at the start of each
-transaction, overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the
+<div class="block">Operations that bind <code>region</code> to each transaction they begin, so new REGIONAL BY ROW
+entities are homed to it, overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the
 default region.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html#inRegion(java.lang.String)" class="member-name-link">inRegion(String)</a> - Method in class com.cockroachlabs.data.template.<a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a></dt>
@@ -1979,8 +1981,8 @@ findings.</div>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/annotation/CockroachDBTransactional.html#region()" class="member-name-link">region()</a> - Element in annotation interface com.cockroachlabs.data.annotation.<a href="com/cockroachlabs/data/annotation/CockroachDBTransactional.html" title="annotation interface in com.cockroachlabs.data.annotation">CockroachDBTransactional</a></dt>
 <dd>
-<div class="block">Session region (<code>SET crdb_region</code>) for REGIONAL BY ROW tables, set at the start of
-each transaction.</div>
+<div class="block">Region that new REGIONAL BY ROW entities are homed to, bound to each transaction this
+method begins and copied into their <code>@CrdbRegion</code> field.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Region.html#%3Cinit%3E()" class="member-name-link">Region()</a> - Constructor for class com.cockroachlabs.data.autoconfigure.<a href="com/cockroachlabs/data/autoconfigure/CockroachDBProperties.Region.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a></dt>
 <dd>&nbsp;</dd>
@@ -2238,8 +2240,8 @@ methods and <code>CockroachDBTransactionTemplate</code>.</div>
 <dd>&nbsp;</dd>
 <dt><a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html#setRegion(java.lang.String)" class="member-name-link">setRegion(String)</a> - Method in class com.cockroachlabs.data.template.<a href="com/cockroachlabs/data/template/CockroachDBTransactionTemplate.html" title="class in com.cockroachlabs.data.template">CockroachDBTransactionTemplate</a></dt>
 <dd>
-<div class="block">Run <code>SET crdb_region</code> to this region at the start of each transaction,
-overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the default region.</div>
+<div class="block">Bind this region to each transaction this template begins, so new REGIONAL BY ROW
+entities are homed to it, overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the default region.</div>
 </dd>
 <dt><a href="com/cockroachlabs/data/multiregion/RegionalByRowListener.html#setRegionBeforePersist(java.lang.Object)" class="member-name-link">setRegionBeforePersist(Object)</a> - Method in class com.cockroachlabs.data.multiregion.<a href="com/cockroachlabs/data/multiregion/RegionalByRowListener.html" title="class in com.cockroachlabs.data.multiregion">RegionalByRowListener</a></dt>
 <dd>&nbsp;</dd>
@@ -2343,8 +2345,8 @@ overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the d
 </dd>
 <dt><a href="com/cockroachlabs/data/transaction/CockroachDBRegions.html#suppress()" class="member-name-link">suppress()</a> - Static method in class com.cockroachlabs.data.transaction.<a href="com/cockroachlabs/data/transaction/CockroachDBRegions.html" title="class in com.cockroachlabs.data.transaction">CockroachDBRegions</a></dt>
 <dd>
-<div class="block">Opens a scope in which transactions that begin get no session region, for transactions
-that must not run any statement first (follower reads).</div>
+<div class="block">Opens a scope in which transactions that begin are bound to no region, for read-only
+transactions such as follower reads.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:T">T</h2>

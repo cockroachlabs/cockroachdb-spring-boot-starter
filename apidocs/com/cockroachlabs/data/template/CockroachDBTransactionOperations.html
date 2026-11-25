@@ -119,8 +119,8 @@ doesn't need the <code>TransactionStatus</code>.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="CockroachDBTransactionOperations.html" title="interface in com.cockroachlabs.data.template">CockroachDBTransactionOperations</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#inRegion(java.lang.String)" class="member-name-link">inRegion</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Operations that run <code>SET crdb_region</code> to <code>region</code> at the start of each
-transaction, overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the
+<div class="block">Operations that bind <code>region</code> to each transaction they begin, so new REGIONAL BY ROW
+entities are homed to it, overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the
 default region.</div>
 </div>
 </div>
@@ -165,8 +165,8 @@ doesn't need the <code>TransactionStatus</code>.</div>
 <h3>inRegion</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type"><a href="CockroachDBTransactionOperations.html" title="interface in com.cockroachlabs.data.template">CockroachDBTransactionOperations</a></span>&nbsp;<span class="element-name">inRegion</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</span></div>
-<div class="block">Operations that run <code>SET crdb_region</code> to <code>region</code> at the start of each
-transaction, overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the
+<div class="block">Operations that bind <code>region</code> to each transaction they begin, so new REGIONAL BY ROW
+entities are homed to it, overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the
 default region. This instance is not changed.</div>
 <dl class="notes">
 <dt>Throws:</dt>

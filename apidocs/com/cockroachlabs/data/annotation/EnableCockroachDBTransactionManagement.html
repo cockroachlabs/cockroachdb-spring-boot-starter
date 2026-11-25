@@ -81,7 +81,7 @@ loadScripts(document, 'script');</script>
 Spring's <code>@EnableTransactionManagement</code> makes <code>@Transactional</code> start, commit and
 roll back transactions. This annotation adds what CockroachDB's SERIALIZABLE model needs on
 top: methods that fail with SQLSTATE <code>40001</code> are retried in a fresh transaction, and
-transactions they begin get the session region. It works only together with Spring's
+transactions they begin are bound to the resolved region. It works only together with Spring's
 transaction management, whose advisor it wraps.
 <p>
 <b>You don't usually need it.</b> Just as Spring Boot applies <code>@EnableTransactionManagement</code>

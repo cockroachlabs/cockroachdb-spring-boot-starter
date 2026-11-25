@@ -66,6 +66,7 @@ loadScripts(document, 'script');</script>
 <ol class="toc-list">
 <li><a href="#bind(java.lang.String)" tabindex="0">bind(String)</a></li>
 <li><a href="#suppress()" tabindex="0">suppress()</a></li>
+<li><a href="#beforeBegin(org.springframework.transaction.TransactionExecution)" tabindex="0">beforeBegin(TransactionExecution)</a></li>
 <li><a href="#afterBegin(org.springframework.transaction.TransactionExecution,java.lang.Throwable)" tabindex="0">afterBegin(TransactionExecution, Throwable)</a></li>
 <li><a href="#validate(java.lang.String)" tabindex="0">validate(String)</a></li>
 </ol>
@@ -97,9 +98,9 @@ REGIONAL BY ROW rows written in that transaction are homed to it.
 Those callers <a href="#bind(java.lang.String)">bind</a> a scope on the current thread for the length of
 the call. When a transaction begins inside that scope, this listener publishes the region to
 <a href="../multiregion/RegionContext.html" title="class in com.cockroachlabs.data.multiregion"><code>RegionContext</code></a> for the duration of the transaction; <code>RegionalByRowListener</code> then
-stamps the entity's <code>@CrdbRegion</code> column on <code>@PrePersist</code>. (CockroachDB has no
-<code>SET crdb_region</code> session variable, so the region is never applied as session SQL.) The
-region is the first of:
+stamps the entity's <code>@CrdbRegion</code> column on <code>@PrePersist</code>. CockroachDB has no
+session variable for a region, so no SQL is run for it, and the region doesn't route queries
+or affect rows written with raw SQL. The region is the first of:
 <ol>
   <li>the region the caller bound explicitly (<code>@CockroachDBTransactional(region = ...)</code>
       or <code>CockroachDBTransactionTemplate.setRegion(...)</code>);</li>
@@ -107,8 +108,10 @@ region is the first of:
   <li>the <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion"><code>RegionResolver</code></a> bean;</li>
   <li><code>cockroachdb.region.default-region</code>.</li>
 </ol>
-No region, a suppressed scope, or a transaction begun outside such a scope leaves
-<a href="../multiregion/RegionContext.html" title="class in com.cockroachlabs.data.multiregion"><code>RegionContext</code></a> untouched. The starter registers this listener with every
+The region is resolved and <a href="#validate(java.lang.String)">validated</a> in
+<a href="#beforeBegin(org.springframework.transaction.TransactionExecution)"><code>beforeBegin(TransactionExecution)</code></a>, so an invalid region fails the call before a
+connection is acquired. No region, a suppressed scope, or a transaction begun outside such a
+scope leaves <a href="../multiregion/RegionContext.html" title="class in com.cockroachlabs.data.multiregion"><code>RegionContext</code></a> untouched. The starter registers this listener with every
 <code>ConfigurableTransactionManager</code> bean.</div>
 </div>
 </section>
@@ -160,21 +163,24 @@ No region, a suppressed scope, or a transaction begun outside such a scope leave
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#afterBegin(org.springframework.transaction.TransactionExecution,java.lang.Throwable)" class="member-name-link">afterBegin</a><wbr>(org.springframework.transaction.TransactionExecution&nbsp;transaction,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;beginFailure)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="CockroachDBRegions.Scope.html" title="interface in com.cockroachlabs.data.transaction">CockroachDBRegions.Scope</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#bind(java.lang.String)" class="member-name-link">bind</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;explicitRegion)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Opens a scope in which transactions that begin get a session region: <code>explicitRegion</code>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#beforeBegin(org.springframework.transaction.TransactionExecution)" class="member-name-link">beforeBegin</a><wbr>(org.springframework.transaction.TransactionExecution&nbsp;transaction)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="CockroachDBRegions.Scope.html" title="interface in com.cockroachlabs.data.transaction">CockroachDBRegions.Scope</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#bind(java.lang.String)" class="member-name-link">bind</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;explicitRegion)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Opens a scope in which transactions that begin are bound to a region: <code>explicitRegion</code>
 when not <code>null</code>, otherwise the resolution chain.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="CockroachDBRegions.Scope.html" title="interface in com.cockroachlabs.data.transaction">CockroachDBRegions.Scope</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#suppress()" class="member-name-link">suppress</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Opens a scope in which transactions that begin get no session region, for transactions
-that must not run any statement first (follower reads).</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="CockroachDBRegions.Scope.html" title="interface in com.cockroachlabs.data.transaction">CockroachDBRegions.Scope</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#suppress()" class="member-name-link">suppress</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Opens a scope in which transactions that begin are bound to no region, for read-only
+transactions such as follower reads.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#validate(java.lang.String)" class="member-name-link">validate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#validate(java.lang.String)" class="member-name-link">validate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Checks that <code>region</code> is well formed and, when <code>cockroachdb.region.validate</code>
 is on, in <code>cockroachdb.region.allowed</code>.</div>
 </div>
@@ -186,7 +192,7 @@ is on, in <code>cockroachdb.region.allowed</code>.</div>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-org.springframework.transaction.TransactionExecutionListener">Methods inherited from interface&nbsp;org.springframework.transaction.TransactionExecutionListener</h3>
-<code>afterCommit, afterRollback, beforeBegin, beforeCommit, beforeRollback</code></div>
+<code>afterCommit, afterRollback, beforeCommit, beforeRollback</code></div>
 </section>
 </li>
 </ul>
@@ -220,7 +226,7 @@ is on, in <code>cockroachdb.region.allowed</code>.</div>
 <h3>bind</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="CockroachDBRegions.Scope.html" title="interface in com.cockroachlabs.data.transaction">CockroachDBRegions.Scope</a></span>&nbsp;<span class="element-name">bind</span><wbr><span class="parameters">(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;explicitRegion)</span></div>
-<div class="block">Opens a scope in which transactions that begin get a session region: <code>explicitRegion</code>
+<div class="block">Opens a scope in which transactions that begin are bound to a region: <code>explicitRegion</code>
 when not <code>null</code>, otherwise the resolution chain. Scopes nest; close it in a
 <code>finally</code> or try-with-resources.</div>
 </div>
@@ -231,8 +237,20 @@ when not <code>null</code>, otherwise the resolution chain. Scopes nest; close i
 <h3>suppress</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="CockroachDBRegions.Scope.html" title="interface in com.cockroachlabs.data.transaction">CockroachDBRegions.Scope</a></span>&nbsp;<span class="element-name">suppress</span>()</div>
-<div class="block">Opens a scope in which transactions that begin get no session region, for transactions
-that must not run any statement first (follower reads).</div>
+<div class="block">Opens a scope in which transactions that begin are bound to no region, for read-only
+transactions such as follower reads.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="beforeBegin(org.springframework.transaction.TransactionExecution)">
+<h3>beforeBegin</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">beforeBegin</span><wbr><span class="parameters">(org.springframework.transaction.TransactionExecution&nbsp;transaction)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>beforeBegin</code>&nbsp;in interface&nbsp;<code>org.springframework.transaction.TransactionExecutionListener</code></dd>
+</dl>
 </div>
 </section>
 </li>

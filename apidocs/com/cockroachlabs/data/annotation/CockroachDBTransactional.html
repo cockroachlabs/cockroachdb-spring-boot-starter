@@ -176,8 +176,8 @@ call retries the whole unit of work.</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color"><code><a href="#region()" class="member-name-link">region</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Session region (<code>SET crdb_region</code>) for REGIONAL BY ROW tables, set at the start of
-each transaction.</div>
+<div class="block">Region that new REGIONAL BY ROW entities are homed to, bound to each transaction this
+method begins and copied into their <code>@CrdbRegion</code> field.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&gt;[]</code></div>
 <div class="col-second odd-row-color"><code><a href="#rollbackFor()" class="member-name-link">rollbackFor</a></code></div>
@@ -446,8 +446,8 @@ each transaction.</div>
 <h3>region</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">region</span></div>
-<div class="block">Session region (<code>SET crdb_region</code>) for REGIONAL BY ROW tables, set at the start of
-each transaction. Empty uses <code>RegionContext</code>, the <code>RegionResolver</code>, then
+<div class="block">Region that new REGIONAL BY ROW entities are homed to, bound to each transaction this
+method begins and copied into their <code>@CrdbRegion</code> field. No SQL is run for it. Empty uses <code>RegionContext</code>, the <code>RegionResolver</code>, then
 <code>cockroachdb.region.default-region</code>.</div>
 <dl class="notes">
 <dt>Default:</dt>

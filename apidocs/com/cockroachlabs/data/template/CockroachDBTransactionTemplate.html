@@ -115,8 +115,8 @@ are declared by <a href="CockroachDBTransactionOperations.html" title="interface
 <ul>
   <li>retry settings (<a href="#setMaxRetries(int)"><code>setMaxRetries(int)</code></a>, <a href="#setDelay(long)"><code>setDelay(long)</code></a>, <a href="#setMultiplier(double)"><code>setMultiplier(double)</code></a>,
       <a href="#setMaxDelay(long)"><code>setMaxDelay(long)</code></a>), which default to the <code>cockroachdb.retry.*</code> properties;</li>
-  <li>a session region (<a href="#setRegion(java.lang.String)"><code>setRegion(String)</code></a>, or the <a href="#inRegion(java.lang.String)"><code>inRegion(String)</code></a> shortcut) for
-      REGIONAL BY ROW tables, which defaults to <code>RegionContext</code>, the
+  <li>a region (<a href="#setRegion(java.lang.String)"><code>setRegion(String)</code></a>, or the <a href="#inRegion(java.lang.String)"><code>inRegion(String)</code></a> shortcut) that new
+      REGIONAL BY ROW entities are homed to, which defaults to <code>RegionContext</code>, the
       <code>RegionResolver</code>, then <code>cockroachdb.region.default-region</code>;</li>
   <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link"><code>Supplier</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html" title="class or interface in java.lang" class="external-link"><code>Runnable</code></a> overloads for callbacks that don't need the
       <code>TransactionStatus</code>, inherited from <code>CockroachDBTransactionOperations</code>.</li>
@@ -240,8 +240,8 @@ anywhere in the cause chain, whatever exception type wraps it.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRegion(java.lang.String)" class="member-name-link">setRegion</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Run <code>SET crdb_region</code> to this region at the start of each transaction,
-overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the default region.</div>
+<div class="block">Bind this region to each transaction this template begins, so new REGIONAL BY ROW
+entities are homed to it, overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the default region.</div>
 </div>
 </div>
 </div>
@@ -374,8 +374,8 @@ Configure the copy without affecting the original.</div>
 <h3>setRegion</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRegion</span><wbr><span class="parameters">(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</span></div>
-<div class="block">Run <code>SET crdb_region</code> to this region at the start of each transaction,
-overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the default region.
+<div class="block">Bind this region to each transaction this template begins, so new REGIONAL BY ROW
+entities are homed to it, overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the default region.
 <code>null</code> or blank restores that resolution chain.</div>
 <dl class="notes">
 <dt>Throws:</dt>

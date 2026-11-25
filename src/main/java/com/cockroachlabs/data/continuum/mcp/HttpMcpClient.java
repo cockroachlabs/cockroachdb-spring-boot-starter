@@ -1,5 +1,6 @@
 package com.cockroachlabs.data.continuum.mcp;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.MediaType;
@@ -36,7 +37,7 @@ class HttpMcpClient implements McpClient {
     private final String clientName;
     private final String clientVersion;
     private final AtomicLong ids = new AtomicLong();
-    private String sessionId;
+    private @Nullable String sessionId;
     private boolean init;
 
     HttpMcpClient(RestClient rest) {
@@ -77,7 +78,7 @@ class HttpMcpClient implements McpClient {
     public CallResult callTool(String name, Map<String, Object> arguments) {
         ensureInit();
         Map<String, Object> result = call(
-                "tools/call", Map.of("name", name, "arguments", arguments == null ? Map.of() : arguments));
+                "tools/call", Map.of("name", name, "arguments", arguments));
         List<Content> content = new ArrayList<>();
         if (result.get("content") instanceof List<?> arr) {
             for (Object o : arr) {
@@ -132,7 +133,7 @@ class HttpMcpClient implements McpClient {
         post(payload);
     }
 
-    private String post(Map<String, Object> payload) {
+    private @Nullable String post(Map<String, Object> payload) {
         RestClient.RequestBodySpec spec = rest.post()
                 .uri("")
                 .accept(MediaType.APPLICATION_JSON, MediaType.TEXT_EVENT_STREAM)
@@ -160,7 +161,7 @@ class HttpMcpClient implements McpClient {
         return body;
     }
 
-    private static String extractSse(String body) {
+    private static String extractSse(@Nullable String body) {
         if (body == null) {
             return "";
         }
@@ -181,7 +182,7 @@ class HttpMcpClient implements McpClient {
 
     // Minimal JSON writer (strings/numbers/booleans/maps/lists), independent of Jackson.
     @SuppressWarnings("unchecked")
-    private static String toJson(Object value) {
+    private static String toJson(@Nullable Object value) {
         if (value == null) {
             return "null";
         }

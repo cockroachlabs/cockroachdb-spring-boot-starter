@@ -10,6 +10,7 @@ import com.cockroachlabs.data.ai.DistanceMetric;
 import com.cockroachlabs.data.ai.VectorSearchTemplate;
 import com.cockroachlabs.data.ai.metrics.AIMetrics;
 import com.cockroachlabs.data.ddl.VectorIndexHelper;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
@@ -42,6 +43,9 @@ public class CockroachDBVectorStore implements VectorStore {
     private final int dimensions;
 
     private CockroachDBVectorStore(Builder builder) {
+        if (builder.txManager == null) {
+            throw new IllegalStateException("transactionManager is required");
+        }
         this.jdbcTemplate = builder.jdbcTemplate;
         this.embeddingModel = builder.embeddingModel;
         this.txManager = builder.txManager;
@@ -119,7 +123,7 @@ public class CockroachDBVectorStore implements VectorStore {
 
     @Override
     public void delete(List<String> idList) {
-        if (idList == null || idList.isEmpty()) {
+        if (idList.isEmpty()) {
             return;
         }
         String placeholders = idList.stream()
@@ -133,9 +137,6 @@ public class CockroachDBVectorStore implements VectorStore {
 
     @Override
     public void delete(Filter.Expression filterExpression) {
-        if (filterExpression == null) {
-            return;
-        }
         String whereClause = filterConverter.convertExpression(filterExpression);
         if (!whereClause.isBlank()) {
             jdbcTemplate.update("DELETE FROM " + tableName + " WHERE " + whereClause);
@@ -213,7 +214,7 @@ public class CockroachDBVectorStore implements VectorStore {
         return filterConverter.convertExpression(filterExpression);
     }
 
-    private Document mapRowToDocument(ResultSet rs, double threshold) throws SQLException {
+    private @Nullable Document mapRowToDocument(ResultSet rs, double threshold) throws SQLException {
         double distance = rs.getDouble("distance");
         double similarity = distanceToSimilarity(distance);
 
@@ -246,7 +247,7 @@ public class CockroachDBVectorStore implements VectorStore {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> parseJsonb(String json) {
+    private Map<String, Object> parseJsonb(@Nullable String json) {
         if (json == null || json.isBlank() || "{}".equals(json.trim())) {
             return new HashMap<>();
         }
@@ -260,7 +261,7 @@ public class CockroachDBVectorStore implements VectorStore {
     }
 
     private String toJsonb(Map<String, Object> metadata) {
-        if (metadata == null || metadata.isEmpty()) {
+        if (metadata.isEmpty()) {
             return "{}";
         }
         try {
@@ -280,7 +281,7 @@ public class CockroachDBVectorStore implements VectorStore {
 
         private final JdbcTemplate jdbcTemplate;
         private final EmbeddingModel embeddingModel;
-        private PlatformTransactionManager txManager;
+        private @Nullable PlatformTransactionManager txManager;
         private AIMetrics metrics = new AIMetrics.Noop();
         private CockroachDBFilterExpressionConverter filterConverter =
                 new CockroachDBFilterExpressionConverter();

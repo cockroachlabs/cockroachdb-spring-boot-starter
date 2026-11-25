@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Generates CockroachDB v26.2+ {@code CREATE VECTOR INDEX} DDL.
@@ -37,14 +38,14 @@ public final class VectorIndexHelper {
      * @param tableName      the table containing the vector column
      * @param vectorColumn   the column holding VECTOR data
      * @param metric         the distance metric (determines the opclass)
-     * @param prefixColumns  optional prefix columns for pre-filtering (may be empty)
+     * @param prefixColumns  optional prefix columns for pre-filtering (may be empty or {@code null})
      * @return the DDL statement
      */
     public static String generateCreateVectorIndex(String indexName,
                                                     String tableName,
                                                     String vectorColumn,
                                                     DistanceMetric metric,
-                                                    String... prefixColumns) {
+                                                    String @Nullable ... prefixColumns) {
         validateNotBlank(indexName, "indexName");
         validateNotBlank(tableName, "tableName");
         validateNotBlank(vectorColumn, "vectorColumn");
@@ -55,7 +56,7 @@ public final class VectorIndexHelper {
 
         if (prefixColumns != null && prefixColumns.length > 0) {
             String prefix = Arrays.stream(prefixColumns)
-                    .filter(c -> c != null && !c.isBlank())
+                    .filter(c -> !c.isBlank())
                     .collect(Collectors.joining(", "));
             if (!prefix.isEmpty()) {
                 sb.append(prefix).append(", ");
@@ -126,7 +127,7 @@ public final class VectorIndexHelper {
     }
 
     private static void validateNotBlank(String value, String paramName) {
-        if (value == null || value.isBlank()) {
+        if (value.isBlank()) {
             throw new IllegalArgumentException(paramName + " must not be blank");
         }
     }

@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.jspecify.annotations.Nullable;
 
 public final class ChangefeedSpec {
 
@@ -19,6 +20,9 @@ public final class ChangefeedSpec {
     private final boolean skipTlsVerify;
 
     private ChangefeedSpec(Builder builder) {
+        if (builder.webhookUrl == null || builder.webhookUrl.isBlank()) {
+            throw new IllegalStateException("webhookUrl is required");
+        }
         this.table = builder.table;
         this.columns = List.copyOf(builder.columns);
         this.webhookUrl = builder.webhookUrl;
@@ -74,7 +78,7 @@ public final class ChangefeedSpec {
     public Map<String, String> getOptions() { return options; }
 
     private static void validateIdentifier(String name, String label) {
-        if (name == null || !IDENTIFIER.matcher(name).matches()) {
+        if (!IDENTIFIER.matcher(name).matches()) {
             throw new IllegalArgumentException(
                     "Invalid " + label + ": '" + name + "' (must match [a-zA-Z_][a-zA-Z0-9_]*)");
         }
@@ -88,7 +92,7 @@ public final class ChangefeedSpec {
 
         private final String table;
         private final List<String> columns = new ArrayList<>();
-        private String webhookUrl;
+        private @Nullable String webhookUrl;
         private final Map<String, String> options = new LinkedHashMap<>();
         private boolean skipTlsVerify = false;
 
@@ -150,9 +154,6 @@ public final class ChangefeedSpec {
         }
 
         public ChangefeedSpec build() {
-            if (webhookUrl == null || webhookUrl.isBlank()) {
-                throw new IllegalStateException("webhookUrl is required");
-            }
             return new ChangefeedSpec(this);
         }
     }

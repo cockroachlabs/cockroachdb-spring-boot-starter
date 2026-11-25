@@ -9,6 +9,7 @@ import com.cockroachlabs.data.cdc.CDCOperationType;
 import com.cockroachlabs.data.cdc.CDCPayload;
 import com.cockroachlabs.data.cdc.handler.CDCHandlerRegistry;
 import com.cockroachlabs.data.cdc.handler.CDCMethodInvoker;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -45,10 +46,10 @@ public class CDCTestHarness {
     }
 
     public <T> void send(String endpoint, CDCEvent<T> event) {
-        Map<String, Object> afterMap = event.after() != null
+        @Nullable Map<String, @Nullable Object> afterMap = event.after() != null
                 ? objectMapper.convertValue(event.after(), mapType())
                 : null;
-        Map<String, Object> beforeMap = event.before() != null
+        @Nullable Map<String, @Nullable Object> beforeMap = event.before() != null
                 ? objectMapper.convertValue(event.before(), mapType())
                 : null;
 
@@ -63,10 +64,10 @@ public class CDCTestHarness {
 
     public <T> void sendBatch(String endpoint, List<CDCEvent<T>> events) {
         List<CDCPayload> payloads = events.stream().map(event -> {
-            Map<String, Object> afterMap = event.after() != null
+            @Nullable Map<String, @Nullable Object> afterMap = event.after() != null
                     ? objectMapper.convertValue(event.after(), mapType())
                     : null;
-            Map<String, Object> beforeMap = event.before() != null
+            @Nullable Map<String, @Nullable Object> beforeMap = event.before() != null
                     ? objectMapper.convertValue(event.before(), mapType())
                     : null;
             String hlc = event.timestamp() != null
@@ -104,7 +105,7 @@ public class CDCTestHarness {
     }
 
     @SuppressWarnings("unchecked")
-    private static Class<Map<String, Object>> mapType() {
-        return (Class<Map<String, Object>>) (Class<?>) Map.class;
+    private static Class<Map<String, @Nullable Object>> mapType() {
+        return (Class<Map<String, @Nullable Object>>) (Class<?>) Map.class;
     }
 }

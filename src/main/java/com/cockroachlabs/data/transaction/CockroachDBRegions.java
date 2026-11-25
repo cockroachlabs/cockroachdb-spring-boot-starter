@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 import com.cockroachlabs.data.autoconfigure.CockroachDBProperties;
 import com.cockroachlabs.data.multiregion.RegionContext;
 import com.cockroachlabs.data.multiregion.RegionResolver;
+import org.jspecify.annotations.Nullable;
 import org.springframework.transaction.TransactionExecution;
 import org.springframework.transaction.TransactionExecutionListener;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -37,13 +38,13 @@ public class CockroachDBRegions implements TransactionExecutionListener {
     private static final Pattern REGION_PATTERN = Pattern.compile("^[a-z][a-z0-9-]*$");
 
     /** The innermost active scope on this thread; null when none. */
-    private static final ThreadLocal<Binding> BINDING = new ThreadLocal<>();
+    private static final ThreadLocal<@Nullable Binding> BINDING = new ThreadLocal<>();
 
     private final CockroachDBProperties.Region properties;
-    private final RegionResolver regionResolver;
+    private final @Nullable RegionResolver regionResolver;
 
     public CockroachDBRegions(CockroachDBProperties.Region properties,
-                              RegionResolver regionResolver) {
+                              @Nullable RegionResolver regionResolver) {
         this.properties = properties;
         this.regionResolver = regionResolver;
     }
@@ -54,7 +55,7 @@ public class CockroachDBRegions implements TransactionExecutionListener {
         void close();
     }
 
-    private record Binding(String explicitRegion, boolean suppressed) {
+    private record Binding(@Nullable String explicitRegion, boolean suppressed) {
     }
 
     /**
@@ -62,7 +63,7 @@ public class CockroachDBRegions implements TransactionExecutionListener {
      * when not {@code null}, otherwise the resolution chain. Scopes nest; close it in a
      * {@code finally} or try-with-resources.
      */
-    public static Scope bind(String explicitRegion) {
+    public static Scope bind(@Nullable String explicitRegion) {
         return push(new Binding(explicitRegion, false));
     }
 
@@ -87,7 +88,7 @@ public class CockroachDBRegions implements TransactionExecutionListener {
     }
 
     @Override
-    public void afterBegin(TransactionExecution transaction, Throwable beginFailure) {
+    public void afterBegin(TransactionExecution transaction, @Nullable Throwable beginFailure) {
         Binding binding = BINDING.get();
         if (beginFailure != null || binding == null || binding.suppressed()) {
             return;
@@ -116,7 +117,7 @@ public class CockroachDBRegions implements TransactionExecutionListener {
     }
 
     /** {@code explicitRegion} if not null, otherwise the resolution chain; validated; null for none. */
-    private String resolve(String explicitRegion) {
+    private @Nullable String resolve(@Nullable String explicitRegion) {
         if (explicitRegion != null) {
             return validate(explicitRegion);
         }
@@ -131,7 +132,7 @@ public class CockroachDBRegions implements TransactionExecutionListener {
             }
         }
         String fallback = properties.getDefaultRegion();
-        return (fallback != null && !fallback.isBlank()) ? validate(fallback) : null;
+        return !fallback.isBlank() ? validate(fallback) : null;
     }
 
     /**
@@ -141,7 +142,7 @@ public class CockroachDBRegions implements TransactionExecutionListener {
      * @throws IllegalArgumentException if it isn't
      */
     public String validate(String region) {
-        if (region == null || !REGION_PATTERN.matcher(region).matches()) {
+        if (!REGION_PATTERN.matcher(region).matches()) {
             throw new IllegalArgumentException(
                     "Invalid region format: '" + region + "' (must match [a-z][a-z0-9-]*)");
         }

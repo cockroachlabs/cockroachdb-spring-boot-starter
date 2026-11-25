@@ -47,9 +47,5 @@ public interface McpClient {
 
     /** Configuration for an MCP client. A blank endpoint selects the simulated client. */
     record Config(boolean enabled, String endpoint, String token) {
-        public Config {
-            endpoint = endpoint == null ? "" : endpoint;
-            token = token == null ? "" : token;
-        }
     }
 }

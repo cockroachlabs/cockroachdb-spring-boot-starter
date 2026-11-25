@@ -1,10 +1,11 @@
 package com.cockroachlabs.data.multiregion;
 
 import java.util.Optional;
+import org.jspecify.annotations.Nullable;
 
 public final class RegionContext {
 
-    private static final ThreadLocal<String> HOLDER = new ThreadLocal<>();
+    private static final ThreadLocal<@Nullable String> HOLDER = new ThreadLocal<>();
 
     private RegionContext() {}
 
@@ -26,7 +27,7 @@ public final class RegionContext {
 
     public static class RegionScope implements AutoCloseable {
 
-        private final String previous;
+        private final @Nullable String previous;
 
         RegionScope(String region) {
             this.previous = HOLDER.get();

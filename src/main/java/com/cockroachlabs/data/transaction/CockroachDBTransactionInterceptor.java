@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import com.cockroachlabs.data.annotation.CockroachDBTransactional;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.jspecify.annotations.Nullable;
 import org.springframework.aop.ProxyMethodInvocation;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.MethodClassKey;
@@ -55,11 +56,11 @@ class CockroachDBTransactionInterceptor implements MethodInterceptor {
     }
 
     /** What to do for one method: whether and how to retry it, and its explicit region. */
-    private record Plan(boolean retried, RetrySettings settings, String region) {
+    private record Plan(boolean retried, RetrySettings settings, @Nullable String region) {
     }
 
     @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
+    public @Nullable Object invoke(MethodInvocation invocation) throws Throwable {
         Class<?> targetClass = invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null;
         Plan plan = plans.computeIfAbsent(new MethodClassKey(invocation.getMethod(), targetClass),
                 key -> plan(invocation.getMethod(), targetClass));
@@ -73,7 +74,7 @@ class CockroachDBTransactionInterceptor implements MethodInterceptor {
         }
     }
 
-    private Plan plan(Method method, Class<?> targetClass) {
+    private Plan plan(Method method, @Nullable Class<?> targetClass) {
         CockroachDBTransactional annotation = findAnnotation(method, targetClass);
         RetrySettings settings = retry.get().defaults();
         if (annotation == null) {
@@ -99,7 +100,7 @@ class CockroachDBTransactionInterceptor implements MethodInterceptor {
      * The {@code @CockroachDBTransactional} that applies, looked up the way Spring looks up
      * {@code @Transactional}: the most specific method first, then its class.
      */
-    private static CockroachDBTransactional findAnnotation(Method method, Class<?> targetClass) {
+    private static @Nullable CockroachDBTransactional findAnnotation(Method method, @Nullable Class<?> targetClass) {
         Method specificMethod = AopUtils.getMostSpecificMethod(method, targetClass);
         CockroachDBTransactional annotation =
                 AnnotatedElementUtils.findMergedAnnotation(specificMethod, CockroachDBTransactional.class);

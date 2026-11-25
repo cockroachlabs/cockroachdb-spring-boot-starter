@@ -2,6 +2,7 @@ package com.cockroachlabs.data.transaction;
 
 import java.lang.reflect.Method;
 import org.aopalliance.aop.Advice;
+import org.jspecify.annotations.Nullable;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
@@ -34,7 +35,7 @@ public class CockroachDBTransactionAdvisor extends AbstractPointcutAdvisor
 
     private final TransactionAttributeSource transactionAttributeSource;
     private final CockroachDBTransactionInterceptor interceptor;
-    private BeanFactory beanFactory;
+    private @Nullable BeanFactory beanFactory;
 
     private final Pointcut pointcut = new StaticMethodMatcherPointcut() {
 

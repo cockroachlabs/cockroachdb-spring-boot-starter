@@ -3,6 +3,7 @@ package com.cockroachlabs.data.continuum.mcp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 /**
  * In-memory {@link McpClient} for development and tests. Advertises a small canned
@@ -22,9 +23,8 @@ class SimulatedMcpClient implements McpClient {
 
     @Override
     public CallResult callTool(String name, Map<String, Object> arguments) {
-        Map<String, Object> args = arguments == null ? Map.of() : arguments;
-        calls.add(Map.entry(name, args));
-        String text = "ping".equals(name) ? "pong" : toJson(args);
+        calls.add(Map.entry(name, arguments));
+        String text = "ping".equals(name) ? "pong" : toJson(arguments);
         return new CallResult(List.of(new Content("text", text)), false);
     }
 
@@ -34,7 +34,7 @@ class SimulatedMcpClient implements McpClient {
     }
 
     // Minimal JSON for the echo payload (simulated-only; strings/numbers/booleans/maps).
-    private static String toJson(Object value) {
+    private static String toJson(@Nullable Object value) {
         if (value == null) {
             return "null";
         }

@@ -9,6 +9,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
@@ -26,7 +27,7 @@ public class VectorSearchAspect {
     }
 
     @Around("@annotation(vectorSearch)")
-    public Object around(ProceedingJoinPoint pjp,
+    public @Nullable Object around(ProceedingJoinPoint pjp,
                          VectorSearch vectorSearch) throws Throwable {
 
         float[] queryVector = extractQueryVector(pjp, vectorSearch.queryParam());
@@ -54,7 +55,7 @@ public class VectorSearchAspect {
         }
     }
 
-    private float[] extractQueryVector(ProceedingJoinPoint pjp, String paramName) {
+    private float @Nullable [] extractQueryVector(ProceedingJoinPoint pjp, String paramName) {
         MethodSignature sig = (MethodSignature) pjp.getSignature();
         String[] paramNames = sig.getParameterNames();
         Object[] args = pjp.getArgs();

@@ -1,6 +1,7 @@
 package com.cockroachlabs.data.multiregion;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.Nullable;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -13,7 +14,7 @@ public class HeaderRegionResolver implements RegionResolver {
     }
 
     @Override
-    public String resolve() {
+    public @Nullable String resolve() {
         ServletRequestAttributes attrs = (ServletRequestAttributes)
                 RequestContextHolder.getRequestAttributes();
         if (attrs == null) return null;

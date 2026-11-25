@@ -2,14 +2,15 @@ package com.cockroachlabs.data.cdc;
 
 import java.time.Instant;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 public record CDCEvent<T>(
-        T after,
-        T before,
-        List<Object> key,
+        @Nullable T after,
+        @Nullable T before,
+        @Nullable List<@Nullable Object> key,
         CDCOperationType operation,
-        String table,
-        Instant timestamp
+        @Nullable String table,
+        @Nullable Instant timestamp
 ) {
 
     public boolean isInsert() {

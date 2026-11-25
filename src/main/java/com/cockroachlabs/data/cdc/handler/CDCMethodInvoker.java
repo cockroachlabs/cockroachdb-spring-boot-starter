@@ -9,6 +9,7 @@ import com.cockroachlabs.data.cdc.CDCEnvelope;
 import com.cockroachlabs.data.cdc.CDCEvent;
 import com.cockroachlabs.data.cdc.CDCOperationType;
 import com.cockroachlabs.data.cdc.CDCPayload;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.ObjectMapper;
 
 public class CDCMethodInvoker {
@@ -69,7 +70,7 @@ public class CDCMethodInvoker {
             CDCOperationType op = payload.resolveOperation();
             if (!descriptor.allowedOperations().contains(op)) continue;
 
-            Map<String, Object> data = (op == CDCOperationType.DELETE)
+            @Nullable Map<String, @Nullable Object> data = (op == CDCOperationType.DELETE)
                     ? Map.of()
                     : payload.after();
 
@@ -87,12 +88,12 @@ public class CDCMethodInvoker {
         return new CDCEvent<>(after, before, payload.key(), op, payload.topic(), timestamp);
     }
 
-    private <T> T convertOrNull(Map<String, Object> map, Class<T> type) {
+    private <T> @Nullable T convertOrNull(@Nullable Map<String, @Nullable Object> map, Class<T> type) {
         if (map == null || map.isEmpty()) return null;
         return objectMapper.convertValue(map, type);
     }
 
-    private Instant parseTimestamp(String hlcTimestamp) {
+    private @Nullable Instant parseTimestamp(@Nullable String hlcTimestamp) {
         if (hlcTimestamp == null || hlcTimestamp.isBlank()) return null;
         try {
             String secondsPart = hlcTimestamp.contains(".")
@@ -121,7 +122,7 @@ public class CDCMethodInvoker {
     }
 
     public static class CDCHandlerException extends RuntimeException {
-        public CDCHandlerException(String message, Throwable cause) {
+        public CDCHandlerException(String message, @Nullable Throwable cause) {
             super(message, cause);
         }
     }

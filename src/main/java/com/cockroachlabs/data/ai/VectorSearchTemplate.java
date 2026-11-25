@@ -60,7 +60,7 @@ public class VectorSearchTemplate {
                    .append(distanceExpr).append(" AS distance FROM ")
                    .append(table);
 
-                if (filter != null && !filter.isBlank()) {
+                if (!filter.isBlank()) {
                     sql.append(" WHERE ").append(filter);
                 }
 
@@ -147,21 +147,21 @@ public class VectorSearchTemplate {
     }
 
     private String buildSelectColumns(List<String> columns) {
-        if (columns == null || columns.isEmpty()) {
+        if (columns.isEmpty()) {
             return "*";
         }
         return String.join(", ", columns);
     }
 
     private void validateInputs(String table, String vectorColumn, float[] vector) {
-        if (table == null || table.isBlank()) {
+        if (table.isBlank()) {
             throw new IllegalArgumentException("Table name must not be blank");
         }
-        if (vectorColumn == null || vectorColumn.isBlank()) {
+        if (vectorColumn.isBlank()) {
             throw new IllegalArgumentException("Vector column name must not be blank");
         }
-        if (vector == null || vector.length == 0) {
-            throw new IllegalArgumentException("Query vector must not be null or empty");
+        if (vector.length == 0) {
+            throw new IllegalArgumentException("Query vector must not be empty");
         }
     }
 }

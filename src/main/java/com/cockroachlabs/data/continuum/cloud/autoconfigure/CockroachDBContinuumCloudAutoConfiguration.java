@@ -33,7 +33,7 @@ public class CockroachDBContinuumCloudAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public CloudClient cockroachCloudClient(CockroachDBContinuumCloudProperties props) {
-        if (props.getApiKey() != null && !props.getApiKey().isBlank()) {
+        if (!props.getApiKey().isBlank()) {
             return HttpCloudClient.create(props.getBaseUrl(), props.getApiKey());
         }
         return new SimulatedCloudClient();

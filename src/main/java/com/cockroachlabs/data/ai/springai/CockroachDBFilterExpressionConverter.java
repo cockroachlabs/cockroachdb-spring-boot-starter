@@ -15,9 +15,6 @@ public class CockroachDBFilterExpressionConverter {
     private static final String METADATA_COLUMN = "metadata";
 
     public String convertExpression(Expression expression) {
-        if (expression == null) {
-            return "";
-        }
         return convertOperand(expression);
     }
 
@@ -37,11 +34,11 @@ public class CockroachDBFilterExpressionConverter {
 
         if (type == ExpressionType.AND) {
             return "(" + convertOperand(expression.left()) + " AND "
-                    + convertOperand(expression.right()) + ")";
+                    + convertOperand(right(expression)) + ")";
         }
         if (type == ExpressionType.OR) {
             return "(" + convertOperand(expression.left()) + " OR "
-                    + convertOperand(expression.right()) + ")";
+                    + convertOperand(right(expression)) + ")";
         }
         if (type == ExpressionType.NOT) {
             return "NOT (" + convertOperand(expression.left()) + ")";
@@ -57,9 +54,18 @@ public class CockroachDBFilterExpressionConverter {
         return convertComparison(expression);
     }
 
+    /** The right operand, which every expression but {@code NOT} has. */
+    private static Operand right(Expression expression) {
+        Operand right = expression.right();
+        if (right == null) {
+            throw new IllegalArgumentException("Expression " + expression.type() + " has no right operand");
+        }
+        return right;
+    }
+
     private String convertComparison(Expression expression) {
         String key = ((Key) expression.left()).key();
-        Object value = ((Value) expression.right()).value();
+        Object value = ((Value) right(expression)).value();
         String operator = switch (expression.type()) {
             case EQ -> "=";
             case NE -> "!=";
@@ -79,9 +85,10 @@ public class CockroachDBFilterExpressionConverter {
     private String convertIn(Expression expression, boolean negate) {
         String key = ((Key) expression.left()).key();
         @SuppressWarnings("unchecked")
-        List<Object> values = ((Value) expression.right()).value() instanceof List<?> list
+        Object operand = ((Value) right(expression)).value();
+        List<Object> values = operand instanceof List<?> list
                 ? (List<Object>) list
-                : List.of(((Value) expression.right()).value());
+                : List.of(operand);
 
         String inClause = values.stream()
                 .map(v -> v instanceof Number ? v.toString() : quote(v.toString()))

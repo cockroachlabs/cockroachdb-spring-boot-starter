@@ -6,15 +6,16 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class RegionContextFilter extends OncePerRequestFilter {
 
     private final CockroachDBProperties properties;
-    private final RegionResolver resolver;
+    private final @Nullable RegionResolver resolver;
 
     public RegionContextFilter(CockroachDBProperties properties,
-                               RegionResolver resolver) {
+                               @Nullable RegionResolver resolver) {
         this.properties = properties;
         this.resolver = resolver;
     }
@@ -34,7 +35,7 @@ public class RegionContextFilter extends OncePerRequestFilter {
         }
     }
 
-    private String resolveFromRequest(HttpServletRequest request) {
+    private @Nullable String resolveFromRequest(HttpServletRequest request) {
         String headerName = properties.getRegion().getHeaderName();
         String fromHeader = request.getHeader(headerName);
         if (fromHeader != null && !fromHeader.isBlank()) {

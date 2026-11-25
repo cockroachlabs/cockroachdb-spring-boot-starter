@@ -12,6 +12,7 @@ import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.metamodel.mapping.AttributeMapping;
 import org.hibernate.metamodel.mapping.SelectableMapping;
 import org.hibernate.persister.entity.EntityPersister;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 
@@ -66,7 +67,7 @@ final class MultiregionEntities {
 		return canonical != null ? canonical : type.getName();
 	}
 
-	private static String regionColumn(EntityPersister persister, Class<?> type) {
+	private static @Nullable String regionColumn(EntityPersister persister, Class<?> type) {
 		for (Class<?> c = type; c != null && c != Object.class; c = c.getSuperclass()) {
 			for (Field field : c.getDeclaredFields()) {
 				if (field.isAnnotationPresent(CrdbRegion.class)) {

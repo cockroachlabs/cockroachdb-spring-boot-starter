@@ -32,9 +32,6 @@ class CloudClientTest {
         c.configureMetricExport(clusters.get(0).id(),
                 new MetricExportConfig(MetricExportTarget.DATADOG, Map.of("site", "us5", "api_key", "dd")));
         assertThat(c.metricExports().get(clusters.get(0).id()).target()).isEqualTo(MetricExportTarget.DATADOG);
-
-        assertThatThrownBy(() -> c.configureMetricExport("x", new MetricExportConfig(null, Map.of())))
-                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

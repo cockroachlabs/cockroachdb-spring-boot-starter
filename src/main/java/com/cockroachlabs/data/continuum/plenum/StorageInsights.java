@@ -1,6 +1,8 @@
 package com.cockroachlabs.data.continuum.plenum;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.lang.Contract;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,8 +31,8 @@ public class StorageInsights {
     public List<TableStorage> summary() {
         Map<String, Long> sizes = tableSizes();
         List<TableStorage> out = new ArrayList<>();
-        List<Map<String, Object>> tables = safeQuery("SHOW TABLES");
-        for (Map<String, Object> row : tables) {
+        List<Map<String, @Nullable Object>> tables = safeQuery("SHOW TABLES");
+        for (Map<String, @Nullable Object> row : tables) {
             String schema = str(row, "schema_name", "public");
             String table = str(row, "table_name", null);
             if (table == null) {
@@ -54,7 +56,7 @@ public class StorageInsights {
         Map<String, Long> map = new HashMap<>();
         String db = currentDatabase();
         String sql = "SHOW RANGES FROM DATABASE " + quoteIdent(db) + " WITH TABLES, DETAILS";
-        for (Map<String, Object> row : safeQuery(sql)) {
+        for (Map<String, @Nullable Object> row : safeQuery(sql)) {
             String table = str(row, "table_name", null);
             Long size = asLong(row.get("range_size"));
             if (table != null && size != null) {
@@ -73,7 +75,7 @@ public class StorageInsights {
         }
     }
 
-    private List<Map<String, Object>> safeQuery(String sql) {
+    private List<Map<String, @Nullable Object>> safeQuery(String sql) {
         try {
             return jdbcTemplate.queryForList(sql);
         } catch (RuntimeException e) {
@@ -82,12 +84,13 @@ public class StorageInsights {
         }
     }
 
-    private static String str(Map<String, Object> row, String key, String dflt) {
+    @Contract("_, _, !null -> !null")
+    private static @Nullable String str(Map<String, @Nullable Object> row, String key, @Nullable String dflt) {
         Object v = row.get(key);
         return v != null ? v.toString() : dflt;
     }
 
-    private static Long asLong(Object v) {
+    private static @Nullable Long asLong(@Nullable Object v) {
         if (v == null) {
             return null;
         }
@@ -101,7 +104,7 @@ public class StorageInsights {
         }
     }
 
-    private static OptionalLong optional(Long v) {
+    private static OptionalLong optional(@Nullable Long v) {
         return v == null ? OptionalLong.empty() : OptionalLong.of(v);
     }
 

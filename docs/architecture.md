@@ -35,6 +35,23 @@ Default to package-private, not `public`. A class, constructor, method or field 
 - Some members must be `public` for Java or for reflection: interface method implementations, and methods discovered with `getMethods()` (such as `@AgentTool` methods).
 - Tests live in the same package as the code they test, so they don't need `public` access.
 
+### Null safety, the Spring way
+
+The starter follows [Spring's null-safety approach](https://docs.spring.io/spring-framework/reference/core/null-safety.html), so its nullness reads the same as Spring Framework 7's to IDEs, Kotlin and NullAway. Every package under `src/main/java` has a `package-info.java` annotated with JSpecify's `@NullMarked`, which makes every type in it non-null unless it is annotated `@Nullable`. A new package gets that `package-info.java` too.
+
+**The rule: if a value can be `null`, its type says so.** Annotate every parameter, return value, field, record component and type argument that can hold `null` with `org.jspecify.annotations.Nullable`, so code that reads it is forced to deal with `null`, and nowhere else. Places it is easy to miss:
+
+- **Overrides of Spring APIs keep Spring's nullness**, return values included. NullAway rejects a non-null parameter where Spring's is `@Nullable`, but it accepts a return narrowed from `@Nullable` to non-null (`BeanPostProcessor.postProcessAfterInitialization`, `HealthIndicator.health`, and so on); `NullSafetyConventionsTest` catches those. For generic methods, keep Spring's bounds: `<T extends @Nullable Object> T execute(TransactionCallback<T>)`.
+- **Values from code that isn't null-annotated** can be `null` even when nothing says so: JDBC (`ResultSet.getString`), the servlet API, reflection (`getAnnotation`), Jackson-bound maps, and AspectJ. An `@Around` advice returns whatever `ProceedingJoinPoint.proceed()` returns, which is `null` for a `void` method, so it is declared `@Nullable Object`.
+- **Thread-locals.** `ThreadLocal.get()` returns `null` until a value is set, so declare `ThreadLocal<@Nullable T>`, and make any field that stores a `get()` result `@Nullable`. NullAway doesn't check this (it ignores type-argument nullness on JDK classes); IntelliJ IDEA does.
+- **DTOs bound by Jackson.** Jackson leaves a reference field `null` when the JSON omits it or sends `null`, and `@JsonIgnoreProperties(ignoreUnknown = true)` doesn't change that. So every reference component of a record read from JSON is `@Nullable` (including map values and list elements, for example `Map<String, @Nullable Object>`), unless its compact constructor replaces `null` (as `CDCEnvelope` turns a missing `payload` into an empty list).
+- **Optional injection points.** A `@RequestHeader(required = false)` (and likewise for request parameters and other optional arguments) is `null` when absent, so it is `@Nullable`.
+- **Configuration properties.** A property with a default (`private String authToken = "";`) is non-null; one without a default is `@Nullable`.
+
+The other side of the rule: **don't null-check a value whose type is non-null.** The type is the contract, so a check on it is dead code that suggests otherwise. When a method really accepts `null` (a test passes it, or the Javadoc promises it), make the parameter `@Nullable` and keep the check instead. A caller that passes `null` where it isn't allowed gets a `NullPointerException`. A builder whose `build()` needs a required field checks it in the constructor, which reads every field from the builder.
+
+Mind where a type-use annotation goes: `String @Nullable []` (a nullable array), `float @Nullable []`, `String @Nullable ... columns`, and `Outer.@Nullable Inner` for a nested type. `@Nullable` on a local variable is never needed: NullAway infers it.
+
 ### Turn on only what's needed
 
 Each feature area (transactions, metrics, CDC, AI, Continuum) has its own auto-configuration, gated by classpath conditions and `cockroachdb.*` properties. Transaction retries are on by default because every CockroachDB application needs them; heavier features such as CDC and AI are off until an application enables them.
@@ -156,5 +173,6 @@ CDC handlers are discovered at startup via `@CockroachDBCDC` annotation scanning
 These apply to the starter itself and shape what guides can assume ([guides.md](guides.md)):
 
 - Built with GraalVM 25 and compiled with `--release 17`, so the published jar runs on any Java 17+ JVM.
+- Main sources are checked by [NullAway](https://github.com/uber/NullAway) (through Error Prone, in JSpecify mode, for `com.cockroachlabs`), and a violation fails the build. Tests are not checked. `NullSafetyConventionsTest` checks by reflection what NullAway can't: that every package is `@NullMarked`, that overrides of Spring APIs keep Spring's nullness (return values included), and that `@Around` advice returns `@Nullable Object`. See [Null safety, the Spring way](#null-safety-the-spring-way). ArchUnit can't take this over yet: it doesn't import type-use annotations such as `@Nullable` ([TNG/ArchUnit#1382](https://github.com/TNG/ArchUnit/issues/1382)).
 - Tests run on JDK 17 by default; CI runs them on 17, 21 and 25.
 - Integration tests use Testcontainers (`testcontainers-cockroachdb`) and need only a container runtime.

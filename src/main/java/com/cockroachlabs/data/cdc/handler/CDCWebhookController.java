@@ -4,6 +4,7 @@ import com.cockroachlabs.data.cdc.CDCEnvelope;
 import com.cockroachlabs.data.cdc.CDCOperationType;
 import com.cockroachlabs.data.cdc.autoconfigure.CockroachDBCDCProperties;
 import com.cockroachlabs.data.cdc.metrics.CDCMetrics;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class CDCWebhookController {
             @PathVariable String endpoint,
             @RequestBody String body,
             @RequestHeader(value = "${cockroachdb.cdc.auth-header:Authorization}",
-                           required = false) String authHeader) {
+                           required = false) @Nullable String authHeader) {
 
         String normalizedEndpoint = "/" + endpoint;
         metrics.recordWebhookReceived(normalizedEndpoint, body.length());
@@ -72,7 +73,7 @@ public class CDCWebhookController {
             invoker.invoke(handler, envelope);
             long durationNanos = System.nanoTime() - startNanos;
 
-            int eventCount = envelope.payload() != null ? envelope.payload().size() : 1;
+            int eventCount = envelope.hasPayload() ? envelope.payload().size() : 1;
             CDCOperationType op = envelope.hasPayload()
                     ? envelope.payload().get(0).resolveOperation()
                     : CDCOperationType.INSERT;
@@ -89,9 +90,9 @@ public class CDCWebhookController {
         }
     }
 
-    private boolean authenticateRequest(String authHeader) {
+    private boolean authenticateRequest(@Nullable String authHeader) {
         String expectedToken = properties.getAuthToken();
-        if (expectedToken == null || expectedToken.isBlank()) {
+        if (expectedToken.isBlank()) {
             return true;
         }
         return expectedToken.equals(authHeader);

@@ -33,7 +33,7 @@ public final class MetricExport {
         Map<String, Object> settings = new LinkedHashMap<>();
         settings.put("role_arn", roleArn);
         settings.put("log_group_name", logGroupName);
-        if (targetRegion != null && !targetRegion.isBlank()) {
+        if (!targetRegion.isBlank()) {
             settings.put("target_region", targetRegion);
         }
         return new MetricExportConfig(MetricExportTarget.CLOUDWATCH, settings);

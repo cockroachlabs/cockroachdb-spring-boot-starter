@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.cockroachlabs'
-version = '0.7.1'
+version = '0.7.2'
 
 // Build with GraalVM 25, but emit (and compile against the API of) Java 17 so the
 // starter runs on any Java 17+ JVM. `release` rejects newer JDK APIs at compile

@@ -84,7 +84,7 @@ public class CockroachDBAutoConfiguration {
 
     /**
      * Registers {@link CockroachDBRegions} with every transaction manager that accepts
-     * execution listeners, so transactions begun by retried methods get their session region.
+     * execution listeners, so transactions begun by retried methods are bound to their region.
      * The listener looks up {@code CockroachDBRegions} lazily, on first use.
      */
     @Bean
@@ -94,6 +94,14 @@ public class CockroachDBAutoConfiguration {
             public @Nullable Object postProcessAfterInitialization(Object bean, String beanName) {
                 if (bean instanceof ConfigurableTransactionManager transactionManager) {
                     transactionManager.addListener(new TransactionExecutionListener() {
+                        @Override
+                        public void beforeBegin(TransactionExecution transaction) {
+                            CockroachDBRegions listener = regions.getIfAvailable();
+                            if (listener != null) {
+                                listener.beforeBegin(transaction);
+                            }
+                        }
+
                         @Override
                         public void afterBegin(TransactionExecution transaction, @Nullable Throwable beginFailure) {
                             CockroachDBRegions listener = regions.getIfAvailable();

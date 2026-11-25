@@ -104,8 +104,8 @@ public @interface CockroachDBTransactional {
     long maxDelay() default -1;
 
     /**
-     * Session region ({@code SET crdb_region}) for REGIONAL BY ROW tables, set at the start of
-     * each transaction. Empty uses {@code RegionContext}, the {@code RegionResolver}, then
+     * Region that new REGIONAL BY ROW entities are homed to, bound to each transaction this
+     * method begins and copied into their {@code @CrdbRegion} field. No SQL is run for it. Empty uses {@code RegionContext}, the {@code RegionResolver}, then
      * {@code cockroachdb.region.default-region}.
      */
     String region() default "";

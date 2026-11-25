@@ -93,7 +93,7 @@ cockroachdb:
     jitter: 50            # Randomized jitter in ms
     apply-to-transactional-methods: true  # Also retry plain @Transactional methods
   region:
-    default-region: ""    # Default region (empty = gateway region)
+    default-region: ""    # Default region for new REGIONAL BY ROW rows (empty = none)
     validate: false       # Validate against allowed list
     allowed: []           # Allowed regions (empty = allow any)
     resolver: context     # Strategy: static | header | context | bean
@@ -141,7 +141,7 @@ public class AccountService {
 | `delay` | `cockroachdb.retry.delay` | Milliseconds before the first retry |
 | `multiplier` | `cockroachdb.retry.multiplier` | Factor applied to the delay after each retry |
 | `maxDelay` | `cockroachdb.retry.max-delay` | Longest wait between retries, in milliseconds |
-| `region` | resolved per transaction | Session region for REGIONAL BY ROW tables (see [Multi-Region Support](#3-multi-region-support)) |
+| `region` | resolved per transaction | Region that new REGIONAL BY ROW rows are homed to (see [Multi-Region Support](#3-multi-region-support)) |
 
 Use it where a method needs different retry settings, a fixed region, or retries even when `apply-to-transactional-methods` is off:
 
@@ -219,7 +219,14 @@ As with `TransactionTemplate`, configure an instance before sharing it between t
 
 ### 3. Multi-Region Support
 
-The starter runs `SET crdb_region = '...'` at the start of every transaction begun by a `@Transactional` method, a `@CockroachDBTransactional` method or `CockroachDBTransactionTemplate`, using the region resolution chain below. With no region from any source, it runs nothing and CockroachDB uses the gateway node's region.
+When a transaction begins in a `@Transactional` method, a `@CockroachDBTransactional` method or `CockroachDBTransactionTemplate`, the starter resolves a region from the chain below, validates it, and binds it to `RegionContext` until the transaction completes (each retry gets a new transaction and binds it again). `RegionalByRowListener` then copies it into the `@CrdbRegion` field of each `@RegionalByRow` entity persisted in that transaction (see [`@RegionalByRow`](#4-jpa-entity-annotations)).
+
+What the region does and doesn't do:
+
+- **It homes new JPA rows, nothing more.** CockroachDB has no session setting for a region, so the starter runs no SQL for it. The region doesn't route queries, pick a gateway node, or affect reads.
+- **Raw SQL isn't homed.** Rows written with `JdbcTemplate` or plain JDBC get whatever your SQL puts in the region column, or its default (the gateway node's region). Read `RegionContext.current()` and write it yourself if you need to.
+- **No region means no value.** If no source gives a region, the field stays `null` unless `@RegionalByRow(defaultRegion = ...)` sets one, and the insert fails the column's `NOT NULL` constraint. Set a default, or use `@DynamicInsert` so the column's default applies.
+- **Invalid names are rejected.** A region must match `[a-z][a-z0-9-]*`, and, with `cockroachdb.region.validate=true`, be in `cockroachdb.region.allowed`. Otherwise the transaction fails to start with an `IllegalArgumentException`.
 
 #### Set region via `@CockroachDBTransactional`
 
@@ -300,7 +307,7 @@ When multiple sources provide a region, the highest-priority source wins:
 | 2 | `RegionContext.current()` | ThreadLocal (filter, scoped) |
 | 3 | `RegionResolver` bean | Header, GeoIP, custom |
 | 4 | `cockroachdb.region.default-region` | `application.yml` |
-| 5 | *(empty)* | CockroachDB uses gateway node's region |
+| 5 | *(none)* | `@RegionalByRow(defaultRegion)`, if set; otherwise the field stays `null` |
 
 ### 4. JPA Entity Annotations
 
@@ -1266,19 +1273,19 @@ public class MyApplication { ... }
 
 ## How It Works
 
-Transactions are run by Spring's own transaction support; the starter adds retries and session regions around it. Spring's transaction advisor does what everyone expects of `@Transactional` (starting the transaction, propagation, isolation, timeouts, rollback rules, commit); the starter's advisor wraps it to add what CockroachDB's SERIALIZABLE model needs.
+Transactions are run by Spring's own transaction support; the starter adds retries and per-transaction regions around it. Spring's transaction advisor does what everyone expects of `@Transactional` (starting the transaction, propagation, isolation, timeouts, rollback rules, commit); the starter's advisor wraps it to add what CockroachDB's SERIALIZABLE model needs.
 
 ```
 CockroachDBTransactionAdvisor  (LOWEST_PRECEDENCE - 2: outside Spring's transaction advisor)
   └─ retry loop: one attempt per fresh transaction, only at the outermost transactional call
        └─ Spring's TransactionInterceptor  (LOWEST_PRECEDENCE)
-            └─ transaction begins → CockroachDBRegions listener runs SET crdb_region = '...'
+            └─ transaction begins → CockroachDBRegions listener binds the region to RegionContext
                  └─ Your method
 ```
 
 - **Which methods.** The advisor matches through the same `TransactionAttributeSource` as Spring's transaction advisor, so it covers exactly the methods Spring treats as transactional: `@Transactional` on methods, classes and interfaces, composed annotations such as `@CockroachDBTransactional`, and `jakarta.transaction.Transactional`. Plain `@Transactional` methods are retried unless `cockroachdb.retry.apply-to-transactional-methods=false`.
 - **Retries.** Because the advisor sits outside Spring's transaction interceptor, each attempt re-enters it and gets a new transaction, which CockroachDB requires after a `40001`. When a transaction is already active, the method runs once.
-- **Regions.** `SET crdb_region` must run inside the transaction, after it begins. The starter registers a `TransactionExecutionListener` with every `ConfigurableTransactionManager` bean; when a transaction begins inside a retried call, the listener sets the region from the resolution chain.
+- **Regions.** The region belongs to a transaction, so it is bound when one begins, not when the method is called. The starter registers a `TransactionExecutionListener` with every `ConfigurableTransactionManager` bean; when a transaction begins inside a retried call, the listener resolves and validates the region from the resolution chain before the transaction manager acquires a connection, then binds it to `RegionContext` until the transaction completes. No SQL is run for it.
 - **Enabled like Spring's transaction management.** Spring's `@EnableTransactionManagement` has a counterpart, `@EnableCockroachDBTransactionManagement`, which registers the retry advisor. You don't normally write either: Spring Boot applies `@EnableTransactionManagement` whenever there is a transaction manager, and the starter applies `@EnableCockroachDBTransactionManagement` with its defaults whenever Spring's transaction advisor is present. Declare it yourself only to change a default, such as the advisor's `order`; the starter's auto-configuration then backs off.
 
   ```java
@@ -1310,7 +1317,8 @@ Any other exception is recorded as a failure and rethrown unchanged, after Sprin
 - **`CockroachDBTemplate` is now `CockroachDBTransactionTemplate`**, extends Spring's `TransactionTemplate`, and implements the new `CockroachDBTransactionOperations` interface. Rename the type where you inject it; `execute(Supplier)`, `executeWithoutResult(Runnable)` and `inRegion(...).execute(...)` work as before. Its constructor now takes a `SerializationRetry` and `CockroachDBRegions`, which only matters if you create it yourself.
 - **`executeReadCommitted(...)` is removed.** Use a copy with `setIsolationLevel(TransactionDefinition.ISOLATION_READ_COMMITTED)`, which also gets retries.
 - **`inRegion(...)` returns a template** (`CockroachDBTransactionTemplate`, or `CockroachDBTransactionOperations` through the interface) instead of `RegionalExecution`.
-- **The session region is set when a transaction begins**, so a template call that joins a running transaction no longer sets it.
+- **The region is bound when a transaction begins**, so a template call that joins a running transaction doesn't change it.
+- **No `SET crdb_region` is run.** CockroachDB has no such session variable, so the old statement failed. The region now only fills `@CrdbRegion` fields of `@RegionalByRow` entities (see [Multi-Region Support](#3-multi-region-support)); it never routed queries or picked a gateway node, and rows written with raw SQL aren't homed.
 - **`CockroachDBAspect` and the unused `cockroachdb.isolation` property are removed.**
 - **The `cockroachdb.transactions.failure` metric** now counts every failed transaction, not only those that ran out of retries.
 

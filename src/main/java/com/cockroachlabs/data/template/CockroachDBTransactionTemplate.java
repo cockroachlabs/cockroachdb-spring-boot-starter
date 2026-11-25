@@ -27,8 +27,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * <ul>
  *   <li>retry settings ({@link #setMaxRetries}, {@link #setDelay}, {@link #setMultiplier},
  *       {@link #setMaxDelay}), which default to the {@code cockroachdb.retry.*} properties;</li>
- *   <li>a session region ({@link #setRegion}, or the {@link #inRegion} shortcut) for
- *       REGIONAL BY ROW tables, which defaults to {@code RegionContext}, the
+ *   <li>a region ({@link #setRegion}, or the {@link #inRegion} shortcut) that new
+ *       REGIONAL BY ROW entities are homed to, which defaults to {@code RegionContext}, the
  *       {@code RegionResolver}, then {@code cockroachdb.region.default-region};</li>
  *   <li>{@link Supplier} and {@link Runnable} overloads for callbacks that don't need the
  *       {@code TransactionStatus}, inherited from {@code CockroachDBTransactionOperations}.</li>
@@ -121,8 +121,8 @@ public class CockroachDBTransactionTemplate extends TransactionTemplate
     }
 
     /**
-     * Run {@code SET crdb_region} to this region at the start of each transaction,
-     * overriding {@code RegionContext}, the {@code RegionResolver} and the default region.
+     * Bind this region to each transaction this template begins, so new REGIONAL BY ROW
+     * entities are homed to it, overriding {@code RegionContext}, the {@code RegionResolver} and the default region.
      * {@code null} or blank restores that resolution chain.
      *
      * @throws IllegalArgumentException if the region is malformed or not in

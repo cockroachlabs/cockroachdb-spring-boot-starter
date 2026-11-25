@@ -140,7 +140,7 @@ No region, a suppressed scope, or a transaction begun outside such a scope leave
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.cockroachlabs.data.autoconfigure.CockroachDBProperties.Region,com.cockroachlabs.data.multiregion.RegionResolver)" class="member-name-link">CockroachDBRegions</a><wbr>(<a href="../autoconfigure/CockroachDBProperties.Region.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a>&nbsp;properties,
- <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver)</code></div>
+ @Nullable <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -158,10 +158,10 @@ No region, a suppressed scope, or a transaction begun outside such a scope leave
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#afterBegin(org.springframework.transaction.TransactionExecution,java.lang.Throwable)" class="member-name-link">afterBegin</a><wbr>(org.springframework.transaction.TransactionExecution&nbsp;transaction,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;beginFailure)</code></div>
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;beginFailure)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="CockroachDBRegions.Scope.html" title="interface in com.cockroachlabs.data.transaction">CockroachDBRegions.Scope</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#bind(java.lang.String)" class="member-name-link">bind</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;explicitRegion)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#bind(java.lang.String)" class="member-name-link">bind</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;explicitRegion)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Opens a scope in which transactions that begin get a session region: <code>explicitRegion</code>
 when not <code>null</code>, otherwise the resolution chain.</div>
@@ -203,7 +203,7 @@ is on, in <code>cockroachdb.region.allowed</code>.</div>
 <h3>CockroachDBRegions</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CockroachDBRegions</span><wbr><span class="parameters">(<a href="../autoconfigure/CockroachDBProperties.Region.html" title="class in com.cockroachlabs.data.autoconfigure">CockroachDBProperties.Region</a>&nbsp;properties,
- <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver)</span></div>
+ @Nullable <a href="../multiregion/RegionResolver.html" title="interface in com.cockroachlabs.data.multiregion">RegionResolver</a>&nbsp;regionResolver)</span></div>
 </div>
 </section>
 </li>
@@ -219,7 +219,7 @@ is on, in <code>cockroachdb.region.allowed</code>.</div>
 <section class="detail" id="bind(java.lang.String)">
 <h3>bind</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="CockroachDBRegions.Scope.html" title="interface in com.cockroachlabs.data.transaction">CockroachDBRegions.Scope</a></span>&nbsp;<span class="element-name">bind</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;explicitRegion)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="CockroachDBRegions.Scope.html" title="interface in com.cockroachlabs.data.transaction">CockroachDBRegions.Scope</a></span>&nbsp;<span class="element-name">bind</span><wbr><span class="parameters">(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;explicitRegion)</span></div>
 <div class="block">Opens a scope in which transactions that begin get a session region: <code>explicitRegion</code>
 when not <code>null</code>, otherwise the resolution chain. Scopes nest; close it in a
 <code>finally</code> or try-with-resources.</div>
@@ -241,7 +241,7 @@ that must not run any statement first (follower reads).</div>
 <h3>afterBegin</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">afterBegin</span><wbr><span class="parameters">(org.springframework.transaction.TransactionExecution&nbsp;transaction,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;beginFailure)</span></div>
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;beginFailure)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>afterBegin</code>&nbsp;in interface&nbsp;<code>org.springframework.transaction.TransactionExecutionListener</code></dd>

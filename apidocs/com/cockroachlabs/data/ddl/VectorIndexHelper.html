@@ -129,7 +129,7 @@ CREATE VECTOR INDEX idx ON docs (tenant_id, embedding vector_cosine_ops);
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;tableName,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;vectorColumn,
  <a href="../ai/DistanceMetric.html" title="enum class in com.cockroachlabs.data.ai">DistanceMetric</a>&nbsp;metric,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>...&nbsp;prefixColumns)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a> @Nullable ...&nbsp;prefixColumns)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Generate a v26.2-compatible <code>CREATE VECTOR INDEX</code> statement.</div>
 </div>
@@ -168,7 +168,7 @@ CREATE VECTOR INDEX idx ON docs (tenant_id, embedding vector_cosine_ops);
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;tableName,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;vectorColumn,
  <a href="../ai/DistanceMetric.html" title="enum class in com.cockroachlabs.data.ai">DistanceMetric</a>&nbsp;metric,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>...&nbsp;prefixColumns)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a> @Nullable ...&nbsp;prefixColumns)</span></div>
 <div class="block">Generate a v26.2-compatible <code>CREATE VECTOR INDEX</code> statement.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -176,7 +176,7 @@ CREATE VECTOR INDEX idx ON docs (tenant_id, embedding vector_cosine_ops);
 <dd><code>tableName</code> - the table containing the vector column</dd>
 <dd><code>vectorColumn</code> - the column holding VECTOR data</dd>
 <dd><code>metric</code> - the distance metric (determines the opclass)</dd>
-<dd><code>prefixColumns</code> - optional prefix columns for pre-filtering (may be empty)</dd>
+<dd><code>prefixColumns</code> - optional prefix columns for pre-filtering (may be empty or <code>null</code>)</dd>
 <dt>Returns:</dt>
 <dd>the DDL statement</dd>
 </dl>

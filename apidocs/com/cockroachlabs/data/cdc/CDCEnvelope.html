@@ -86,10 +86,19 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>Record Components:</dt>
+<dd><code><span id="param-payload">payload</span></code> - the row changes; empty for a resolved-timestamp message. Never <code>null</code>, and
+       never holds <code>null</code>: a missing or <code>null</code> payload becomes an empty list, and
+       <code>null</code> entries are dropped</dd>
+<dd><code><span id="param-length">length</span></code> - the number of row changes CockroachDB sent</dd>
+<dd><code><span id="param-resolved">resolved</span></code> - the resolved timestamp, or <code>null</code> for a message of row changes</dd>
+</dl>
 <hr>
 <div class="horizontal-scroll">
-<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">CDCEnvelope</span>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CDCPayload.html" title="class in com.cockroachlabs.data.cdc">CDCPayload</a>&gt;&nbsp;payload, int&nbsp;length, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;resolved)
+<div class="type-signature"><span class="modifiers">public record </span><span class="element-name type-name-label">CDCEnvelope</span>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CDCPayload.html" title="class in com.cockroachlabs.data.cdc">CDCPayload</a>&gt;&nbsp;payload, int&nbsp;length, @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;resolved)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
+<div class="block">A changefeed webhook message: a batch of row changes, or a resolved timestamp.</div>
 </div>
 </section>
 <section class="summary">
@@ -104,7 +113,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,int,java.lang.String)" class="member-name-link">CDCEnvelope</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CDCPayload.html" title="class in com.cockroachlabs.data.cdc">CDCPayload</a>&gt;&nbsp;payload,
  int&nbsp;length,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;resolved)</code></div>
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;resolved)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Creates an instance of a <code>CDCEnvelope</code> record class.</div>
 </div>
@@ -141,17 +150,17 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#length()" class="member-name-link">length</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>length</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-length"><code>length</code></a> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="CDCPayload.html" title="class in com.cockroachlabs.data.cdc">CDCPayload</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#payload()" class="member-name-link">payload</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>payload</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-payload"><code>payload</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolved()" class="member-name-link">resolved</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>resolved</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-resolved"><code>resolved</code></a> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
@@ -181,13 +190,13 @@ loadScripts(document, 'script');</script>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CDCEnvelope</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CDCPayload.html" title="class in com.cockroachlabs.data.cdc">CDCPayload</a>&gt;&nbsp;payload,
  int&nbsp;length,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;resolved)</span></div>
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;resolved)</span></div>
 <div class="block">Creates an instance of a <code>CDCEnvelope</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>payload</code> - the value for the <code>payload</code> record component</dd>
-<dd><code>length</code> - the value for the <code>length</code> record component</dd>
-<dd><code>resolved</code> - the value for the <code>resolved</code> record component</dd>
+<dd><code>payload</code> - the value for the <a href="#param-payload"><code>payload</code></a> record component</dd>
+<dd><code>length</code> - the value for the <a href="#param-length"><code>length</code></a> record component</dd>
+<dd><code>resolved</code> - the value for the <a href="#param-resolved"><code>resolved</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -268,10 +277,10 @@ loadScripts(document, 'script');</script>
 <h3>payload</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="CDCPayload.html" title="class in com.cockroachlabs.data.cdc">CDCPayload</a>&gt;</span>&nbsp;<span class="element-name">payload</span>()</div>
-<div class="block">Returns the value of the <code>payload</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-payload"><code>payload</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>payload</code> record component</dd>
+<dd>the value of the <a href="#param-payload"><code>payload</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -281,10 +290,10 @@ loadScripts(document, 'script');</script>
 <h3>length</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">length</span>()</div>
-<div class="block">Returns the value of the <code>length</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-length"><code>length</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>length</code> record component</dd>
+<dd>the value of the <a href="#param-length"><code>length</code></a> record component</dd>
 </dl>
 </div>
 </section>
@@ -293,11 +302,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="resolved()">
 <h3>resolved</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">resolved</span>()</div>
-<div class="block">Returns the value of the <code>resolved</code> record component.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">resolved</span>()</div>
+<div class="block">Returns the value of the <a href="#param-resolved"><code>resolved</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>resolved</code> record component</dd>
+<dd>the value of the <a href="#param-resolved"><code>resolved</code></a> record component</dd>
 </dl>
 </div>
 </section>

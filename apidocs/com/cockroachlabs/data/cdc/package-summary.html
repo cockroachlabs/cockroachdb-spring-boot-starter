@@ -63,7 +63,8 @@ loadScripts(document, 'script');</script>
 </div>
 <hr>
 <div class="horizontal-scroll">
-<div class="package-signature">package <span class="element-name">com.cockroachlabs.data.cdc</span></div>
+<div class="package-signature"><span class="annotations">@NullMarked
+</span>package <span class="element-name">com.cockroachlabs.data.cdc</span></div>
 </div>
 <section class="summary">
 <ul class="summary-list">
@@ -96,13 +97,17 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab4"><a href="CDCEnvelope.html" title="class in com.cockroachlabs.data.cdc">CDCEnvelope</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab4">&nbsp;</div>
+<div class="col-last even-row-color class-summary class-summary-tab4">
+<div class="block">A changefeed webhook message: a batch of row changes, or a resolved timestamp.</div>
+</div>
 <div class="col-first odd-row-color class-summary class-summary-tab4"><a href="CDCEvent.html" title="class in com.cockroachlabs.data.cdc">CDCEvent</a>&lt;T&gt;</div>
 <div class="col-last odd-row-color class-summary class-summary-tab4">&nbsp;</div>
 <div class="col-first even-row-color class-summary class-summary-tab3"><a href="CDCOperationType.html" title="enum class in com.cockroachlabs.data.cdc">CDCOperationType</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab3">&nbsp;</div>
 <div class="col-first odd-row-color class-summary class-summary-tab4"><a href="CDCPayload.html" title="class in com.cockroachlabs.data.cdc">CDCPayload</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab4">&nbsp;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab4">
+<div class="block">One row change in a changefeed webhook message.</div>
+</div>
 </div>
 </div>
 </div>

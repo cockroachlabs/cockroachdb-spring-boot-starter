@@ -62,7 +62,8 @@ loadScripts(document, 'script');</script>
 </div>
 <hr>
 <div class="horizontal-scroll">
-<div class="package-signature">package <span class="element-name">com.cockroachlabs.data.transaction</span></div>
+<div class="package-signature"><span class="annotations">@NullMarked
+</span>package <span class="element-name">com.cockroachlabs.data.transaction</span></div>
 </div>
 <section class="summary">
 <ul class="summary-list">
@@ -108,7 +109,7 @@ and adding up to <code>jitter</code> ms of randomness either way.</div>
 <div class="block">The one retry loop behind <code>@CockroachDBTransactional</code>, retried <code>@Transactional</code>
 methods and <code>CockroachDBTransactionTemplate</code>.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SerializationRetry.Attempt.html" title="interface in com.cockroachlabs.data.transaction">SerializationRetry.Attempt</a>&lt;T&gt;</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="SerializationRetry.Attempt.html" title="interface in com.cockroachlabs.data.transaction">SerializationRetry.Attempt</a>&lt;T extends @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</div>
 <div class="col-last even-row-color class-summary class-summary-tab1">
 <div class="block">One attempt of the work being retried.</div>
 </div>

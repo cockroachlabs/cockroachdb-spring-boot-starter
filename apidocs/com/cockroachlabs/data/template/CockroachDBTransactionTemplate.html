@@ -188,7 +188,7 @@ threads. To vary settings, copy the shared instance with
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T&gt;&nbsp;T</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;<br>T</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#execute(org.springframework.transaction.support.TransactionCallback)" class="member-name-link">execute</a><wbr>(org.springframework.transaction.support.TransactionCallback&lt;T&gt;&nbsp;action)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Runs <code>action</code> in a transaction, as <code>TransactionTemplate.execute(TransactionCallback)</code> does,
@@ -207,7 +207,7 @@ anywhere in the cause chain, whatever exception type wraps it.</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMultiplier()" class="member-name-link">getMultiplier</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRegion()" class="member-name-link">getRegion</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The explicitly set region, or <code>null</code> when it is resolved per transaction.</div>
@@ -238,7 +238,7 @@ anywhere in the cause chain, whatever exception type wraps it.</div>
 <div class="block">Multiply the delay by this after each retry (default <code>cockroachdb.retry.multiplier</code>).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRegion(java.lang.String)" class="member-name-link">setRegion</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRegion(java.lang.String)" class="member-name-link">setRegion</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Run <code>SET crdb_region</code> to this region at the start of each transaction,
 overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the default region.</div>
@@ -373,7 +373,7 @@ Configure the copy without affecting the original.</div>
 <section class="detail" id="setRegion(java.lang.String)">
 <h3>setRegion</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRegion</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRegion</span><wbr><span class="parameters">(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;region)</span></div>
 <div class="block">Run <code>SET crdb_region</code> to this region at the start of each transaction,
 overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the default region.
 <code>null</code> or blank restores that resolution chain.</div>
@@ -389,7 +389,7 @@ overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the d
 <section class="detail" id="getRegion()">
 <h3>getRegion</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getRegion</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getRegion</span>()</div>
 <div class="block">The explicitly set region, or <code>null</code> when it is resolved per transaction.</div>
 </div>
 </section>
@@ -411,8 +411,8 @@ overriding <code>RegionContext</code>, the <code>RegionResolver</code> and the d
 <section class="detail" id="execute(org.springframework.transaction.support.TransactionCallback)">
 <h3>execute</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">execute</span><wbr><span class="parameters">(org.springframework.transaction.support.TransactionCallback&lt;T&gt;&nbsp;action)</span>
-              throws <span class="exceptions">org.springframework.transaction.TransactionException</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">execute</span><wbr><span class="parameters">(org.springframework.transaction.support.TransactionCallback&lt;T&gt;&nbsp;action)</span>
+                                       throws <span class="exceptions">org.springframework.transaction.TransactionException</span></div>
 <div class="block">Runs <code>action</code> in a transaction, as <code>TransactionTemplate.execute(TransactionCallback)</code> does,
 and retries it in a fresh transaction when it fails with SQLSTATE <code>40001</code>
 anywhere in the cause chain, whatever exception type wraps it. Any other exception

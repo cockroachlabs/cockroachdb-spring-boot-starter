@@ -104,7 +104,7 @@ or <code>TransactionSystemException</code> under JPA). Any other exception is re
 <div class="table-header col-second">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="SerializationRetry.Attempt.html" class="type-name-link" title="interface in com.cockroachlabs.data.transaction">SerializationRetry.Attempt</a>&lt;<a href="SerializationRetry.Attempt.html#type-param-T" title="type parameter in SerializationRetry.Attempt">T</a>&gt;</code></div>
+<div class="col-second even-row-color"><code><a href="SerializationRetry.Attempt.html" class="type-name-link" title="interface in com.cockroachlabs.data.transaction">SerializationRetry.Attempt</a>&lt;<a href="SerializationRetry.Attempt.html#type-param-T" title="type parameter in SerializationRetry.Attempt">T</a> extends @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</code></div>
 <div class="col-last even-row-color">
 <div class="block">One attempt of the work being retried.</div>
 </div>
@@ -141,7 +141,7 @@ or <code>TransactionSystemException</code> under JPA). Any other exception is re
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The <code>cockroachdb.retry.*</code> settings.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T&gt;&nbsp;T</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;<br>T</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#execute(com.cockroachlabs.data.transaction.RetrySettings,com.cockroachlabs.data.transaction.SerializationRetry.Attempt)" class="member-name-link">execute</a><wbr>(<a href="RetrySettings.html" title="class in com.cockroachlabs.data.transaction">RetrySettings</a>&nbsp;settings,
  <a href="SerializationRetry.Attempt.html" title="interface in com.cockroachlabs.data.transaction">SerializationRetry.Attempt</a>&lt;T&gt;&nbsp;attempt)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -195,9 +195,9 @@ or <code>TransactionSystemException</code> under JPA). Any other exception is re
 <section class="detail" id="execute(com.cockroachlabs.data.transaction.RetrySettings,com.cockroachlabs.data.transaction.SerializationRetry.Attempt)">
 <h3>execute</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">execute</span><wbr><span class="parameters">(<a href="RetrySettings.html" title="class in com.cockroachlabs.data.transaction">RetrySettings</a>&nbsp;settings,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">execute</span><wbr><span class="parameters">(<a href="RetrySettings.html" title="class in com.cockroachlabs.data.transaction">RetrySettings</a>&nbsp;settings,
  <a href="SerializationRetry.Attempt.html" title="interface in com.cockroachlabs.data.transaction">SerializationRetry.Attempt</a>&lt;T&gt;&nbsp;attempt)</span>
-              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></span></div>
+                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></span></div>
 <div class="block">Runs <code>attempt</code>, retrying it with backoff while it fails with SQLSTATE
 <code>40001</code>, up to <code>settings.maxRetries()</code> times. Records the outcome in the
 transaction metrics.</div>

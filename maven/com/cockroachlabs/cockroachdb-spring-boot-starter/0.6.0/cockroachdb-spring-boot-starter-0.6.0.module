@@ -25,6 +25,13 @@
       },
       "dependencies": [
         {
+          "group": "org.jspecify",
+          "module": "jspecify",
+          "version": {
+            "requires": "1.0.1"
+          }
+        },
+        {
           "group": "org.springframework.boot",
           "module": "spring-boot-starter",
           "version": {
@@ -64,11 +71,11 @@
         {
           "name": "cockroachdb-spring-boot-starter-0.6.0.jar",
           "url": "cockroachdb-spring-boot-starter-0.6.0.jar",
-          "size": 249258,
-          "sha512": "20f376991524977a29ebd9a418547c03ba636ac7ac503332b8e0dd058b1a4f4c5dc6d4fb1fb2a79b58529a9cad7f05188d6225c26425bf289173f44b9bb7191a",
-          "sha256": "c9ce4aa7614d7d2913e3a5de1b31a1241f9cbbb3bd46f751fbeefefde59d552c",
-          "sha1": "3b7b4385dd29010967791c338e76884805dd34b2",
-          "md5": "be739800b9dfe8371e20e7c4f745125a"
+          "size": 264813,
+          "sha512": "4025a34abb0d2384937557553bc17e204623fc57d88790fb2a44edb8df2ff586251bca8454baec43dac3829e483cba03d71e07fcb3989e165d1535ae30f8c913",
+          "sha256": "643c33939c2c263dde664c05e10fac998022ff19306983a0edf6424751587ae5",
+          "sha1": "39c0d5569d76f73103f300d42cfdc0528d8c7a55",
+          "md5": "b9b2a64eec1631338990bd5a4d1ec0a0"
         }
       ]
     },
@@ -90,6 +97,13 @@
           }
         },
         {
+          "group": "org.jspecify",
+          "module": "jspecify",
+          "version": {
+            "requires": "1.0.1"
+          }
+        },
+        {
           "group": "org.springframework.boot",
           "module": "spring-boot-starter",
           "version": {
@@ -129,11 +143,11 @@
         {
           "name": "cockroachdb-spring-boot-starter-0.6.0.jar",
           "url": "cockroachdb-spring-boot-starter-0.6.0.jar",
-          "size": 249258,
-          "sha512": "20f376991524977a29ebd9a418547c03ba636ac7ac503332b8e0dd058b1a4f4c5dc6d4fb1fb2a79b58529a9cad7f05188d6225c26425bf289173f44b9bb7191a",
-          "sha256": "c9ce4aa7614d7d2913e3a5de1b31a1241f9cbbb3bd46f751fbeefefde59d552c",
-          "sha1": "3b7b4385dd29010967791c338e76884805dd34b2",
-          "md5": "be739800b9dfe8371e20e7c4f745125a"
+          "size": 264813,
+          "sha512": "4025a34abb0d2384937557553bc17e204623fc57d88790fb2a44edb8df2ff586251bca8454baec43dac3829e483cba03d71e07fcb3989e165d1535ae30f8c913",
+          "sha256": "643c33939c2c263dde664c05e10fac998022ff19306983a0edf6424751587ae5",
+          "sha1": "39c0d5569d76f73103f300d42cfdc0528d8c7a55",
+          "md5": "b9b2a64eec1631338990bd5a4d1ec0a0"
         }
       ]
     },
@@ -149,11 +163,11 @@
         {
           "name": "cockroachdb-spring-boot-starter-0.6.0-sources.jar",
           "url": "cockroachdb-spring-boot-starter-0.6.0-sources.jar",
-          "size": 121933,
-          "sha512": "16da4a25ef147c270eb286d7bf60798323b4718b74507d56d316d5564af9484f5331b5878227c817768eb0265b4d9161b03b68f2c8638fbc25cad863a5e2675a",
-          "sha256": "55e163325086db912b8880cf3b87db737dd1eaa8f40af83ee87cc91d3637f71c",
-          "sha1": "21af0e89756f304e7a2866eccb629174d1c394e8",
-          "md5": "1e742b8ad5c3d4f189f4b0448e03f011"
+          "size": 132439,
+          "sha512": "29a94b54bbf07e1835f1072315a415ad1dc384975f9f1786096070402f5d76d4d147f4d54b4e690c99c42703045dd080d96bff1eec51ac8cce55615e3fd9052d",
+          "sha256": "d4088f8aa6625456de65b63d53969a0a8c5e2a973cc15c3a34f88c76193496b4",
+          "sha1": "c28317a317a11ef44de27bc4f0a903c261ccb1c1",
+          "md5": "ed04e64656adccc19658ff931c630063"
         }
       ]
     },
@@ -169,11 +183,11 @@
         {
           "name": "cockroachdb-spring-boot-starter-0.6.0-javadoc.jar",
           "url": "cockroachdb-spring-boot-starter-0.6.0-javadoc.jar",
-          "size": 4766580,
-          "sha512": "d77d666f1f4b316cd61b4b0c0bc40c6bd3e8fe650f7d176d332ef893c4e2191a6f3de3b7ae9c03164a3a99caefee720b82507b98fedf5ff26208f6613dd8c9a2",
-          "sha256": "7254bd71b81b7c7ce127ae509f2ee1db876c29f71c51989a073a5d46c263af04",
-          "sha1": "fc3a09909b7298d3365b298fffa52c53b92be403",
-          "md5": "70e503586ba57a79fd275cd008a5f8ad"
+          "size": 4768955,
+          "sha512": "cf178f661fdb0967bce6b653e8cd9709082cc3e0e5bea81b5e00571532a1172cee1c4e1b5877d021012d1b8d2c09b3d0c048e6857c38e8d79528f5f000d8bd78",
+          "sha256": "9c2a42177a8adeebb0b97edb8a9be5cbecec3d2e398d52b685786bbaabd8ff66",
+          "sha1": "4b61efaa919346494d96a1277132e2cea1fe4ab7",
+          "md5": "8d3672048473e63a02d564fee7a7f197"
         }
       ]
     }

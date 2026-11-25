@@ -79,6 +79,29 @@ dependencies {
 
 API reference: https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/
 
+### Using the starter with coding agents
+
+[docs/agents/AGENTS.md](docs/agents/AGENTS.md) is a short guide for the coding agents working in your application (Claude Code, Codex, Cursor, Copilot and others). It tells them what the starter already handles, such as `40001` retries and session regions, which annotation or API to use for each job, and what not to write by hand. It's available in two places:
+
+- **Inside the starter's jar**, at `META-INF/cockroachdb-spring-boot-starter/AGENTS.md`. This copy matches the version your application uses. Your IDE shows it under the jar in the project's external libraries, and you can print it with:
+
+  ```bash
+  unzip -p "$(find ~/.gradle/caches ~/.m2/repository -name 'cockroachdb-spring-boot-starter-*.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' 2>/dev/null | sort -V | tail -1)" META-INF/cockroachdb-spring-boot-starter/AGENTS.md
+  ```
+
+  That finds the newest version in your local caches; if several are there, unzip the one your build resolves.
+- **On the project site**, at <https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/agents/AGENTS.md>. This copy follows the `main` branch. The site also serves an [`llms.txt`](https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/llms.txt) that points to it.
+
+To point your agent at it, copy it into your repository, or reference it from your own `AGENTS.md` or `CLAUDE.md`:
+
+```markdown
+This application uses the CockroachDB Spring Boot Starter. Before writing transaction,
+region, CDC or vector-search code, read the starter's agent guide: the copy inside the
+starter jar (META-INF/cockroachdb-spring-boot-starter/AGENTS.md) matches the version
+we use; the latest is at
+https://cockroachlabs.github.io/cockroachdb-spring-boot-starter/agents/AGENTS.md
+```
+
 ## Configuration
 
 Add to `application.yml`:

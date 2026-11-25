@@ -64,6 +64,14 @@ The published jar targets Java 17 and is tested on every supported JDK (17, 21 a
 
 User-facing behavior is documented in the [README](../README.md) and taught by executable getting-started guides that CI builds against every change (see [guides.md](guides.md)). A change that alters what users see updates both in the same pull request.
 
+### Easy to use, for people and coding agents alike
+
+The starter's users include the coding agents that write so much application code today, not only the people they work with. Both should find it as easy as possible to reach CockroachDB through the starter, and to use what it provides instead of rebuilding it. An agent that doesn't know the starter tends to hand-roll a `40001` retry loop, run `SET crdb_region` itself, or write its own changefeed plumbing.
+
+- **Conventional APIs are the first help.** Because the starter extends Spring the Spring way, what a person or an agent already knows about Spring carries over, and the obvious code is usually the right code.
+- **Agents get a guide of their own.** [docs/agents/AGENTS.md](agents/AGENTS.md) tells the coding agents working in a user's application what the starter already does, which annotation or API fits each job, which configuration matters, and which patterns to avoid. It links to the README for details rather than repeating it. It ships inside the jar, at `META-INF/cockroachdb-spring-boot-starter/AGENTS.md`, so every application has a copy that matches the version it uses, and it is published on GitHub Pages (with an `llms.txt` that points to it), so users can reference the latest from their own agent instructions.
+- **It stays accurate.** Like the README, the agent guide changes in the same pull request as the API it describes. A guide that tells an agent to use something that no longer exists is worse than none.
+
 ## Repository layout
 
 ```
@@ -75,6 +83,7 @@ cockroachdb-spring-boot-starter/
 ├── docs/architecture.md   This document
 ├── docs/guides.md         Rules and structure for the getting-started guides
 ├── docs/rules.md          Rules for how changes are scoped, tracked and reviewed
+├── docs/agents/AGENTS.md  Guide for coding agents in applications that use the starter
 ├── docker/                Local multi-node CockroachDB clusters for manual testing
 ├── examples/              Standalone example apps (one directory each, own Gradle build)
 └── guides/                Executable getting-started guides

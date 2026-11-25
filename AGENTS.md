@@ -9,6 +9,7 @@ Guidance for coding agents working in this repository.
 - [docs/guides.md](docs/guides.md): the rules for getting-started guides under `guides/`. Any new or changed guide must meet every principle listed there (executable, self-contained, Java 17+, one focus, 30 to 60 minutes).
 - [guides/README.md](guides/README.md): the step-by-step process for writing, reviewing and maintaining a guide, including the review checklist.
 - [README.md](README.md): the user-facing reference. Keep it in sync with API changes.
+- [docs/agents/AGENTS.md](docs/agents/AGENTS.md): the guide for coding agents in applications that *use* the starter (not for this repository). Keep it in sync with API changes too, in the same pull request, next to `README.md`.
 
 ## Build and test
 

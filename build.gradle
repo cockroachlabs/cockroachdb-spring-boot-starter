@@ -24,6 +24,15 @@ tasks.withType(JavaCompile).configureEach {
     options.release = 17
 }
 
+// Ship the guide for coding agents (docs/agents/AGENTS.md) inside the jar, so a copy
+// that matches the version in use sits next to the code. The directory is named after
+// the artifact so it can't collide with another library's file in a shaded jar.
+tasks.named('processResources', ProcessResources) {
+    from('docs/agents/AGENTS.md') {
+        into 'META-INF/cockroachdb-spring-boot-starter'
+    }
+}
+
 // Null safety, the way Spring Framework does it: every package is JSpecify
 // @NullMarked, and NullAway (run through Error Prone) checks main sources at
 // compile time. Tests are not checked.

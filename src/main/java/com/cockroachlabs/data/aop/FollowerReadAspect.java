@@ -47,8 +47,7 @@ public class FollowerReadAspect {
         txTemplate.setReadOnly(true);
 
         long start = System.nanoTime();
-        // SET TRANSACTION AS OF SYSTEM TIME must be the transaction's first statement, so
-        // keep the session-region listener from running SET crdb_region ahead of it.
+        // A follower read is read-only, so it has no rows to home to a region.
         try (CockroachDBRegions.Scope noRegion = CockroachDBRegions.suppress()) {
             Object result = txTemplate.execute(status -> {
                 requireTransactionBoundConnection(pjp);

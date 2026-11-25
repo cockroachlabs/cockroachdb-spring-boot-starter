@@ -19,9 +19,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * Those callers {@linkplain #bind(String) bind} a scope on the current thread for the length of
  * the call. When a transaction begins inside that scope, this listener publishes the region to
  * {@link RegionContext} for the duration of the transaction; {@code RegionalByRowListener} then
- * stamps the entity's {@code @CrdbRegion} column on {@code @PrePersist}. (CockroachDB has no
- * {@code SET crdb_region} session variable, so the region is never applied as session SQL.) The
- * region is the first of:
+ * stamps the entity's {@code @CrdbRegion} column on {@code @PrePersist}. CockroachDB has no
+ * session variable for a region, so no SQL is run for it, and the region doesn't route queries
+ * or affect rows written with raw SQL. The region is the first of:
  * <ol>
  *   <li>the region the caller bound explicitly ({@code @CockroachDBTransactional(region = ...)}
  *       or {@code CockroachDBTransactionTemplate.setRegion(...)});</li>
@@ -29,8 +29,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  *   <li>the {@link RegionResolver} bean;</li>
  *   <li>{@code cockroachdb.region.default-region}.</li>
  * </ol>
- * No region, a suppressed scope, or a transaction begun outside such a scope leaves
- * {@link RegionContext} untouched. The starter registers this listener with every
+ * The region is resolved and {@linkplain #validate(String) validated} in
+ * {@link #beforeBegin(TransactionExecution)}, so an invalid region fails the call before a
+ * connection is acquired. No region, a suppressed scope, or a transaction begun outside such a
+ * scope leaves {@link RegionContext} untouched. The starter registers this listener with every
  * {@code ConfigurableTransactionManager} bean.
  */
 public class CockroachDBRegions implements TransactionExecutionListener {
@@ -39,6 +41,9 @@ public class CockroachDBRegions implements TransactionExecutionListener {
 
     /** The innermost active scope on this thread; null when none. */
     private static final ThreadLocal<@Nullable Binding> BINDING = new ThreadLocal<>();
+
+    /** The region resolved in {@link #beforeBegin} for the transaction now beginning; null when none. */
+    private static final ThreadLocal<@Nullable String> PENDING = new ThreadLocal<>();
 
     private final CockroachDBProperties.Region properties;
     private final @Nullable RegionResolver regionResolver;
@@ -59,7 +64,7 @@ public class CockroachDBRegions implements TransactionExecutionListener {
     }
 
     /**
-     * Opens a scope in which transactions that begin get a session region: {@code explicitRegion}
+     * Opens a scope in which transactions that begin are bound to a region: {@code explicitRegion}
      * when not {@code null}, otherwise the resolution chain. Scopes nest; close it in a
      * {@code finally} or try-with-resources.
      */
@@ -68,8 +73,8 @@ public class CockroachDBRegions implements TransactionExecutionListener {
     }
 
     /**
-     * Opens a scope in which transactions that begin get no session region, for transactions
-     * that must not run any statement first (follower reads).
+     * Opens a scope in which transactions that begin are bound to no region, for read-only
+     * transactions such as follower reads.
      */
     public static Scope suppress() {
         return push(new Binding(null, true));
@@ -88,20 +93,32 @@ public class CockroachDBRegions implements TransactionExecutionListener {
     }
 
     @Override
-    public void afterBegin(TransactionExecution transaction, @Nullable Throwable beginFailure) {
+    public void beforeBegin(TransactionExecution transaction) {
+        PENDING.remove();
         Binding binding = BINDING.get();
-        if (beginFailure != null || binding == null || binding.suppressed()) {
+        if (binding == null || binding.suppressed()) {
             return;
         }
+        // Resolve and validate before the transaction manager begins: an exception thrown from
+        // afterBegin would leave the begun transaction (and its connection) bound to the thread.
         String region = resolve(binding.explicitRegion());
-        if (region == null || !TransactionSynchronizationManager.isSynchronizationActive()) {
-            // Nothing to apply, or no synchronization to scope the binding to. CockroachDB has no
-            // `SET crdb_region` session variable, so region is never applied as session SQL.
+        if (region != null) {
+            PENDING.set(region);
+        }
+    }
+
+    @Override
+    public void afterBegin(TransactionExecution transaction, @Nullable Throwable beginFailure) {
+        String region = PENDING.get();
+        PENDING.remove();
+        if (beginFailure != null || region == null
+                || !TransactionSynchronizationManager.isSynchronizationActive()) {
+            // Nothing to bind, or no synchronization to scope the binding to.
             return;
         }
         // Home REGIONAL BY ROW rows by stamping the @CrdbRegion column: RegionalByRowListener reads
         // RegionContext on @PrePersist. Bind the region for THIS transaction only and restore the
-        // previous value on completion, so a pooled connection/thread never leaks a region.
+        // previous value on completion, so a pooled thread never leaks a region.
         String previous = RegionContext.current().orElse(null);
         RegionContext.set(region);
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {

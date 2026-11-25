@@ -36,8 +36,8 @@ public interface CockroachDBTransactionOperations extends TransactionOperations 
     }
 
     /**
-     * Operations that run {@code SET crdb_region} to {@code region} at the start of each
-     * transaction, overriding {@code RegionContext}, the {@code RegionResolver} and the
+     * Operations that bind {@code region} to each transaction they begin, so new REGIONAL BY ROW
+     * entities are homed to it, overriding {@code RegionContext}, the {@code RegionResolver} and the
      * default region. This instance is not changed.
      *
      * @throws IllegalArgumentException if the region is malformed or not allowed
